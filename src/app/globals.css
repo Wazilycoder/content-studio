@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --canvas: #F8F8F6;
+  --surface: #FFFFFF;
+  --surface-subtle: #F1F1ED;
+  --border: #E4E4DE;
+  --ink-primary: #18181B;
+  --ink-secondary: #71717A;
+  --accent: #3B49DF;
+  --accent-hover: #2F3CBF;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink-primary);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tinh chỉnh thanh cuộn thanh lịch */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}
