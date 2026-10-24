@@ -11,10 +11,24 @@
   --ink-tertiary: #8C8C96;
   --accent-navy: #2534C7;
   --accent-navy-hover: #1B27A4;
-    --accent-emerald: #0E7051;
-    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
-  }
+  --accent-emerald: #0E7051;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dark {
+  --canvas: #09090B;
+  --surface: #121215;
+  --surface-raised: #1A1A22;
+  --border-subtle: #24242C;
+  --border-strong: #363642;
+  --ink-primary: #FAFAFA;
+  --ink-secondary: #A1A1AA;
+  --ink-tertiary: #71717A;
+  --accent-navy: #4F5DFF;
+  --accent-navy-hover: #6370FF;
+  --accent-emerald: #10B981;
+}
 
 body {
   background-color: var(--canvas);
@@ -22,6 +36,7 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Tinh chỉnh thanh cuộn thanh lịch */
@@ -38,6 +53,13 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #C9C9C1;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272A;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3F3F46;
 }
 
 /* Chống tràn ngang tuyệt đối, không phá vỡ position: sticky */
@@ -92,6 +114,15 @@ body {
   animation: shimmer 1.6s var(--ease-out) infinite;
 }
 
+.dark .skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--surface-raised) 25%,
+    #24242C 50%,
+    var(--surface-raised) 75%
+  );
+}
+
 /* Micro-spring cho icon checkmark khi sao chép */
 @keyframes check-pop {
   0% {
@@ -110,3 +141,68 @@ body {
 .check-pop {
   animation: check-pop 0.28s var(--ease-spring);
 }
+
+/* Hiệu ứng nảy mượt mà khi ấn Thích trong mô phỏng Facebook */
+@keyframes like-bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.35) rotate(-8deg);
+  }
+  60% {
+    transform: scale(0.92) rotate(4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+.animate-like-bounce {
+  animation: like-bounce 0.4s var(--ease-spring);
+}
+
+/* Hiệu ứng xuất hiện mượt mà (Fade In & Slide Up) cho danh sách kết quả */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out both;
+}
+
+/* Ánh sáng nền huyền ảo (Ambient Glow) cho Hero Section */
+.ambient-glow {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(79, 93, 255, 0.08) 0%,
+    rgba(79, 93, 255, 0.02) 50%,
+    transparent 80%
+  );
+}
+.dark .ambient-glow {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(79, 93, 255, 0.15) 0%,
+    rgba(79, 93, 255, 0.04) 50%,
+    transparent 80%
+  );
+}
+

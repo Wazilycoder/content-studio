@@ -42,7 +42,7 @@ export default function ResultsSection({
   };
 
   return (
-    <div>
+    <div className="relative">
       <div className="mb-4 flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h2 className="flex items-center gap-1.5 text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
@@ -61,16 +61,16 @@ export default function ResultsSection({
             type="button"
             onClick={onRegenerate}
             disabled={loading || !result}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-white px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[var(--accent-navy)]" : ""}`} />
             Tạo lại
           </button>
           <button
             type="button"
             onClick={handleCopyAll}
             disabled={!result}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-white px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Copy className="h-3.5 w-3.5" />
             Sao chép tất cả
@@ -79,14 +79,14 @@ export default function ResultsSection({
       </div>
 
       {result && !loading ? (
-        <div className="mb-4 inline-flex rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-0.5">
+        <div className="mb-5 inline-flex rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1 shadow-inner">
           <button
             type="button"
             onClick={() => setView("cards")}
             aria-pressed={view === "cards"}
-            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
+            className={`btn-tactile inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200 ${
               view === "cards"
-                ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                ? "bg-[var(--surface)] text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
                 : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
             }`}
           >
@@ -97,9 +97,9 @@ export default function ResultsSection({
             type="button"
             onClick={() => setView("facebook_mockup")}
             aria-pressed={view === "facebook_mockup"}
-            className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition-colors ${
+            className={`btn-tactile inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200 ${
               view === "facebook_mockup"
-                ? "bg-white text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+                ? "bg-[var(--surface)] text-[var(--ink-primary)] shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
                 : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
             }`}
           >
@@ -117,40 +117,56 @@ export default function ResultsSection({
         <FacebookMockup captions={result.captions} />
       ) : (
         <div className="space-y-6">
-          <section>
-            <h3 className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
-              <AlignLeft className="h-3.5 w-3.5" />
+          <section className="animate-fade-in-up">
+            <h3 className="mb-2.5 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
+              <AlignLeft className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
               3 góc bài viết
             </h3>
             <div className="space-y-3">
-              {result.captions.map((caption) => (
-                <CaptionCard
+              {result.captions.map((caption, index) => (
+                <div
                   key={caption.id}
-                  caption={caption}
-                  onNotify={onNotify}
-                />
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${index * 90}ms` }}
+                >
+                  <CaptionCard
+                    caption={caption}
+                    onNotify={onNotify}
+                  />
+                </div>
               ))}
             </div>
           </section>
 
-          <section>
-            <h3 className="mb-2 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
-              <Sparkles className="h-3.5 w-3.5" />
-              3 headlines
+          <section
+            className="animate-fade-in-up"
+            style={{ animationDelay: "280ms" }}
+          >
+            <h3 className="mb-2.5 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
+              <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+              3 headlines thu hút
             </h3>
             <div className="space-y-2">
               {result.headlines.map((headline, index) => (
-                <HeadlineCard
+                <div
                   key={`${index}-${headline}`}
-                  headline={headline}
-                  index={index}
-                  onNotify={onNotify}
-                />
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${(index + 3) * 70}ms` }}
+                >
+                  <HeadlineCard
+                    headline={headline}
+                    index={index}
+                    onNotify={onNotify}
+                  />
+                </div>
               ))}
             </div>
           </section>
 
-          <section>
+          <section
+            className="animate-fade-in-up"
+            style={{ animationDelay: "450ms" }}
+          >
             <HashtagGroup hashtags={result.hashtags} onNotify={onNotify} />
           </section>
         </div>

@@ -37,19 +37,19 @@ const COLUMNS: FooterColumn[] = [
 
 export default function LandingFooter() {
   return (
-    <footer className="border-t border-[#E4E4DE] bg-white">
+    <footer className="border-t border-[var(--border-subtle)] bg-[var(--surface)]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#3B49DF] text-white shadow-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-xs">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <span className="text-sm font-semibold tracking-tight text-[#18181B]">
+              <span className="text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
                 Content Studio
               </span>
             </div>
-            <p className="mt-4 text-[13px] leading-relaxed text-[#71717A]">
+            <p className="mt-4 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
               Sáng tạo nội dung bán hàng chuẩn phong cách. Biến mô tả sản phẩm thô
               thành 3 góc bài viết độc bản cho Facebook &amp; Instagram.
             </p>
@@ -57,7 +57,7 @@ export default function LandingFooter() {
 
           {COLUMNS.map((column) => (
             <div key={column.title}>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#A1A1AA]">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
                 {column.title}
               </h4>
               <ul className="mt-3 space-y-2.5">
@@ -65,7 +65,7 @@ export default function LandingFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[13px] text-[#52525B] transition-colors hover:text-[#18181B]"
+                      className="text-[13px] text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
                     >
                       {link.label}
                     </Link>
@@ -76,7 +76,7 @@ export default function LandingFooter() {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-[#E4E4DE] pt-6 text-center text-xs text-[#A1A1AA] sm:text-left">
+        <div className="mt-12 border-t border-[var(--border-subtle)] pt-6 text-center text-xs text-[var(--ink-tertiary)] sm:text-left">
           © 2026 Content Studio. Thiết kế theo chuẩn Editorial SaaS &amp; Karpathy
           Discipline. Zero AI-Slop.
         </div>

@@ -49,25 +49,25 @@ export default function HashtagGroup({ hashtags, onNotify }: HashtagGroupProps) 
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-[#E4E4DE] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E4E4DE] px-4 py-2.5">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#71717A]">
-          <Hash className="h-3.5 w-3.5" />
-          Hashtags
+    <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <header className="flex items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-4 py-2.5">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
+          <Hash className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+          Bộ 5 Hashtags đề xuất
         </span>
 
         <button
           type="button"
           onClick={copyAll}
           aria-label="Chép tất cả hashtag"
-          className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
+          className={`btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-[11px] font-medium transition-colors ${
             copiedAll
-              ? "border-[#0E7051]/30 bg-[#0E7051]/[0.06] text-[#0E7051]"
-              : "border-[#E4E4DE] bg-white text-[#71717A] hover:border-[#D4D4D8] hover:text-[#18181B]"
+              ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+              : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
           }`}
         >
           {copiedAll ? (
-            <Check className="h-3 w-3" />
+            <Check className="check-pop h-3 w-3" />
           ) : (
             <Copy className="h-3 w-3" />
           )}
@@ -75,7 +75,7 @@ export default function HashtagGroup({ hashtags, onNotify }: HashtagGroupProps) 
         </button>
       </header>
 
-      <div className="flex flex-wrap gap-1.5 px-4 py-3">
+      <div className="flex flex-wrap gap-2 px-4 py-3.5">
         {hashtags.map((tag) => {
           const active = copiedTag === tag;
           return (
@@ -84,13 +84,13 @@ export default function HashtagGroup({ hashtags, onNotify }: HashtagGroupProps) 
               type="button"
               onClick={() => copyTag(tag)}
               aria-label={`Sao chép ${tag}`}
-              className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[12px] font-medium transition-colors ${
+              className={`btn-tactile inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-[12px] font-medium transition-all duration-150 ${
                 active
-                  ? "border-[#0E7051]/30 bg-[#0E7051]/[0.06] text-[#0E7051]"
-                  : "border-[#E4E4DE] bg-[#F8F8F6] text-[#3F3F46] hover:border-[#3B49DF]/40 hover:bg-[#3B49DF]/[0.06] hover:text-[#3B49DF]"
+                  ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+                  : "border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:border-[var(--accent-navy)]/40 hover:bg-[var(--accent-navy)]/[0.06] hover:text-[var(--accent-navy)]"
               }`}
             >
-              {active ? <Check className="h-3 w-3" /> : null}
+              {active ? <Check className="check-pop h-3 w-3" /> : null}
               <span className="break-all">{tag}</span>
             </button>
           );

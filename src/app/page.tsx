@@ -14,7 +14,7 @@ export default async function HomePage() {
   const user = await getUserProfile();
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-[#F8F8F6] text-[#18181B]">
+    <div className="min-h-screen overflow-x-clip bg-[var(--canvas)] text-[var(--ink-primary)]">
       <LandingNav user={user} />
       <main>
         <HeroSection user={user} />

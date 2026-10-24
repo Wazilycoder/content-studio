@@ -155,17 +155,17 @@ export default function InteractivePlayground() {
   return (
     <section
       id="demo"
-      className="scroll-mt-20 border-y border-[#E4E4DE] bg-white py-16 sm:py-20"
+      className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface)] py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E4E4DE] bg-[#F1F1ED] px-3 py-1 text-[11px] font-medium text-[#52525B]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
             Trải nghiệm thử
           </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#18181B] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
             Xem AI viết thế nào — ngay trên trang này
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[#71717A] sm:text-base">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
             Chọn một sản phẩm mẫu để xem trọn bộ 3 caption đa góc nhìn, 3 headline
             và 5 hashtag được sinh ra chỉ trong vài giây. Không cần đăng nhập.
           </p>
@@ -180,10 +180,10 @@ export default function InteractivePlayground() {
                 key={p.id}
                 type="button"
                 onClick={() => setActiveId(p.id)}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold transition-colors ${
+                className={`btn-tactile rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-150 ${
                   isActive
-                    ? "border-[#3B49DF] bg-[#3B49DF] text-white shadow-xs"
-                    : "border-[#E4E4DE] bg-white text-[#52525B] hover:bg-[#F1F1ED]"
+                    ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
+                    : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
                 }`}
               >
                 {p.tab}
@@ -193,37 +193,40 @@ export default function InteractivePlayground() {
         </div>
 
         {/* Two column result */}
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
+        <div
+          key={active.id}
+          className="animate-fade-in mt-8 grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]"
+        >
           {/* Left: input summary */}
-          <aside className="rounded-2xl border border-[#E4E4DE] bg-[#F8F8F6] p-5 sm:p-6">
+          <aside className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-5 sm:p-6">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#A1A1AA]">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
                 Thông tin đầu vào
               </span>
-              <span className="rounded-full border border-[#E4E4DE] bg-white px-2.5 py-0.5 text-[11px] font-medium text-[#3B49DF]">
+              <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent-navy)]">
                 {active.toneLabel}
               </span>
             </div>
             <dl className="mt-4 space-y-3.5">
               <div>
-                <dt className="text-[11px] font-medium text-[#A1A1AA]">
+                <dt className="text-[11px] font-medium text-[var(--ink-tertiary)]">
                   Tên sản phẩm
                 </dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#18181B]">
+                <dd className="mt-0.5 text-sm font-semibold text-[var(--ink-primary)]">
                   {active.name}
                 </dd>
               </div>
               <div>
-                <dt className="text-[11px] font-medium text-[#A1A1AA]">Mô tả</dt>
-                <dd className="mt-0.5 text-[13px] leading-relaxed text-[#52525B]">
+                <dt className="text-[11px] font-medium text-[var(--ink-tertiary)]">Mô tả</dt>
+                <dd className="mt-0.5 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                   {active.description}
                 </dd>
               </div>
               <div>
-                <dt className="text-[11px] font-medium text-[#A1A1AA]">
+                <dt className="text-[11px] font-medium text-[var(--ink-tertiary)]">
                   Khách hàng mục tiêu
                 </dt>
-                <dd className="mt-0.5 text-[13px] leading-relaxed text-[#52525B]">
+                <dd className="mt-0.5 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                   {active.audience}
                 </dd>
               </div>
@@ -237,31 +240,31 @@ export default function InteractivePlayground() {
               return (
                 <div
                   key={caption.angle}
-                  className="rounded-xl border border-[#E4E4DE] bg-white p-4"
+                  className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="inline-flex items-center rounded-md bg-[#F1F1ED] px-2 py-0.5 text-[11px] font-semibold text-[#3B49DF]">
+                    <span className="inline-flex items-center rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-semibold text-[var(--accent-navy)]">
                       {caption.angle}
                     </span>
                     <div className="flex items-center gap-2.5">
-                      <span className="text-[11px] text-[#A1A1AA]">
+                      <span className="text-[11px] text-[var(--ink-tertiary)]">
                         {countChars(caption.text)} ký tự
                       </span>
                       <button
                         type="button"
                         onClick={() => handleCopy(copyKey, caption.text)}
                         aria-label="Sao chép caption"
-                        className="text-[#A1A1AA] transition-colors hover:text-[#3B49DF]"
+                        className="btn-tactile text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
                       >
                         {copied === copyKey ? (
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="check-pop h-3.5 w-3.5 text-[var(--accent-emerald)]" />
                         ) : (
                           <Copy className="h-3.5 w-3.5" />
                         )}
                       </button>
                     </div>
                   </div>
-                  <p className="mt-3 whitespace-pre-line text-[13px] leading-relaxed text-[#3F3F46]">
+                  <p className="mt-3 whitespace-pre-line text-[13px] leading-relaxed text-[var(--ink-primary)]">
                     {caption.text}
                   </p>
                 </div>
@@ -269,10 +272,10 @@ export default function InteractivePlayground() {
             })}
 
             {/* Headlines */}
-            <div className="rounded-xl border border-[#E4E4DE] bg-white p-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[#3B49DF]" />
-                <span className="text-xs font-semibold text-[#18181B]">
+                <Sparkles className="h-4 w-4 text-[var(--accent-navy)]" />
+                <span className="text-xs font-semibold text-[var(--ink-primary)]">
                   3 Headlines giật tít
                 </span>
               </div>
@@ -282,19 +285,19 @@ export default function InteractivePlayground() {
                   return (
                     <li
                       key={headline}
-                      className="flex items-start justify-between gap-3 rounded-lg bg-[#F8F8F6] px-3 py-2"
+                      className="flex items-start justify-between gap-3 rounded-lg bg-[var(--surface-raised)] px-3 py-2"
                     >
-                      <span className="text-[13px] font-medium text-[#3F3F46]">
+                      <span className="text-[13px] font-medium text-[var(--ink-primary)]">
                         {headline}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleCopy(copyKey, headline)}
                         aria-label="Sao chép headline"
-                        className="shrink-0 text-[#A1A1AA] transition-colors hover:text-[#3B49DF]"
+                        className="btn-tactile shrink-0 text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
                       >
                         {copied === copyKey ? (
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="check-pop h-3.5 w-3.5 text-[var(--accent-emerald)]" />
                         ) : (
                           <Copy className="h-3.5 w-3.5" />
                         )}
@@ -306,21 +309,21 @@ export default function InteractivePlayground() {
             </div>
 
             {/* Hashtags */}
-            <div className="rounded-xl border border-[#E4E4DE] bg-white p-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Hash className="h-4 w-4 text-[#3B49DF]" />
-                  <span className="text-xs font-semibold text-[#18181B]">
+                  <Hash className="h-4 w-4 text-[var(--accent-navy)]" />
+                  <span className="text-xs font-semibold text-[var(--ink-primary)]">
                     5 Hashtags chuẩn ngách
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy("hashtags", active.hashtags.join(" "))}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-[#71717A] transition-colors hover:text-[#3B49DF]"
+                  className="btn-tactile inline-flex items-center gap-1 text-[11px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-navy)]"
                 >
                   {copied === "hashtags" ? (
-                    <Check className="h-3.5 w-3.5" />
+                    <Check className="check-pop h-3.5 w-3.5 text-[var(--accent-emerald)]" />
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
@@ -331,7 +334,7 @@ export default function InteractivePlayground() {
                 {active.hashtags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-md bg-[#F1F1ED] px-2.5 py-1 text-xs font-medium text-[#3B49DF]"
+                    className="rounded-md bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-medium text-[var(--accent-navy)]"
                   >
                     {tag}
                   </span>
@@ -342,7 +345,7 @@ export default function InteractivePlayground() {
             {/* CTA */}
             <Link
               href="/workspace"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B49DF] px-5 py-3 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-[#2F3CBF]"
+              className="btn-tactile inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-5 py-3 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-[var(--accent-navy-hover)]"
             >
               Mở trong Workspace để tạo bài cho sản phẩm của bạn
               <ArrowRight className="h-4 w-4" />

@@ -37,26 +37,26 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="scroll-mt-20 border-y border-[#E4E4DE] bg-white py-16 sm:py-20"
+      className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface)] py-16 sm:py-20"
     >
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <div className="text-center">
-          <span className="inline-flex items-center rounded-full border border-[#E4E4DE] bg-[#F1F1ED] px-3 py-1 text-[11px] font-medium text-[#52525B]">
+          <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
             FAQ
           </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#18181B] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
             Giải đáp thắc mắc của chủ shop
           </h2>
         </div>
 
-        <div className="mt-10 divide-y divide-[#E4E4DE] overflow-hidden rounded-2xl border border-[#E4E4DE] bg-white">
+        <div className="mt-10 divide-y divide-[var(--border-subtle)] overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           {FAQS.map((faq) => (
             <details key={faq.question} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-[#18181B] [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-[var(--ink-primary)] transition-colors hover:bg-[var(--surface-raised)] [&::-webkit-details-marker]:hidden">
                 <span>{faq.question}</span>
-                <ChevronDown className="h-4 w-4 shrink-0 text-[#71717A] transition-transform duration-200 group-open:rotate-180" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-[var(--ink-secondary)] transition-transform duration-200 group-open:rotate-180" />
               </summary>
-              <p className="px-5 pb-4 text-[13px] leading-relaxed text-[#71717A]">
+              <p className="px-5 pb-4 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                 {faq.answer}
               </p>
             </details>

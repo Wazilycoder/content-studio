@@ -60,7 +60,7 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
             className={`btn-tactile inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-md border px-3 py-1 text-[12px] font-medium transition-colors sm:min-h-0 sm:py-1 ${
               copied
                 ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.06] text-[var(--accent-emerald)]"
-                : "border-[var(--border-subtle)] bg-white text-[var(--ink-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
             }`}
           >
             {copied ? (

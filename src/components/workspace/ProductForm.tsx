@@ -93,7 +93,7 @@ function validate(values: ContentFormInput): FieldErrors {
 }
 
 const inputBaseClass =
-  "w-full rounded-lg border bg-white px-3 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-colors focus:outline-none focus:ring-2";
+  "w-full rounded-lg border bg-[var(--surface)] px-3 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-colors focus:outline-none focus:ring-2";
 const inputNormalClass =
   "border-[var(--border-subtle)] focus:border-[var(--border-strong)] focus:ring-[var(--accent-navy)]/15";
 const inputErrorClass =
@@ -331,10 +331,10 @@ export default function ProductForm({
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
                   title={option.hint}
-                  className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+                  className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                     active
                       ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
-                      : "border-[var(--border-subtle)] bg-white hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                      : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                   }`}
                 >
                   <span className="min-w-0">
@@ -386,10 +386,10 @@ export default function ProductForm({
                     onClick={() => update({ tone: option.value })}
                     aria-pressed={active}
                     title={option.hint}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+                    className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                       active
                         ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
-                        : "border-[var(--border-subtle)] bg-white hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                        : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                     }`}
                   >
                     <span className="min-w-0">

@@ -84,19 +84,19 @@ export default function HistoryDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Lịch sử tạo bài viết"
-        className={`absolute inset-y-0 right-0 flex w-full flex-col border-l border-[#E4E4DE] bg-white shadow-[0_0_30px_rgba(0,0,0,0.08)] transition-transform duration-200 ease-out sm:w-[480px] ${
+        className={`absolute inset-y-0 right-0 flex w-full flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_0_30px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out sm:w-[480px] ${
           active ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <header className="flex items-start justify-between gap-3 border-b border-[#E4E4DE] px-5 py-4">
+        <header className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] px-5 py-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <History className="h-4 w-4 shrink-0 text-[#3B49DF]" />
-              <h2 className="truncate text-sm font-semibold tracking-tight text-[#18181B]">
+              <History className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
+              <h2 className="truncate text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
                 Lịch sử tạo bài viết
               </h2>
             </div>
-            <p className="mt-1.5 inline-flex items-center rounded-md bg-[#F1F1ED] px-2 py-0.5 text-[11px] font-medium text-[#71717A]">
+            <p className="mt-1.5 inline-flex items-center rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
               {loading ? "Đang tải..." : `${count} bài đã lưu`}
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function HistoryDrawer({
             type="button"
             onClick={onClose}
             aria-label="Đóng lịch sử"
-            className="shrink-0 rounded-md p-1.5 text-[#71717A] transition-colors hover:bg-[#F1F1ED] hover:text-[#18181B]"
+            className="btn-tactile shrink-0 rounded-md p-1.5 text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -117,17 +117,17 @@ export default function HistoryDrawer({
               {[0, 1, 2].map((index) => (
                 <div
                   key={index}
-                  className="animate-pulse rounded-xl border border-[#E4E4DE] bg-white p-3.5"
+                  className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5"
                 >
-                  <div className="h-3 w-2/3 rounded bg-[#F1F1ED]" />
-                  <div className="mt-2 h-2.5 w-1/3 rounded bg-[#F1F1ED]" />
-                  <div className="mt-3 h-2.5 w-full rounded bg-[#F1F1ED]" />
-                  <div className="mt-1.5 h-2.5 w-5/6 rounded bg-[#F1F1ED]" />
+                  <div className="skeleton-shimmer h-3 w-2/3 rounded" />
+                  <div className="skeleton-shimmer mt-2 h-2.5 w-1/3 rounded" />
+                  <div className="skeleton-shimmer mt-3 h-2.5 w-full rounded" />
+                  <div className="skeleton-shimmer mt-1.5 h-2.5 w-5/6 rounded" />
                 </div>
               ))}
             </div>
           ) : error ? (
-            <div className="rounded-xl border border-[#E4E4DE] bg-[#F1F1ED]/60 p-4 text-[12px] leading-relaxed text-[#71717A]">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-4 text-[12px] leading-relaxed text-[var(--ink-secondary)]">
               {error}
             </div>
           ) : count === 0 ? (

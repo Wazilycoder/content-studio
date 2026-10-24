@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getUserProfile, signOut } from "@/app/auth/actions";
 import WorkspaceContainer from "@/components/workspace/WorkspaceContainer";
 import { PenLine, LogOut, ArrowRight, Coins, Home } from "lucide-react";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ export default async function WorkspacePage() {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--canvas)] text-[var(--ink-primary)]">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-white/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--surface)]/90 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Link
@@ -53,6 +54,9 @@ export default async function WorkspacePage() {
                   {user.email}
                 </span>
 
+                {/* Theme Toggle */}
+                <ThemeToggle />
+
                 {/* Logout action */}
                 <form action={signOut}>
                   <button
@@ -66,13 +70,16 @@ export default async function WorkspacePage() {
                 </form>
               </>
             ) : (
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
-              >
-                <span>Đăng nhập</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              <>
+                <ThemeToggle />
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
+                >
+                  <span>Đăng nhập</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -84,7 +91,7 @@ export default async function WorkspacePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border-subtle)] bg-white py-4 text-center text-[12px] text-[var(--ink-tertiary)]">
+      <footer className="border-t border-[var(--border-subtle)] bg-[var(--surface)] py-4 text-center text-[12px] text-[var(--ink-tertiary)]">
         Content Studio — Không gian sáng tạo nội dung Facebook & Instagram chuyên nghiệp. Zero AI-Slop.
       </footer>
     </div>

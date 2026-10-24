@@ -38,12 +38,12 @@ export default function HeadlineCard({
   };
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-[#E4E4DE] bg-white px-3.5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <span className="mt-[1px] inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#F1F1ED] text-[10.5px] font-semibold tabular-nums text-[#71717A]">
+    <div className="flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[var(--border-strong)]">
+      <span className="mt-[1px] inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--surface-raised)] text-[10.5px] font-semibold tabular-nums text-[var(--ink-tertiary)]">
         {String(index + 1).padStart(2, "0")}
       </span>
 
-      <p className="min-w-0 flex-1 break-words text-[13px] font-medium leading-relaxed text-[#18181B]">
+      <p className="min-w-0 flex-1 break-words text-[13px] font-medium leading-relaxed text-[var(--ink-primary)]">
         {headline}
       </p>
 
@@ -52,14 +52,14 @@ export default function HeadlineCard({
         onClick={handleCopy}
         aria-label="Sao chép headline"
         title="Chép headline"
-        className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
+        className={`btn-tactile inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
           copied
-            ? "border-[#0E7051]/30 bg-[#0E7051]/[0.06] text-[#0E7051]"
-            : "border-[#E4E4DE] bg-white text-[#71717A] hover:border-[#D4D4D8] hover:text-[#18181B]"
+            ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+            : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
         }`}
       >
         {copied ? (
-          <Check className="h-3 w-3" />
+          <Check className="check-pop h-3 w-3" />
         ) : (
           <Copy className="h-3 w-3" />
         )}
