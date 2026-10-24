@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Copy, Hash, Sparkles } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 interface AngleCaption {
   angle: string;
@@ -158,39 +159,43 @@ export default function InteractivePlayground() {
       className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface)] py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
-            Trải nghiệm thử
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
-            Xem AI viết thế nào — ngay trên trang này
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-            Chọn một sản phẩm mẫu để xem trọn bộ 3 caption đa góc nhìn, 3 headline
-            và 5 hashtag được sinh ra chỉ trong vài giây. Không cần đăng nhập.
-          </p>
-        </div>
+        <ScrollReveal direction="up" duration={600}>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
+              Trải nghiệm thử
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
+              Xem AI viết thế nào — ngay trên trang này
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
+              Chọn một sản phẩm mẫu để xem trọn bộ 3 caption đa góc nhìn, 3 headline
+              và 5 hashtag được sinh ra chỉ trong vài giây. Không cần đăng nhập.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Tabs */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          {PRODUCTS.map((p) => {
-            const isActive = p.id === activeId;
-            return (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setActiveId(p.id)}
-                className={`btn-tactile rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-150 ${
-                  isActive
-                    ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
-                    : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-                }`}
-              >
-                {p.tab}
-              </button>
-            );
-          })}
-        </div>
+        <ScrollReveal direction="up" delay={120} duration={600}>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {PRODUCTS.map((p) => {
+              const isActive = p.id === activeId;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setActiveId(p.id)}
+                  className={`btn-tactile rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-150 ${
+                    isActive
+                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
+                      : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                  }`}
+                >
+                  {p.tab}
+                </button>
+              );
+            })}
+          </div>
+        </ScrollReveal>
 
         {/* Two column result */}
         <div

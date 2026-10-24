@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 interface FaqItem {
   question: string;
@@ -34,34 +38,64 @@ const FAQS: FaqItem[] = [
 ];
 
 export default function FaqSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
     <section
       id="faq"
       className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface)] py-16 sm:py-20"
     >
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <div className="text-center">
-          <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
-            FAQ
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
-            Giải đáp thắc mắc của chủ shop
-          </h2>
-        </div>
+        <ScrollReveal direction="up" duration={600}>
+          <div className="text-center">
+            <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
+              FAQ
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
+              Giải đáp thắc mắc của chủ shop
+            </h2>
+          </div>
+        </ScrollReveal>
 
-        <div className="mt-10 divide-y divide-[var(--border-subtle)] overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-          {FAQS.map((faq) => (
-            <details key={faq.question} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-[var(--ink-primary)] transition-colors hover:bg-[var(--surface-raised)] [&::-webkit-details-marker]:hidden">
-                <span>{faq.question}</span>
-                <ChevronDown className="h-4 w-4 shrink-0 text-[var(--ink-secondary)] transition-transform duration-200 group-open:rotate-180" />
-              </summary>
-              <p className="px-5 pb-4 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
-                {faq.answer}
-              </p>
-            </details>
-          ))}
-        </div>
+        <ScrollReveal direction="up" delay={120} duration={650}>
+          <div className="mt-10 divide-y divide-[var(--border-subtle)] overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+            {FAQS.map((faq, index) => {
+              const isOpen = openIndex === index;
+              return (
+                <div key={faq.question} className="transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(index)}
+                    aria-expanded={isOpen}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left text-sm font-medium text-[var(--ink-primary)] transition-colors hover:bg-[var(--surface-raised)] focus:outline-none"
+                  >
+                    <span>{faq.question}</span>
+                    <ChevronDown
+                      className={`h-4 w-4 shrink-0 text-[var(--ink-secondary)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        isOpen ? "rotate-180 text-[var(--accent-navy)]" : ""
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="px-5 pb-4 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

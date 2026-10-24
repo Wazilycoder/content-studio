@@ -1,5 +1,6 @@
 import { MessagesSquare, Type, Copy, History, ShieldCheck, Cpu } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 interface FeatureItem {
   Icon: LucideIcon;
@@ -66,47 +67,56 @@ export default function FeatureGrid() {
       className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface)] py-16 sm:py-20"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
-            Tính năng
-          </span>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
-            Mọi thứ một chủ shop cần để viết content
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-            Tinh gọn, mạnh mẽ và được thiết kế để bạn đăng bài trong vài phút, không
-            phải học công cụ phức tạp.
-          </p>
-        </div>
+        <ScrollReveal direction="up" duration={600}>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
+              Tính năng
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
+              Mọi thứ một chủ shop cần để viết content
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
+              Tinh gọn, mạnh mẽ và được thiết kế để bạn đăng bài trong vài phút, không
+              phải học công cụ phức tạp.
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ Icon, title, description, className, pills }) => (
-            <div
+          {FEATURES.map(({ Icon, title, description, className, pills }, idx) => (
+            <ScrollReveal
               key={title}
-              className={`flex flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[var(--accent-navy)]/40 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] ${className ?? ""}`}
+              direction="up"
+              delay={idx * 70}
+              duration={600}
+              className={`h-full ${className ?? ""}`}
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--accent-navy)] shadow-xs">
-                <Icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]">
-                {title}
-              </h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
-                {description}
-              </p>
-              {pills && (
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {pills.map((pill) => (
-                    <span
-                      key={pill}
-                      className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]"
-                    >
-                      {pill}
-                    </span>
-                  ))}
+              <div
+                className="card-interactive group flex h-full flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-6 hover:border-[var(--accent-navy)]/40"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--accent-navy)] shadow-xs transition-transform duration-200 group-hover:scale-110">
+                  <Icon className="h-5 w-5" />
                 </div>
-              )}
-            </div>
+                <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]">
+                  {title}
+                </h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                  {description}
+                </p>
+                {pills && (
+                  <div className="mt-4 flex flex-wrap gap-1.5">
+                    {pills.map((pill) => (
+                      <span
+                        key={pill}
+                        className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)] transition-colors group-hover:border-[var(--border-strong)]"
+                      >
+                        {pill}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

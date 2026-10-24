@@ -161,11 +161,11 @@ body {
   animation: like-bounce 0.4s var(--ease-spring);
 }
 
-/* Hiệu ứng xuất hiện mượt mà (Fade In & Slide Up) cho danh sách kết quả */
+/* Hiệu ứng xuất hiện mượt mà (Fade In & Slide Up) rõ rệt cho toàn trang */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -173,7 +173,7 @@ body {
   }
 }
 .animate-fade-in-up {
-  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes fadeIn {
@@ -185,23 +185,79 @@ body {
   }
 }
 .animate-fade-in {
-  animation: fadeIn 0.25s ease-out both;
+  animation: fadeIn 0.35s ease-out both;
+}
+
+/* Chuyển động lơ lửng tự nhiên (Floating Motion) */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-float {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* Ánh hào quang nền thở nhịp nhàng (Ambient Aura Pulse) */
+@keyframes auraPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+.animate-aura {
+  animation: auraPulse 7s ease-in-out infinite;
+}
+
+/* Hiệu ứng sóng sáng (Highlight Pulse) khi nạp Dữ liệu mẫu */
+@keyframes sampleHighlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 93, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(79, 93, 255, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 93, 255, 0);
+  }
+}
+.sample-pulse {
+  animation: sampleHighlight 0.8s ease-out;
+}
+
+/* Vật lý tương tác thẻ khi di chuột (Card Physics Lift) */
+.card-interactive {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+}
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+}
+.dark .card-interactive:hover {
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px 2px rgba(79, 93, 255, 0.18);
 }
 
 /* Ánh sáng nền huyền ảo (Ambient Glow) cho Hero Section */
 .ambient-glow {
   background: radial-gradient(
     circle at 50% 0%,
-    rgba(79, 93, 255, 0.08) 0%,
-    rgba(79, 93, 255, 0.02) 50%,
+    rgba(79, 93, 255, 0.12) 0%,
+    rgba(79, 93, 255, 0.03) 50%,
     transparent 80%
   );
 }
 .dark .ambient-glow {
   background: radial-gradient(
     circle at 50% 0%,
-    rgba(79, 93, 255, 0.15) 0%,
-    rgba(79, 93, 255, 0.04) 50%,
+    rgba(79, 93, 255, 0.22) 0%,
+    rgba(79, 93, 255, 0.06) 50%,
     transparent 80%
   );
 }

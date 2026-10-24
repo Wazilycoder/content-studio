@@ -125,6 +125,7 @@ export default function ProductForm({
   });
   const [submitted, setSubmitted] = useState(false);
   const [showExtendedTones, setShowExtendedTones] = useState(false);
+  const [isSamplePulsing, setIsSamplePulsing] = useState(false);
 
   const errors = useMemo(() => validate(value), [value]);
 
@@ -144,6 +145,12 @@ export default function ProductForm({
 
   const markTouched = (field: FieldName) => {
     setTouched((previous) => ({ ...previous, [field]: true }));
+  };
+
+  const handleSampleClick = () => {
+    onLoadSample();
+    setIsSamplePulsing(true);
+    window.setTimeout(() => setIsSamplePulsing(false), 850);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -177,12 +184,12 @@ export default function ProductForm({
 
         <button
           type="button"
-          onClick={onLoadSample}
+          onClick={handleSampleClick}
           disabled={loading}
           title="Điền nhanh một bộ dữ liệu mẫu để thử nghiệm"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-all duration-150 hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FlaskConical className="h-3.5 w-3.5" />
+          <FlaskConical className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
           Dữ liệu mẫu
         </button>
       </div>
@@ -211,7 +218,9 @@ export default function ProductForm({
             maxLength={MAX_PRODUCT_NAME}
             placeholder="Ví dụ: Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc"
             aria-invalid={Boolean(productNameError)}
-            className={`${inputBaseClass} ${productNameError ? inputErrorClass : inputNormalClass}`}
+            className={`${inputBaseClass} ${
+              productNameError ? inputErrorClass : inputNormalClass
+            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
           />
 
           <div className="mt-1.5">
@@ -256,7 +265,7 @@ export default function ProductForm({
             aria-invalid={Boolean(descriptionError)}
             className={`${inputBaseClass} resize-y leading-relaxed ${
               descriptionError ? inputErrorClass : inputNormalClass
-            }`}
+            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
           />
 
           <div className="mt-1.5">
@@ -297,7 +306,9 @@ export default function ProductForm({
             maxLength={MAX_AUDIENCE}
             placeholder="Ví dụ: Nữ chuyên viên văn phòng 28–45 tuổi"
             aria-invalid={Boolean(audienceError)}
-            className={`${inputBaseClass} ${audienceError ? inputErrorClass : inputNormalClass}`}
+            className={`${inputBaseClass} ${
+              audienceError ? inputErrorClass : inputNormalClass
+            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
           />
 
           <div className="mt-1.5">
