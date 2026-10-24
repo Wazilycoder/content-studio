@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Globe, MessageCircle, Share2, ThumbsUp } from "lucide-react";
 import type { CaptionItem } from "@/types/content";
 
@@ -21,12 +21,31 @@ interface FacebookMockupProps {
 export default function FacebookMockup({ captions }: FacebookMockupProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [fading, setFading] = useState(false);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    };
+  }, []);
 
   const safeIndex = Math.min(activeIndex, captions.length - 1);
   const active = captions[safeIndex];
   if (!active) return null;
 
   const { preview, truncated } = truncateToChars(active.text, FB_PREVIEW_LIMIT);
+
+  const handleSelectAngle = (index: number) => {
+    if (index === safeIndex) return;
+    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    setFading(true);
+    setExpanded(false);
+    fadeTimerRef.current = setTimeout(() => {
+      setActiveIndex(index);
+      setFading(false);
+    }, 150);
+  };
 
   return (
     <div>

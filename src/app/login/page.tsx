@@ -1,13 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { login, signup } from "@/app/auth/actions";
 import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 
-export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+interface AuthPageProps {
+  initialMode?: "login" | "signup";
+}
+
+export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
+  const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (initialMode === "signup") {
+      emailInputRef.current?.focus();
+    }
+  }, [initialMode]);
 
   async function handleSubmit(formData: FormData) {
     setError(null);
@@ -102,6 +113,7 @@ export default function AuthPage() {
                 name="email"
                 type="email"
                 required
+                ref={emailInputRef}
                 autoComplete="email"
                 placeholder="chushop@gmail.com"
                 className="w-full px-3 py-2 text-sm bg-white border border-[#E4E4DE] rounded-lg text-[#18181B] placeholder-[#A1A1AA] focus:outline-none focus:ring-2 focus:ring-[#3B49DF]/20 focus:border-[#3B49DF] transition-all"

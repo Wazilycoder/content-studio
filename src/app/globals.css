@@ -11,8 +11,10 @@
   --ink-tertiary: #8C8C96;
   --accent-navy: #2534C7;
   --accent-navy-hover: #1B27A4;
-  --accent-emerald: #0E7051;
-}
+    --accent-emerald: #0E7051;
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  }
 
 body {
   background-color: var(--canvas);
@@ -36,4 +38,75 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #C9C9C1;
+}
+
+/* Chống tràn ngang tuyệt đối, không phá vỡ position: sticky */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Phản hồi xúc giác cho mọi điểm chạm */
+.btn-tactile {
+  transition: transform 0.1s ease, background-color 0.15s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-tactile:active {
+  transform: scale(0.98);
+}
+
+/* Vùng chạm tối thiểu 44px trên thiết bị di động */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Vuốt ngang tự nhiên, ẩn thanh cuộn thô thiển */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Shimmer skeleton sang trọng */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    var(--surface-raised) 25%,
+    #ffffff 50%,
+    var(--surface-raised) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s var(--ease-out) infinite;
+}
+
+/* Micro-spring cho icon checkmark khi sao chép */
+@keyframes check-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.check-pop {
+  animation: check-pop 0.28s var(--ease-spring);
 }
