@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, History } from "lucide-react";
 import ProductForm from "./ProductForm";
 import ResultsSection from "./ResultsSection";
+import AuthModal from "./AuthModal";
 import HistoryDrawer from "@/components/history/HistoryDrawer";
 import { deleteHistoryItem, fetchUserHistory } from "@/app/history/actions";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
@@ -211,108 +212,13 @@ Cô đặc gấp ba lần dầu gội thường nên chỉ cần một lượng 
   },
 ];
 
-const TONE_FRAMES: Record<
-  ToneOption,
-  { hook: string; emotion: string; value: string; close: string; headline: string }
-> = {
-  "trang-trong": {
-    hook: "Sự chỉn chu trong từng chi tiết là cách bền vững nhất để xây dựng niềm tin.",
-    emotion:
-      "Có những lựa chọn không ồn ào, nhưng khiến người ta yên tâm mỗi ngày.",
-    value: "Chất lượng hoàn thiện, nguồn gốc rõ ràng, phù hợp sử dụng dài lâu.",
-    close: "Liên hệ để được tư vấn chi tiết và nhận báo giá minh bạch.",
-    headline: "Chọn đúng ngay từ lần đầu",
-  },
-  "tre-trung": {
-    hook: "Bạn không cần thêm lựa chọn — bạn cần một lựa chọn đúng.",
-    emotion:
-      "Một ngày tốt hơn có thể bắt đầu từ một quyết định rất nhỏ.",
-    value: "Nhanh, gọn, đúng nhu cầu — không phí thời gian.",
-    close: "Inbox ngay để nhận ưu đãi cho đơn hàng đầu tiên.",
-    headline: "Đúng nhu cầu, không lan man",
-  },
-  "hai-huoc": {
-    hook: "Có những vấn đề chỉ giải quyết được bằng một sản phẩm đúng.",
-    emotion:
-      "Chăm sóc bản thân không cần phức tạp, chỉ cần đừng tự làm khó mình.",
-    value: "Không phép màu, chỉ là làm đúng phần việc của mình.",
-    close: "Thử một lần, không hợp cứ nói — chúng tôi nghe hết.",
-    headline: "Một lần thử, khỏi phải lăn tăn",
-  },
-};
-
-function buildGenericResult(input: ContentFormInput): GeneratedContent {
-  const productName = input.productName.trim();
-  const targetAudience = input.targetAudience.trim();
-  const description = input.productDescription.trim();
-  const frame = TONE_FRAMES[input.tone];
-  const stamp = Date.now();
-
-  const summary =
-    countUnicodeChars(description) > 240
-      ? `${Array.from(description).slice(0, 237).join("").trim()}...`
-      : description;
-
-  const captions: [CaptionItem, CaptionItem, CaptionItem] = [
-    {
-      id: `${stamp}-g1`,
-      angle: "Góc 1: Vấn đề & Giải pháp",
-      text: `${frame.hook}
-
-${productName} được làm cho ${targetAudience}.
-
-${summary}
-
-${frame.close}`,
-    },
-    {
-      id: `${stamp}-g2`,
-      angle: "Góc 2: Cảm xúc & Phong cách sống",
-      text: `${frame.emotion}
-
-Mỗi lần chọn ${productName}, bạn đang chọn cách mình muốn được nhìn thấy — chỉn chu, tự tin và không phải giải thích với bất kỳ ai.
-
-${frame.close}`,
-    },
-    {
-      id: `${stamp}-g3`,
-      angle: "Góc 3: Trực diện tính năng & Giá trị",
-      text: `${productName} — thông tin cần biết:
-
-• ${summary}
-• Dành cho: ${targetAudience}
-• ${frame.value}
-
-${frame.close}`,
-    },
-  ];
-
-  const headlines: [string, string, string] = [
-    `${productName} — lựa chọn đáng tin cho ${targetAudience}`,
-    `${productName}: đúng nhu cầu, không phí một đồng`,
-    `${frame.headline} — ${productName}`,
-  ];
-
-  const hashtags: [string, string, string, string, string] = [
-    "#sanphamchinhhang",
-    "#uudaidacbiet",
-    "#tuvanmienphi",
-    "#chatluongcaocao",
-    "#muangayhomnay",
-  ];
-
-  return { captions, headlines, hashtags };
-}
-
-function buildResult(input: ContentFormInput): GeneratedContent {
+function findSampleResult(input: ContentFormInput): GeneratedContent | null {
   const normalizedName = input.productName.trim().toLowerCase();
   const matched = SAMPLE_SCENARIOS.find(
     (scenario) =>
       scenario.input.productName.trim().toLowerCase() === normalizedName,
   );
-
-  if (matched) return matched.output;
-  return buildGenericResult(input);
+  return matched ? matched.output : null;
 }
 
 export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
@@ -325,6 +231,7 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
   const [historyItems, setHistoryItems] = useState<GenerationRecord[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const sampleIndexRef = useRef(0);
   const generateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -437,14 +344,23 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
     async (input: ContentFormInput, successMessage: string) => {
       setLoading(true);
 
-      // Nếu chưa đăng nhập: Cho trải nghiệm thử bằng Mock Data mẫu
+      // Nếu chưa đăng nhập:
       if (!user) {
-        if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
-        generateTimerRef.current = setTimeout(() => {
-          setResult(buildResult(input));
-          setLoading(false);
-          showToast("Đang ở chế độ xem thử. Đăng nhập để tạo bằng AI và lưu lịch sử.");
-        }, 800);
+        const sample = findSampleResult(input);
+        if (sample) {
+          if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
+          generateTimerRef.current = setTimeout(() => {
+            setResult(sample);
+            setLoading(false);
+            showToast("Đang xem dữ liệu mẫu. Đăng nhập để AI tạo bài viết riêng.");
+          }, 400);
+          return;
+        }
+
+        // Với sản phẩm do người dùng tự gõ -> Yêu cầu đăng nhập, không dùng văn mẫu giả lập!
+        setLoading(false);
+        setAuthModalOpen(true);
+        showToast("Vui lòng đăng nhập để AI tạo bài viết cho sản phẩm này.");
         return;
       }
 
@@ -558,6 +474,12 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
           onClose={handleCloseHistory}
           onRestore={handleRestore}
           onDelete={handleDeleteHistoryItem}
+        />
+
+        <AuthModal
+          open={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          productName={formInputs.productName}
         />
 
         {toast ? (

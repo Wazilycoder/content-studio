@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { callGemini } from "@/lib/ai/gemini";
+import { callUnifiedAi } from "@/lib/ai";
 import type { CaptionAngle, GeneratedContent } from "@/types/content";
 
 // 1. Schema kiểm tra đầu vào Form
@@ -148,7 +148,7 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
 
   // BƯỚC 5: Gọi AI với cơ chế HOÀN CREDIT TỰ ĐỘNG khi lỗi (Refund Safety)
   try {
-    const rawAiResponse = await callGemini({
+    const rawAiResponse = await callUnifiedAi({
       prompt: userPrompt,
       systemInstruction,
       responseMimeType: "application/json",
