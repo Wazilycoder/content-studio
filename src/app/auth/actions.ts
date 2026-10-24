@@ -41,13 +41,21 @@ export async function signup(formData: FormData) {
     return { error: "Mật khẩu phải có ít nhất 6 ký tự." };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
 
   if (error) {
     return { error: error.message || "Không thể đăng ký tài khoản. Vui lòng thử lại." };
+  }
+
+  // Nếu cấu hình Supabase yêu cầu xác nhận email (session trả về null):
+  if (data.user && !data.session) {
+    return {
+      success: true,
+      message: "Đăng ký thành công! Vui lòng kiểm tra hộp thư email để kích hoạt tài khoản.",
+    };
   }
 
   revalidatePath("/", "layout");
@@ -69,15 +77,30 @@ export async function getUserProfile() {
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("credits_remaining, email")
     .eq("id", user.id)
     .single();
 
+  if (!profile || error) {
+    // Tự động khởi tạo profile với 10 credits (Self-healing nếu trigger DB chưa chạy)
+    const { data: newProfile } = await supabase
+      .from("profiles")
+      .upsert({ id: user.id, email: user.email, credits_remaining: 10 })
+      .select("credits_remaining")
+      .single();
+
+    return {
+      id: user.id,
+      email: user.email,
+      credits: newProfile?.credits_remaining ?? 10,
+    };
+  }
+
   return {
     id: user.id,
     email: user.email,
-    credits: profile?.credits_remaining ?? 10,
+    credits: profile.credits_remaining,
   };
 }

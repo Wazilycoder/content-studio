@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { AlertCircle, FlaskConical, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, FlaskConical, Loader2, Sparkles } from "lucide-react";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
 import type { ContentFormInput, ToneOption } from "@/types/content";
 
@@ -10,53 +10,50 @@ const MAX_PRODUCT_NAME = 100;
 const MAX_DESCRIPTION = 1000;
 const MAX_AUDIENCE = 200;
 
-const TONE_OPTIONS: {
+interface ToneMeta {
   value: ToneOption;
   label: string;
   hint: string;
-  icon: string;
-}[] = [
-  {
-    value: "hai-huoc",
-    label: "Hài hước & Viral",
-    hint: "Dí dỏm, chơi chữ tự nhiên, thân thiện",
-    icon: "😄",
-  },
+}
+
+const PRIMARY_TONES: ToneMeta[] = [
   {
     value: "trang-trong",
     label: "Sang trọng & Cao cấp",
     hint: "Thanh lịch, chuẩn mực, tôn vinh giá trị",
-    icon: "✨",
   },
+  {
+    value: "hai-huoc",
+    label: "Hài hước & Đời thường",
+    hint: "Dí dỏm, viral, gần gũi",
+  },
+  {
+    value: "chuyen-gia",
+    label: "Trực diện & Chuyên gia",
+    hint: "Lập luận logic, số liệu và nguyên lý",
+  },
+];
+
+const EXTENDED_TONES: ToneMeta[] = [
   {
     value: "tre-trung",
     label: "Trẻ trung & Bắt trend",
     hint: "Năng động, hiện đại, phóng khoáng",
-    icon: "⚡",
   },
   {
     value: "dong-cam",
     label: "Đồng cảm & Chữa lành",
     hint: "Thủ thỉ, sâu lắng, chạm cảm xúc",
-    icon: "🌿",
-  },
-  {
-    value: "chuyen-gia",
-    label: "Chuyên gia & Logic",
-    hint: "Dẫn chứng thực tế, lập luận chặt chẽ",
-    icon: "🎯",
   },
   {
     value: "ke-chuyen",
     label: "Storytelling",
     hint: "Kể chuyện di sản, cảm hứng làng nghề",
-    icon: "📖",
   },
   {
     value: "kich-thich",
     label: "Kích thích mua & FOMO",
-    hint: "Khẩn trương, ưu đãi giới hạn, kêu gọi mua",
-    icon: "🔥",
+    hint: "Khẩn trương, ưu đãi giới hạn",
   },
 ];
 
@@ -96,11 +93,23 @@ function validate(values: ContentFormInput): FieldErrors {
 }
 
 const inputBaseClass =
-  "w-full rounded-md border bg-white px-3 py-2 text-[13px] text-[#18181B] placeholder:text-[#A1A1AA] transition-colors focus:outline-none focus:ring-2";
+  "w-full rounded-lg border bg-white px-3 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-colors focus:outline-none focus:ring-2";
 const inputNormalClass =
-  "border-[#E4E4DE] focus:border-[#3B49DF] focus:ring-[#3B49DF]/15";
+  "border-[var(--border-subtle)] focus:border-[var(--border-strong)] focus:ring-[var(--accent-navy)]/15";
 const inputErrorClass =
   "border-[#DC2626] focus:border-[#DC2626] focus:ring-[#DC2626]/15";
+
+function MicroBar({ value, max }: { value: number; max: number }) {
+  const ratio = Math.min(value / max, 1);
+  return (
+    <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+      <div
+        className="h-full rounded-full bg-[var(--accent-navy)] transition-[width] duration-300"
+        style={{ width: `${ratio * 100}%` }}
+      />
+    </div>
+  );
+}
 
 export default function ProductForm({
   value,
@@ -115,8 +124,14 @@ export default function ProductForm({
     targetAudience: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  const [showExtendedTones, setShowExtendedTones] = useState(false);
 
   const errors = useMemo(() => validate(value), [value]);
+
+  const selectedIsExtended = EXTENDED_TONES.some(
+    (tone) => tone.value === value.tone,
+  );
+  const extendedVisible = showExtendedTones || selectedIsExtended;
 
   const showError = (field: FieldName): string | undefined => {
     if (!submitted && !touched[field]) return undefined;
@@ -145,16 +160,17 @@ export default function ProductForm({
 
   return (
     <form
+      id="product-form"
       onSubmit={handleSubmit}
       noValidate
-      className="overflow-hidden rounded-lg border border-[#E4E4DE] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+      className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
     >
-      <div className="flex items-start justify-between gap-3 border-b border-[#E4E4DE] px-5 pb-4 pt-5">
+      <div className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] px-5 pb-4 pt-5">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold tracking-tight text-[#18181B]">
+          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
             Thông tin sản phẩm
           </h2>
-          <p className="mt-1 text-[11.5px] leading-relaxed text-[#71717A]">
+          <p className="mt-1 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
             Càng chi tiết, nội dung tạo ra càng sát ý bạn.
           </p>
         </div>
@@ -164,24 +180,24 @@ export default function ProductForm({
           onClick={onLoadSample}
           disabled={loading}
           title="Điền nhanh một bộ dữ liệu mẫu để thử nghiệm"
-          className="inline-flex shrink-0 items-center gap-1 rounded-md border border-[#E4E4DE] bg-[#F8F8F6] px-2 py-1 text-[11px] font-medium text-[#71717A] transition-colors hover:border-[#D4D4D8] hover:text-[#18181B] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FlaskConical className="h-3 w-3" />
-          Nạp dữ liệu mẫu
+          <FlaskConical className="h-3.5 w-3.5" />
+          Dữ liệu mẫu
         </button>
       </div>
 
-      <div className="space-y-4 px-5 py-4">
-        {/* Tên sản phẩm */}
+      <div className="space-y-5 px-5 py-5">
+        {/* 01. Tên sản phẩm */}
         <div>
-          <div className="mb-1.5 flex items-baseline justify-between gap-2">
+          <div className="mb-2 flex items-baseline justify-between gap-2">
             <label
               htmlFor="productName"
-              className="text-xs font-medium text-[#27272A]"
+              className="text-[13px] font-medium text-[var(--ink-primary)]"
             >
-              Tên sản phẩm <span className="text-[#DC2626]">*</span>
+              01. Tên sản phẩm <span className="text-[#DC2626]">*</span>
             </label>
-            <span className="text-[10.5px] tabular-nums text-[#A1A1AA]">
+            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
               {countUnicodeChars(value.productName)} / 100
             </span>
           </div>
@@ -198,62 +214,76 @@ export default function ProductForm({
             className={`${inputBaseClass} ${productNameError ? inputErrorClass : inputNormalClass}`}
           />
 
+          <div className="mt-1.5">
+            <MicroBar
+              value={countUnicodeChars(value.productName)}
+              max={MAX_PRODUCT_NAME}
+            />
+          </div>
+
           {productNameError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[11px] leading-relaxed text-[#DC2626]">
-              <AlertCircle className="mt-[1px] h-3 w-3 shrink-0" />
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+              <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{productNameError}</span>
             </p>
           ) : null}
         </div>
 
-        {/* Mô tả sản phẩm */}
+        {/* 02. Mô tả & Chất liệu */}
         <div>
-          <label
-            htmlFor="productDescription"
-            className="mb-1.5 block text-xs font-medium text-[#27272A]"
-          >
-            Mô tả sản phẩm <span className="text-[#DC2626]">*</span>
-          </label>
-
-          <div className="relative">
-            <textarea
-              id="productDescription"
-              rows={5}
-              value={value.productDescription}
-              onChange={(event) =>
-                update({ productDescription: event.target.value })
-              }
-              onBlur={() => markTouched("productDescription")}
-              maxLength={MAX_DESCRIPTION}
-              placeholder="Chất liệu, công dụng, điểm khác biệt, quy cách đóng gói..."
-              aria-invalid={Boolean(descriptionError)}
-              className={`${inputBaseClass} resize-y pb-7 leading-relaxed ${
-                descriptionError ? inputErrorClass : inputNormalClass
-              }`}
-            />
-            <span className="pointer-events-none absolute bottom-2 right-3 text-[10.5px] tabular-nums text-[#A1A1AA]">
-              {countUnicodeChars(value.productDescription)} / 1.000 ký tự
+          <div className="mb-2 flex items-baseline justify-between gap-2">
+            <label
+              htmlFor="productDescription"
+              className="text-[13px] font-medium text-[var(--ink-primary)]"
+            >
+              02. Mô tả &amp; Chất liệu <span className="text-[#DC2626]">*</span>
+            </label>
+            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
+              {countUnicodeChars(value.productDescription)} / 1.000
             </span>
           </div>
 
+          <textarea
+            id="productDescription"
+            rows={5}
+            value={value.productDescription}
+            onChange={(event) =>
+              update({ productDescription: event.target.value })
+            }
+            onBlur={() => markTouched("productDescription")}
+            maxLength={MAX_DESCRIPTION}
+            placeholder="Chất liệu, công dụng, điểm khác biệt, quy cách đóng gói..."
+            aria-invalid={Boolean(descriptionError)}
+            className={`${inputBaseClass} resize-y leading-relaxed ${
+              descriptionError ? inputErrorClass : inputNormalClass
+            }`}
+          />
+
+          <div className="mt-1.5">
+            <MicroBar
+              value={countUnicodeChars(value.productDescription)}
+              max={MAX_DESCRIPTION}
+            />
+          </div>
+
           {descriptionError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[11px] leading-relaxed text-[#DC2626]">
-              <AlertCircle className="mt-[1px] h-3 w-3 shrink-0" />
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+              <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{descriptionError}</span>
             </p>
           ) : null}
         </div>
 
-        {/* Khách hàng mục tiêu */}
+        {/* 03. Khách hàng mục tiêu */}
         <div>
-          <div className="mb-1.5 flex items-baseline justify-between gap-2">
+          <div className="mb-2 flex items-baseline justify-between gap-2">
             <label
               htmlFor="targetAudience"
-              className="text-xs font-medium text-[#27272A]"
+              className="text-[13px] font-medium text-[var(--ink-primary)]"
             >
-              Khách hàng mục tiêu <span className="text-[#DC2626]">*</span>
+              03. Khách hàng mục tiêu <span className="text-[#DC2626]">*</span>
             </label>
-            <span className="text-[10.5px] tabular-nums text-[#A1A1AA]">
+            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
               {countUnicodeChars(value.targetAudience)} / 200
             </span>
           </div>
@@ -270,26 +300,29 @@ export default function ProductForm({
             className={`${inputBaseClass} ${audienceError ? inputErrorClass : inputNormalClass}`}
           />
 
+          <div className="mt-1.5">
+            <MicroBar
+              value={countUnicodeChars(value.targetAudience)}
+              max={MAX_AUDIENCE}
+            />
+          </div>
+
           {audienceError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[11px] leading-relaxed text-[#DC2626]">
-              <AlertCircle className="mt-[1px] h-3 w-3 shrink-0" />
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+              <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{audienceError}</span>
             </p>
           ) : null}
         </div>
 
-        {/* Tone of voice */}
+        {/* Tông giọng */}
         <div>
-          <span className="mb-1.5 block text-xs font-medium text-[#27272A]">
-            Tone of voice
+          <span className="mb-2 block text-[13px] font-medium text-[var(--ink-primary)]">
+            Tông giọng
           </span>
 
-          <div
-            role="group"
-            aria-label="Chọn tone of voice"
-            className="grid grid-cols-2 gap-1.5"
-          >
-            {TONE_OPTIONS.map((option) => {
+          <div role="group" aria-label="Chọn tông giọng" className="space-y-1.5">
+            {PRIMARY_TONES.map((option) => {
               const active = value.tone === option.value;
               return (
                 <button
@@ -298,37 +331,97 @@ export default function ProductForm({
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
                   title={option.hint}
-                  className={`rounded-lg border p-2 text-left transition-colors ${
+                  className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                     active
-                      ? "border-[#3B49DF] bg-[#3B49DF]/[0.06] ring-1 ring-[#3B49DF]/20"
-                      : "border-[#E4E4DE] bg-white hover:border-[#D4D4D8] hover:bg-[#F8F8F6]"
+                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
+                      : "border-[var(--border-subtle)] bg-white hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                   }`}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs leading-none">{option.icon}</span>
+                  <span className="min-w-0">
                     <span
-                      className={`block truncate text-[11px] font-semibold ${
-                        active ? "text-[#3B49DF]" : "text-[#18181B]"
+                      className={`block text-[13px] font-semibold ${
+                        active
+                          ? "text-[var(--accent-navy)]"
+                          : "text-[var(--ink-primary)]"
                       }`}
                     >
                       {option.label}
                     </span>
-                  </div>
-                  <span className="mt-1 line-clamp-1 block text-[9.5px] leading-tight text-[#71717A]">
-                    {option.hint}
+                    <span className="mt-0.5 block truncate text-[12px] text-[var(--ink-tertiary)]">
+                      {option.hint}
+                    </span>
                   </span>
+                  {active ? (
+                    <Check className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
+                  ) : null}
                 </button>
               );
             })}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setShowExtendedTones((previous) => !previous)}
+            aria-expanded={extendedVisible}
+            className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
+          >
+            <ChevronDown
+              className={`h-3.5 w-3.5 transition-transform ${extendedVisible ? "rotate-180" : ""}`}
+            />
+            {extendedVisible ? "Thu gọn tông giọng" : "Tông giọng mở rộng..."}
+          </button>
+
+          {extendedVisible ? (
+            <div
+              role="group"
+              aria-label="Tông giọng mở rộng"
+              className="mt-2 space-y-1.5"
+            >
+              {EXTENDED_TONES.map((option) => {
+                const active = value.tone === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => update({ tone: option.value })}
+                    aria-pressed={active}
+                    title={option.hint}
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+                      active
+                        ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
+                        : "border-[var(--border-subtle)] bg-white hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span
+                        className={`block text-[13px] font-semibold ${
+                          active
+                            ? "text-[var(--accent-navy)]"
+                            : "text-[var(--ink-primary)]"
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[12px] text-[var(--ink-tertiary)]">
+                        {option.hint}
+                      </span>
+                    </span>
+                    {active ? (
+                      <Check className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
 
-      <div className="px-5 pb-5">
+      <div className="hidden px-5 pb-5 md:block">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#3B49DF] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[#2F3CBF] focus:outline-none focus:ring-2 focus:ring-[#3B49DF]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.18)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
         >
           {loading ? (
             <>
@@ -343,8 +436,16 @@ export default function ProductForm({
           )}
         </button>
 
-        <p className="mt-2 text-center text-[10.5px] text-[#A1A1AA]">
-          3 góc nhìn · 3 headlines · 5 hashtags
+        <p className="mt-2 text-center text-[12px] text-[var(--ink-tertiary)]">
+          Nhấn{" "}
+          <kbd className="rounded border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-1 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+            Ctrl
+          </kbd>{" "}
+          +{" "}
+          <kbd className="rounded border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-1 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+            Enter
+          </kbd>{" "}
+          để tạo nhanh
         </p>
       </div>
     </form>

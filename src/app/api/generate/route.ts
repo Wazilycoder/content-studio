@@ -71,6 +71,26 @@ const TONE_DESCRIPTIONS: Record<string, string> = {
     "Trực diện, nhịp điệu nhanh, tạo cảm giác khẩn trương và khan hiếm (FOMO tinh tế); nêu bật ưu đãi giới hạn và thôi thúc ra quyết định mua hàng ngay mà không bị phản cảm.",
 };
 
+// Bộ giới hạn tần suất: Tối đa 5 lượt gọi / phút / user
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now();
+  const userRate = rateLimitMap.get(userId);
+
+  if (!userRate || now > userRate.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + 60000 });
+    return true;
+  }
+
+  if (userRate.count >= 5) {
+    return false;
+  }
+
+  userRate.count += 1;
+  return true;
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -83,6 +103,16 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Vui lòng đăng nhập để tạo nội dung quảng cáo." },
       { status: 401 }
+    );
+  }
+
+  // Rate Limiting Guard
+  if (!checkRateLimit(user.id)) {
+    return NextResponse.json(
+      {
+        error: "Bạn đang thao tác quá nhanh. Vui lòng chờ 1 phút trước khi tạo lượt tiếp theo.",
+      },
+      { status: 429 }
     );
   }
 
@@ -104,11 +134,12 @@ export async function POST(request: Request) {
   }
 
   const input = parseResult.data;
+  const requestId = crypto.randomUUID();
 
-  // BƯỚC 3: Trừ Credit Atomic trong Database (Khóa dòng chống double-spending)
-  const { data: deductSuccess, error: deductError } = await supabase.rpc(
+  // BƯỚC 3: Trừ Credit Atomic & Idempotent với requestId
+  const { data: deductResult, error: deductError } = await supabase.rpc(
     "deduct_credit_atomic",
-    { p_user_id: user.id }
+    { p_user_id: user.id, p_request_id: requestId }
   );
 
   if (deductError) {
@@ -118,6 +149,12 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+
+  // Hỗ trợ cả 2 dạng: JSONB trả về từ migration mới hoặc boolean từ RPC cũ
+  const deductSuccess =
+    typeof deductResult === "object" && deductResult !== null
+      ? (deductResult as { success?: boolean }).success ?? false
+      : Boolean(deductResult);
 
   if (!deductSuccess) {
     return NextResponse.json(
@@ -266,8 +303,8 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       ],
     };
 
-    // BƯỚC 6: Lưu bản ghi vào bảng generations trên Supabase (Background save)
-    await supabase.from("generations").insert({
+    // BƯỚC 6: Lưu bản ghi vào bảng generations trên Supabase (Bắt buộc kiểm tra lỗi)
+    const { error: insertError } = await supabase.from("generations").insert({
       user_id: user.id,
       product_name: input.productName,
       product_description: input.productDescription,
@@ -277,6 +314,23 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       headlines: formattedOutput.headlines,
       hashtags: formattedOutput.hashtags,
     });
+
+    if (insertError) {
+      console.error("[Database Insert Generation Error]:", insertError);
+      // Rollback hoàn trả credit ngay lập tức vì không thể lưu lịch sử
+      await supabase.rpc("refund_credit_atomic", {
+        p_user_id: user.id,
+        p_request_id: requestId,
+      });
+
+      return NextResponse.json(
+        {
+          error:
+            "Không thể lưu trữ bài viết vào lịch sử. Lượt tạo của bạn đã được hoàn lại đầy đủ.",
+        },
+        { status: 500 }
+      );
+    }
 
     // Lấy số credit mới nhất sau khi trừ thành công
     const { data: updatedProfile } = await supabase
@@ -293,8 +347,11 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
   } catch (error: unknown) {
     console.error("[AI Generation Failed]:", error);
 
-    // KÍCH HOẠT CƠ CHẾ HOÀN CREDIT TỨC THÌ
-    await supabase.rpc("refund_credit_atomic", { p_user_id: user.id });
+    // KÍCH HOẠT CƠ CHẾ HOÀN CREDIT TỨC THÌ THEO REQUEST ID
+    await supabase.rpc("refund_credit_atomic", {
+      p_user_id: user.id,
+      p_request_id: requestId,
+    });
 
     const message =
       error instanceof Error

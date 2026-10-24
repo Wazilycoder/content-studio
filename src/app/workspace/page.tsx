@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getUserProfile, signOut } from "@/app/auth/actions";
 import WorkspaceContainer from "@/components/workspace/WorkspaceContainer";
-import { Sparkles, LogOut, ArrowRight, Coins, Home } from "lucide-react";
+import { PenLine, LogOut, ArrowRight, Coins, Home } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -9,44 +9,47 @@ export default async function WorkspacePage() {
   const user = await getUserProfile();
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] text-[#18181B] flex flex-col">
+    <div className="flex min-h-screen flex-col bg-[var(--canvas)] text-[var(--ink-primary)]">
       {/* Top Navigation */}
-      <header className="border-b border-[#E4E4DE] bg-white sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+      <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Link
               href="/"
-              className="flex items-center gap-1.5 text-xs text-[#71717A] hover:text-[#18181B] transition-colors mr-2 pr-3 border-r border-[#E4E4DE]"
+              className="flex items-center gap-1.5 text-[13px] text-[var(--ink-tertiary)] transition-colors hover:text-[var(--ink-primary)]"
               title="Về trang giới thiệu"
             >
-              <Home className="w-3.5 h-3.5" />
+              <Home className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Trang chủ</span>
             </Link>
-
-            <div className="w-8 h-8 rounded-lg bg-[#3B49DF] text-white flex items-center justify-center shadow-xs">
-              <Sparkles className="w-4 h-4" />
+            <span className="hidden text-[var(--border-strong)] sm:inline">/</span>
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white">
+                <PenLine className="h-4 w-4" />
+              </div>
+              <span className="text-[13px] font-semibold tracking-tight text-[var(--ink-primary)]">
+                Studio
+              </span>
+              <span className="hidden rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-tertiary)] sm:inline-block">
+                v3.2 Studio Pro
+              </span>
             </div>
-            <span className="font-semibold text-sm tracking-tight text-[#18181B]">
-              Content Studio
-            </span>
-            <span className="hidden sm:inline-block text-[11px] font-medium text-[#71717A] bg-[#F1F1ED] px-2 py-0.5 rounded-md">
-              Workspace v3.2
-            </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <>
-                {/* Credit Badge */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#F1F1ED] border border-[#E4E4DE] text-xs font-medium text-[#27272A]">
-                  <Coins className="w-3.5 h-3.5 text-[#3B49DF]" />
+                {/* Credit Pill */}
+                <div className="flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-[12px] font-medium text-[var(--ink-secondary)]">
+                  <Coins className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
                   <span>
-                    <strong className="text-[#18181B]">{user.credits}</strong> lượt tạo
+                    <strong className="tabular-nums text-[var(--ink-primary)]">{user.credits}</strong>{" "}
+                    lượt tạo khả dụng
                   </span>
                 </div>
 
                 {/* User email */}
-                <span className="hidden md:inline-block text-xs text-[#71717A]">
+                <span className="hidden text-[12px] text-[var(--ink-tertiary)] md:inline">
                   {user.email}
                 </span>
 
@@ -54,10 +57,10 @@ export default async function WorkspacePage() {
                 <form action={signOut}>
                   <button
                     type="submit"
-                    className="flex items-center gap-1 text-xs font-medium text-[#71717A] hover:text-[#DC2626] transition-colors p-1.5"
+                    className="flex items-center gap-1 rounded-lg p-1.5 text-[12px] font-medium text-[var(--ink-tertiary)] transition-colors hover:text-[#DC2626]"
                     title="Đăng xuất"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="h-4 w-4" />
                     <span className="hidden sm:inline">Thoát</span>
                   </button>
                 </form>
@@ -65,10 +68,10 @@ export default async function WorkspacePage() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#3B49DF] hover:bg-[#2F3CBF] rounded-lg transition-colors shadow-xs"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-3 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
               >
                 <span>Đăng nhập</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             )}
           </div>
@@ -76,12 +79,12 @@ export default async function WorkspacePage() {
       </header>
 
       {/* Main Workspace */}
-      <main className="flex-1 w-full">
+      <main className="w-full flex-1">
         <WorkspaceContainer user={user} />
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E4E4DE] bg-white py-4 text-center text-xs text-[#A1A1AA]">
+      <footer className="border-t border-[var(--border-subtle)] bg-white py-4 text-center text-[12px] text-[var(--ink-tertiary)]">
         Content Studio — Không gian sáng tạo nội dung Facebook & Instagram chuyên nghiệp. Zero AI-Slop.
       </footer>
     </div>

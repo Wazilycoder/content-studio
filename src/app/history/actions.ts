@@ -116,6 +116,7 @@ export async function fetchUserHistory(): Promise<{
   const { data, error } = await supabase
     .from("generations")
     .select("*")
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -143,7 +144,11 @@ export async function deleteHistoryItem(
     return { success: false, error: "Bạn cần đăng nhập để xóa bài viết." };
   }
 
-  const { error } = await supabase.from("generations").delete().eq("id", id);
+  const { error } = await supabase
+    .from("generations")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (error) {
     return { success: false, error: "Không thể xóa bài viết. Vui lòng thử lại." };

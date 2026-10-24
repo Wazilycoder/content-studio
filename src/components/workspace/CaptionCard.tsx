@@ -10,6 +10,8 @@ import {
 } from "@/lib/utils/charCounter";
 import type { CaptionItem } from "@/types/content";
 
+const FB_PREVIEW_LIMIT = 125;
+
 interface CaptionCardProps {
   caption: CaptionItem;
   onNotify?: (message: string) => void;
@@ -29,6 +31,7 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
   const facebook = getFacebookStatus(charCount);
   const instagram = getInstagramStatus(charCount);
   const exceeded = facebook.status === "recommended_exceeded";
+  const ratio = Math.min(charCount / FB_PREVIEW_LIMIT, 1);
 
   const handleCopy = async () => {
     const succeeded = await copyToClipboard(caption.text);
@@ -44,9 +47,9 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
   };
 
   return (
-    <article className="overflow-hidden rounded-lg border border-[#E4E4DE] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <header className="flex items-center justify-between gap-3 border-b border-[#E4E4DE] px-4 py-2.5">
-        <span className="inline-flex min-w-0 items-center rounded-md bg-[#F1F1ED] px-2 py-1 text-[11px] font-medium text-[#52525B]">
+    <article className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+      <header className="flex items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-4 py-3">
+        <span className="inline-flex min-w-0 items-center rounded-md bg-[var(--surface-raised)] px-2.5 py-1 text-[12px] font-medium text-[var(--ink-secondary)]">
           <span className="truncate">{caption.angle}</span>
         </span>
 
@@ -54,55 +57,65 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
           type="button"
           onClick={handleCopy}
           aria-label="Sao chép caption"
-          className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-[12px] font-medium transition-colors ${
             copied
-              ? "border-[#0E7051]/30 bg-[#0E7051]/[0.06] text-[#0E7051]"
-              : "border-[#E4E4DE] bg-white text-[#71717A] hover:border-[#D4D4D8] hover:text-[#18181B]"
+              ? "border-[var(--accent-emerald)]/30 bg-[var(--accent-emerald)]/[0.06] text-[var(--accent-emerald)]"
+              : "border-[var(--border-subtle)] bg-white text-[var(--ink-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
           }`}
         >
           {copied ? (
-            <Check className="h-3 w-3" />
+            <Check className="h-3.5 w-3.5" />
           ) : (
-            <Copy className="h-3 w-3" />
+            <Copy className="h-3.5 w-3.5" />
           )}
           <span>{copied ? "Đã chép" : "Chép"}</span>
         </button>
       </header>
 
-      <div className="px-4 py-3.5">
-        <p className="whitespace-pre-wrap break-words text-[13.5px] leading-relaxed text-[#18181B]">
+      <div className="px-4 py-4">
+        <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.7] text-[var(--ink-primary)]">
           {caption.text}
         </p>
       </div>
 
-      <footer className="border-t border-[#E4E4DE] px-4 py-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-          <span className="text-[11px] tabular-nums text-[#71717A]">
+      <footer className="space-y-2 border-t border-[var(--border-subtle)] px-4 py-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
             {charCount} ký tự
           </span>
 
           <span
-            className={`inline-flex items-center gap-1 text-[11px] ${
-              exceeded ? "text-[#B45309]" : "text-[#0E7051]"
+            className={`inline-flex items-center gap-1 text-[12px] ${
+              exceeded ? "text-[#B45309]" : "text-[var(--accent-emerald)]"
             }`}
           >
             {exceeded ? (
-              <AlertTriangle className="h-3 w-3 shrink-0" />
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             ) : (
-              <Check className="h-3 w-3 shrink-0" />
+              <Check className="h-3.5 w-3.5 shrink-0" />
             )}
-            {exceeded ? "Vượt 125 ký tự khuyến nghị" : "Tối ưu cho Facebook"}
+            {exceeded ? "Vượt mốc 125" : "Trong mốc 125"}
           </span>
         </div>
 
-        {exceeded ? (
-          <p className="mt-1 text-[10.5px] leading-relaxed text-[#B45309]/90">
-            {facebook.message}
-          </p>
-        ) : null}
+        {/* Vạch thước đo mốc 125 ký tự */}
+        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+          <div
+            className={`h-full rounded-full transition-[width] duration-300 ${
+              exceeded ? "bg-[#B45309]" : "bg-[var(--accent-emerald)]"
+            }`}
+            style={{ width: `${ratio * 100}%` }}
+          />
+        </div>
+
+        <p className="text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+          {exceeded
+            ? "Nội dung sẽ hiện sau nút Xem thêm trên Facebook."
+            : "Toàn bộ nội dung hiển thị trước nút Xem thêm."}
+        </p>
 
         {instagram.status === "limit_exceeded" ? (
-          <p className="mt-1 text-[10.5px] leading-relaxed text-[#DC2626]">
+          <p className="text-[12px] leading-relaxed text-[#DC2626]">
             {instagram.message}
           </p>
         ) : null}

@@ -69,6 +69,7 @@ export async function callOpenRouter(options: OpenRouterGenerateOptions): Promis
     method: "POST",
     headers,
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!response.ok) {
