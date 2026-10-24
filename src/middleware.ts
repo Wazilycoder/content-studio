@@ -95,8 +95,22 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(htmlResponse);
   }
 
-  // 3. Chạy tiếp tục Supabase Auth Session Middleware
-  const sessionResponse = await updateSession(request);
+  // 3. Chạy tiếp tục Supabase Auth Session Middleware (bọc lỗi mạng/cấu hình)
+  const hasDevSession = Boolean(request.cookies.get("cs_dev_session")?.value);
+  let sessionResponse: NextResponse;
+  try {
+    sessionResponse = await updateSession(request);
+  } catch {
+    sessionResponse = NextResponse.next();
+  }
+
+  // 3b. Dev session (local bypass) không bị middleware đẩy ngược về /login
+  if (hasDevSession) {
+    const redirectTarget = sessionResponse.headers.get("location");
+    if (redirectTarget && redirectTarget.includes("/login")) {
+      sessionResponse = NextResponse.next();
+    }
+  }
 
   // 4. Đính kèm Rate Limit telemetry headers & Security Headers
   sessionResponse.headers.set("X-RateLimit-Limit", String(rateLimit.limit));

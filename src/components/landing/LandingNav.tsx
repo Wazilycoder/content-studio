@@ -1,3 +1,6 @@
+"use client";
+
+import type { MouseEvent } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight, Coins } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
@@ -16,6 +19,14 @@ const NAV_LINKS = [
   { label: "Bảng giá", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
 ];
+
+function handleSmoothScroll(event: MouseEvent<HTMLAnchorElement>, href: string) {
+  if (!href.startsWith("#")) return;
+  event.preventDefault();
+  const el = document.querySelector(href);
+  el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.history.pushState(null, "", href);
+}
 
 export default function LandingNav({ user }: LandingNavProps) {
   return (
@@ -40,6 +51,7 @@ export default function LandingNav({ user }: LandingNavProps) {
             <a
               key={link.href}
               href={link.href}
+              onClick={(event) => handleSmoothScroll(event, link.href)}
               className="text-[13px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
             >
               {link.label}
