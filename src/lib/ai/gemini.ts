@@ -30,7 +30,8 @@ export async function callGemini(options: GeminiGenerateOptions) {
   const endpoint =
     process.env.GEMINI_API_ENDPOINT ||
     "https://generativelanguage.googleapis.com/v1beta";
-  const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  // KHÓA MODEL: Khóa mặc định gemini-3.5-flash (đã xác minh thực tế Status 200)
+  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
   let lastError: Error | null = null;
 
@@ -49,6 +50,7 @@ export async function callGemini(options: GeminiGenerateOptions) {
       generationConfig: {
         temperature: options.temperature ?? 0.7,
         responseMimeType: options.responseMimeType || "text/plain",
+        maxOutputTokens: 1500, // Tối ưu Free-Tier: Chặn runaway token
       },
     };
 

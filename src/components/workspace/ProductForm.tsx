@@ -101,10 +101,13 @@ const inputErrorClass =
 
 function MicroBar({ value, max }: { value: number; max: number }) {
   const ratio = Math.min(value / max, 1);
+  const nearLimit = ratio >= 0.9;
   return (
     <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
       <div
-        className="h-full rounded-full bg-[var(--accent-navy)] transition-[width] duration-300"
+        className={`h-full rounded-full transition-all duration-500 ease-out ${
+          nearLimit ? "bg-amber-500" : "bg-emerald-500"
+        }`}
         style={{ width: `${ratio * 100}%` }}
       />
     </div>
@@ -342,9 +345,9 @@ export default function ProductForm({
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
                   title={option.hint}
-                  className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+                  className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-all duration-200 ${
                     active
-                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
+                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.06] ring-2 ring-[var(--accent-navy)]/25 shadow-[0_4px_14px_rgba(37,52,199,0.12)]"
                       : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                   }`}
                 >
@@ -397,9 +400,9 @@ export default function ProductForm({
                     onClick={() => update({ tone: option.value })}
                     aria-pressed={active}
                     title={option.hint}
-                    className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+                    className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-all duration-200 ${
                       active
-                        ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.05]"
+                        ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.06] ring-2 ring-[var(--accent-navy)]/25 shadow-[0_4px_14px_rgba(37,52,199,0.12)]"
                         : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                     }`}
                   >

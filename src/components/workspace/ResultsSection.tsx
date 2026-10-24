@@ -10,6 +10,7 @@ import HashtagGroup from "./HashtagGroup";
 import HeadlineCard from "./HeadlineCard";
 import SkeletonResults from "./SkeletonResults";
 import type { GeneratedContent } from "@/types/content";
+import type { InspirationPreset } from "./EmptyState";
 
 type ViewMode = "cards" | "facebook_mockup";
 
@@ -18,6 +19,7 @@ interface ResultsSectionProps {
   loading: boolean;
   onRegenerate: () => void;
   onNotify: (message: string) => void;
+  onSelectInspiration?: (preset: InspirationPreset) => void;
 }
 
 export default function ResultsSection({
@@ -25,6 +27,7 @@ export default function ResultsSection({
   loading,
   onRegenerate,
   onNotify,
+  onSelectInspiration,
 }: ResultsSectionProps) {
   const [view, setView] = useState<ViewMode>("cards");
 
@@ -112,7 +115,7 @@ export default function ResultsSection({
       {loading ? (
         <SkeletonResults />
       ) : !result ? (
-        <EmptyState />
+        <EmptyState onSelectInspiration={onSelectInspiration} />
       ) : view === "facebook_mockup" ? (
         <FacebookMockup captions={result.captions} />
       ) : (

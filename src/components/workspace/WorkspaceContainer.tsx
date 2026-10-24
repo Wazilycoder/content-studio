@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, History, Loader2, Sparkles } from "lucide-react";
+import { Check, Coins, History, Loader2, Sparkles } from "lucide-react";
 import ProductForm from "./ProductForm";
 import ResultsSection from "./ResultsSection";
 import AuthModal from "./AuthModal";
+import OutOfCreditsModal from "./OutOfCreditsModal";
 import HistoryDrawer from "@/components/history/HistoryDrawer";
 import { deleteHistoryItem, fetchUserHistory } from "@/app/history/actions";
 import { SAMPLE_SCENARIOS, findSampleResult } from "./sampleScenarios";
@@ -41,6 +42,7 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [outOfCreditsOpen, setOutOfCreditsOpen] = useState(false);
 
   const [draftSaved, setDraftSaved] = useState(false);
 
@@ -241,6 +243,9 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
           if (typeof resData?.creditsRemaining === "number") {
             setCredits(resData.creditsRemaining);
           }
+          if (response.status === 402 || resData?.error?.includes("hết lượt") || resData?.error?.includes("0 lượt")) {
+            setOutOfCreditsOpen(true);
+          }
           throw new Error(resData?.error || "Không thể tạo nội dung từ AI.");
         }
 
@@ -360,6 +365,11 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
         open={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         productName={formInputs.productName}
+      />
+
+      <OutOfCreditsModal
+        open={outOfCreditsOpen}
+        onClose={() => setOutOfCreditsOpen(false)}
       />
 
       {/* Mobile sticky action bar */}

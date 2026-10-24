@@ -1,8 +1,74 @@
 import { NextResponse } from "next/server";
+import { createHmac, timingSafeEqual } from "crypto";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { callUnifiedAi } from "@/lib/ai";
 import type { CaptionAngle, GeneratedContent } from "@/types/content";
+
+const COOKIE_DEV_SESSION = "cs_dev_session";
+
+// Cùng khoá ký với src/app/auth/actions.ts để cookie dev session tương thích 100%
+const DEV_SESSION_SECRET =
+  process.env.CAPTCHA_SECRET ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "content-studio-local-captcha-signing-key";
+
+interface DevSession {
+  id: string;
+  email: string;
+  credits: number;
+}
+
+function signDevSession(session: DevSession): string {
+  const payload = Buffer.from(JSON.stringify(session)).toString("base64url");
+  const sig = createHmac("sha256", DEV_SESSION_SECRET).update(payload).digest("hex");
+  return `${payload}.${sig}`;
+}
+
+function verifyDevSession(cookieValue: string): DevSession | null {
+  if (!cookieValue || process.env.NODE_ENV === "production") return null;
+  const parts = cookieValue.split(".");
+  if (parts.length !== 2) return null;
+  const [payload, sig] = parts;
+  if (!payload || !sig) return null;
+
+  const expectedSig = createHmac("sha256", DEV_SESSION_SECRET).update(payload).digest("hex");
+  const expectedBuf = Buffer.from(expectedSig, "hex");
+  const providedBuf = Buffer.from(sig, "hex");
+  if (expectedBuf.length !== providedBuf.length || !timingSafeEqual(expectedBuf, providedBuf)) {
+    return null;
+  }
+
+  try {
+    const raw = Buffer.from(payload, "base64url").toString("utf-8");
+    const parsed = JSON.parse(raw) as Partial<DevSession>;
+    if (parsed && typeof parsed.email === "string") {
+      return {
+        id: parsed.id ?? "local-dev-user",
+        email: parsed.email,
+        credits: typeof parsed.credits === "number" ? parsed.credits : 10,
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function jsonWithDevSession(payload: unknown, status: number, session: DevSession | null) {
+  const response = NextResponse.json(payload, { status });
+  if (session) {
+    response.cookies.set(COOKIE_DEV_SESSION, signDevSession(session), {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+  }
+  return response;
+}
 
 // 1. Schema kiểm tra đầu vào Form
 const InputSchema = z.object({
@@ -37,21 +103,23 @@ const InputSchema = z.object({
   ),
 });
 
-// 2. Schema kiểm tra đầu ra từ AI
+// 2. Schema kiểm tra đầu ra từ AI - Siết chặt chất lượng và chống chuỗi rỗng
 const AiOutputSchema = z.object({
   captions: z
     .array(
       z.object({
         id: z.string(),
-        angle: z.string(),
-        text: z.string(),
+        angle: z.string().min(3, "Tên góc nhìn không hợp lệ"),
+        text: z.string().trim().min(30, "Nội dung bài viết quá ngắn (tối thiểu 30 ký tự)"),
       })
     )
     .length(3, "Bắt buộc phải có đúng 3 bài viết captions"),
   headlines: z
-    .array(z.string())
+    .array(z.string().trim().min(5, "Tiêu đề tối thiểu 5 ký tự"))
     .length(3, "Bắt buộc phải có đúng 3 tiêu đề headlines"),
-  hashtags: z.array(z.string()).length(5, "Bắt buộc phải có đúng 5 hashtags"),
+  hashtags: z
+    .array(z.string().trim().min(2, "Hashtag không hợp lệ"))
+    .length(5, "Bắt buộc phải có đúng 5 hashtags"),
 });
 
 const TONE_DESCRIPTIONS: Record<string, string> = {
@@ -71,13 +139,22 @@ const TONE_DESCRIPTIONS: Record<string, string> = {
     "Trực diện, nhịp điệu nhanh, tạo cảm giác khẩn trương và khan hiếm (FOMO tinh tế); nêu bật ưu đãi giới hạn và thôi thúc ra quyết định mua hàng ngay mà không bị phản cảm.",
 };
 
-// Bộ giới hạn tần suất: Tối đa 5 lượt gọi / phút / user
+// Bộ giới hạn tần suất: Tối đa 5 lượt gọi / phút / user kèm cơ chế dọn dẹp TTL chống memory leak
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 function checkRateLimit(userId: string): boolean {
   const now = Date.now();
-  const userRate = rateLimitMap.get(userId);
 
+  // Dọn rác các record hết hạn để tránh rò rỉ bộ nhớ (memory leak)
+  if (rateLimitMap.size > 200) {
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (now > value.resetAt) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+
+  const userRate = rateLimitMap.get(userId);
   if (!userRate || now > userRate.resetAt) {
     rateLimitMap.set(userId, { count: 1, resetAt: now + 60000 });
     return true;
@@ -98,8 +175,36 @@ function sanitizeString(str: string): string {
     .trim();
 }
 
+async function executeRefundWithVerification(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  requestId: string
+): Promise<{ success: boolean; creditsRemaining?: number }> {
+  try {
+    const { data, error } = await supabase.rpc("refund_credit_atomic", {
+      p_user_id: userId,
+      p_request_id: requestId,
+    });
+    if (error) {
+      console.error("[Refund RPC Failure]:", error);
+      return { success: false };
+    }
+    const result =
+      typeof data === "object" && data !== null
+        ? (data as { success?: boolean; credits_remaining?: number })
+        : { success: Boolean(data) };
+    return {
+      success: result.success ?? false,
+      creditsRemaining: result.credits_remaining,
+    };
+  } catch (err) {
+    console.error("[Refund RPC Exception]:", err);
+    return { success: false };
+  }
+}
+
 export async function POST(request: Request) {
-  // Kiểm tra kích thước payload chống tấn công tràn bộ nhớ (> 32KB)
+  // 1. Kiểm tra kích thước payload chống tấn công tràn bộ nhớ (chặn cả chunked payload > 32KB)
   const contentLength = request.headers.get("content-length");
   if (contentLength && parseInt(contentLength, 10) > 32768) {
     return NextResponse.json(
@@ -108,22 +213,38 @@ export async function POST(request: Request) {
     );
   }
 
+  const rawBody = await request.text();
+  if (rawBody.length > 32768) {
+    return NextResponse.json(
+      { error: "Kích thước dữ liệu vượt quá giới hạn an toàn (tối đa 32KB)." },
+      { status: 413 }
+    );
+  }
+
   const supabase = await createClient();
 
-  // BƯỚC 1: Xác thực người dùng
+  // BƯỚC 1: Xác thực người dùng — Supabase Auth ưu tiên, fallback Dev Session (local)
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let devSession: DevSession | null = null;
   if (!user) {
+    const cookieStore = await cookies();
+    devSession = verifyDevSession(cookieStore.get(COOKIE_DEV_SESSION)?.value ?? "");
+  }
+
+  if (!user && !devSession) {
     return NextResponse.json(
       { error: "Vui lòng đăng nhập để tạo nội dung quảng cáo." },
       { status: 401 }
     );
   }
 
+  const actorId = user?.id ?? (devSession as DevSession).id;
+
   // Rate Limiting Guard
-  if (!checkRateLimit(user.id)) {
+  if (!checkRateLimit(actorId)) {
     return NextResponse.json(
       {
         error: "Bạn đang thao tác quá nhanh. Vui lòng chờ 1 phút trước khi tạo lượt tiếp theo.",
@@ -135,7 +256,7 @@ export async function POST(request: Request) {
   // BƯỚC 2: Kiểm tra dữ liệu đầu vào
   let body: unknown;
   try {
-    body = await request.json();
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json(
       { error: "Dữ liệu gửi lên không đúng định dạng JSON." },
@@ -158,31 +279,57 @@ export async function POST(request: Request) {
   };
   const requestId = crypto.randomUUID();
 
-  // BƯỚC 3: Trừ Credit Atomic & Idempotent với requestId
-  const { data: deductResult, error: deductError } = await supabase.rpc(
-    "deduct_credit_atomic",
-    { p_user_id: user.id, p_request_id: requestId }
-  );
+  // BƯỚC 3: Trừ Credit Atomic (Supabase) hoặc Dev Session (local)
+  let creditsRemaining = 0;
+  let activeDevSession: DevSession | null = null;
 
-  if (deductError) {
-    console.error("[Database RPC Error]:", deductError);
-    return NextResponse.json(
-      { error: "Lỗi hệ thống khi kiểm tra số dư lượt tạo. Vui lòng thử lại sau." },
-      { status: 500 }
+  if (user) {
+    const { data: deductResult, error: deductError } = await supabase.rpc(
+      "deduct_credit_atomic",
+      { p_user_id: user.id, p_request_id: requestId }
     );
-  }
 
-  // Hỗ trợ cả 2 dạng: JSONB trả về từ migration mới hoặc boolean từ RPC cũ
-  const deductSuccess =
-    typeof deductResult === "object" && deductResult !== null
-      ? (deductResult as { success?: boolean }).success ?? false
-      : Boolean(deductResult);
+    if (deductError) {
+      console.error("[Database RPC Error]:", deductError);
+      return NextResponse.json(
+        { error: "Lỗi hệ thống khi kiểm tra số dư lượt tạo. Vui lòng thử lại sau." },
+        { status: 500 }
+      );
+    }
 
-  if (!deductSuccess) {
-    return NextResponse.json(
-      { error: "Bạn đã sử dụng hết lượt tạo nội dung miễn phí (0 lượt khả dụng)." },
-      { status: 402 }
-    );
+    // Hỗ trợ cả 2 dạng: JSONB trả về từ migration mới hoặc boolean từ RPC cũ
+    const deductSuccess =
+      typeof deductResult === "object" && deductResult !== null
+        ? (deductResult as { success?: boolean }).success ?? false
+        : Boolean(deductResult);
+
+    if (!deductSuccess) {
+      return NextResponse.json(
+        { error: "Bạn đã sử dụng hết lượt tạo nội dung miễn phí (0 lượt khả dụng)." },
+        { status: 402 }
+      );
+    }
+
+    const { data: updatedProfile } = await supabase
+      .from("profiles")
+      .select("credits_remaining")
+      .eq("id", user.id)
+      .single();
+
+    creditsRemaining = updatedProfile?.credits_remaining ?? 0;
+  } else {
+    const session = devSession as DevSession;
+
+    if (session.credits <= 0) {
+      return NextResponse.json(
+        { error: "Bạn đã sử dụng hết lượt tạo nội dung miễn phí (0 lượt khả dụng)." },
+        { status: 402 }
+      );
+    }
+
+    // Trừ 1 credit và ký lại cookie dev session
+    activeDevSession = { ...session, credits: session.credits - 1 };
+    creditsRemaining = activeDevSession.credits;
   }
 
   // BƯỚC 4: Soạn thảo Prompt chống AI-slop chặt chẽ cho Gemini
@@ -330,66 +477,79 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       ],
     };
 
-    // BƯỚC 6: Lưu bản ghi vào bảng generations trên Supabase (Bắt buộc kiểm tra lỗi)
-    const { error: insertError } = await supabase.from("generations").insert({
-      user_id: user.id,
-      product_name: input.productName,
-      product_description: input.productDescription,
-      target_audience: input.targetAudience,
-      tone: input.tone,
-      captions: formattedOutput.captions,
-      headlines: formattedOutput.headlines,
-      hashtags: formattedOutput.hashtags,
-    });
-
-    if (insertError) {
-      console.error("[Database Insert Generation Error]:", insertError);
-      // Rollback hoàn trả credit ngay lập tức vì không thể lưu lịch sử
-      await supabase.rpc("refund_credit_atomic", {
-        p_user_id: user.id,
-        p_request_id: requestId,
+    // BƯỚC 6: Lưu bản ghi vào bảng generations (chỉ áp dụng với Supabase Auth)
+    if (user) {
+      const { error: insertError } = await supabase.from("generations").insert({
+        user_id: user.id,
+        product_name: input.productName,
+        product_description: input.productDescription,
+        target_audience: input.targetAudience,
+        tone: input.tone,
+        captions: formattedOutput.captions,
+        headlines: formattedOutput.headlines,
+        hashtags: formattedOutput.hashtags,
       });
+
+      if (insertError) {
+        console.error("[Database Insert Generation Error]:", insertError);
+        // Rollback hoàn trả credit an toàn và kiểm tra kết quả
+        const refund = await executeRefundWithVerification(supabase, user.id, requestId);
+
+        return NextResponse.json(
+          {
+            error: refund.success
+              ? "Không thể lưu trữ bài viết vào lịch sử. Lượt tạo của bạn đã được hoàn lại đầy đủ."
+              : "Không thể lưu trữ bài viết. Quá trình hoàn credit đang được ghi nhận đối soát.",
+            creditsRemaining: refund.creditsRemaining ?? creditsRemaining,
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    return jsonWithDevSession(
+      {
+        success: true,
+        data: formattedOutput,
+        creditsRemaining,
+      },
+      200,
+      activeDevSession
+    );
+  } catch (error: unknown) {
+    console.error("[AI Generation Failed]:", error);
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Không thể kết nối đến máy chủ AI.";
+
+    // RULE 3: Hoàn credit an toàn cho cả Supabase Auth và Dev Session
+    if (user) {
+      const refund = await executeRefundWithVerification(supabase, user.id, requestId);
 
       return NextResponse.json(
         {
-          error:
-            "Không thể lưu trữ bài viết vào lịch sử. Lượt tạo của bạn đã được hoàn lại đầy đủ.",
+          error: refund.success
+            ? `Quá trình tạo thất bại: ${message}. Lượt tạo của bạn đã được hoàn lại đầy đủ.`
+            : `Quá trình tạo thất bại: ${message}. Hệ thống đang đối soát hoàn lượt tạo cho bạn.`,
+          creditsRemaining: refund.creditsRemaining ?? creditsRemaining,
         },
         { status: 500 }
       );
     }
 
-    // Lấy số credit mới nhất sau khi trừ thành công
-    const { data: updatedProfile } = await supabase
-      .from("profiles")
-      .select("credits_remaining")
-      .eq("id", user.id)
-      .single();
+    const refundedSession = activeDevSession
+      ? { ...activeDevSession, credits: activeDevSession.credits + 1 }
+      : null;
 
-    return NextResponse.json({
-      success: true,
-      data: formattedOutput,
-      creditsRemaining: updatedProfile?.credits_remaining ?? 0,
-    });
-  } catch (error: unknown) {
-    console.error("[AI Generation Failed]:", error);
-
-    // KÍCH HOẠT CƠ CHẾ HOÀN CREDIT TỨC THÌ THEO REQUEST ID
-    await supabase.rpc("refund_credit_atomic", {
-      p_user_id: user.id,
-      p_request_id: requestId,
-    });
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Không thể kết nối đến máy chủ AI. Lượt tạo của bạn đã được hoàn lại 100%.";
-
-    return NextResponse.json(
+    return jsonWithDevSession(
       {
         error: `Quá trình tạo thất bại: ${message}. Lượt tạo của bạn đã được hoàn lại đầy đủ.`,
+        creditsRemaining: refundedSession?.credits ?? creditsRemaining,
       },
-      { status: 500 }
+      500,
+      refundedSession
     );
   }
 }

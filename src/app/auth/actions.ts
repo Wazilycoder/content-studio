@@ -28,6 +28,7 @@ interface AuthResult {
 }
 
 function isLocalDev(): boolean {
+  if (process.env.NODE_ENV === "production") return false;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   return (
     process.env.NODE_ENV === "development" ||
@@ -37,6 +38,7 @@ function isLocalDev(): boolean {
 }
 
 function isDemoEmail(email: string): boolean {
+  if (process.env.NODE_ENV === "production") return false;
   const lower = email.toLowerCase();
   return (
     lower.includes("demo") ||
@@ -45,16 +47,53 @@ function isDemoEmail(email: string): boolean {
   );
 }
 
+function signDevSession(session: DevSession): string {
+  const payload = Buffer.from(JSON.stringify(session)).toString("base64url");
+  const sig = createHmac("sha256", CAPTCHA_SECRET).update(payload).digest("hex");
+  return `${payload}.${sig}`;
+}
+
+function verifyDevSession(cookieValue: string): DevSession | null {
+  if (!cookieValue || process.env.NODE_ENV === "production") return null;
+  const parts = cookieValue.split(".");
+  if (parts.length !== 2) return null;
+  const [payload, sig] = parts;
+  if (!payload || !sig) return null;
+
+  const expectedSig = createHmac("sha256", CAPTCHA_SECRET).update(payload).digest("hex");
+  const expectedBuf = Buffer.from(expectedSig, "hex");
+  const providedBuf = Buffer.from(sig, "hex");
+  if (expectedBuf.length !== providedBuf.length || !timingSafeEqual(expectedBuf, providedBuf)) {
+    return null;
+  }
+
+  try {
+    const raw = Buffer.from(payload, "base64url").toString("utf-8");
+    const parsed = JSON.parse(raw) as Partial<DevSession>;
+    if (parsed && typeof parsed.email === "string") {
+      return {
+        id: parsed.id ?? "local-dev-user",
+        email: parsed.email,
+        credits: typeof parsed.credits === "number" ? parsed.credits : 10,
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 async function setDevSession(email: string): Promise<void> {
+  if (process.env.NODE_ENV === "production") return;
   const cookieStore = await cookies();
   const session: DevSession = {
     id: "local-dev-user",
     email,
     credits: 10,
   };
-  cookieStore.set(COOKIE_DEV_SESSION, JSON.stringify(session), {
+  cookieStore.set(COOKIE_DEV_SESSION, signDevSession(session), {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
@@ -65,7 +104,7 @@ async function clearDevSession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_DEV_SESSION, "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: (process.env.NODE_ENV as string) === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 0,
@@ -236,25 +275,17 @@ export async function signOut(): Promise<void> {
 }
 
 export async function getUserProfile(): Promise<DevSession | null> {
-  // 1. Ưu tiên dev session cookie (local bypass)
-  const cookieStore = await cookies();
-  const devCookie = cookieStore.get(COOKIE_DEV_SESSION)?.value;
-  if (devCookie) {
-    try {
-      const parsed = JSON.parse(devCookie) as Partial<DevSession>;
-      if (parsed && typeof parsed.email === "string") {
-        return {
-          id: parsed.id ?? "local-dev-user",
-          email: parsed.email,
-          credits: typeof parsed.credits === "number" ? parsed.credits : 10,
-        };
-      }
-    } catch {
-      // Cookie hỏng -> fallback sang Supabase
+  // 1. Chỉ dùng dev session cookie khi chạy local development và chữ ký HMAC hợp lệ
+  if (process.env.NODE_ENV !== "production") {
+    const cookieStore = await cookies();
+    const devCookie = cookieStore.get(COOKIE_DEV_SESSION)?.value;
+    if (devCookie) {
+      const verified = verifyDevSession(devCookie);
+      if (verified) return verified;
     }
   }
 
-  // 2. Fallback: Supabase auth như cũ
+  // 2. Supabase auth chuẩn cho production & authenticated users
   try {
     const supabase = await createClient();
     const {
@@ -291,6 +322,101 @@ export async function getUserProfile(): Promise<DevSession | null> {
     };
   } catch {
     return null;
+  }
+}
+
+interface TopUpResult {
+  success: boolean;
+  newCredits: number;
+  message: string;
+}
+
+/**
+ * Nạp thêm lượt tạo cho người dùng hiện tại.
+ * RULE 1: Supabase Auth -> cộng trực tiếp vào profiles.credits_remaining.
+ * RULE 2: Dev session -> cộng vào payload HMAC và ký lại COOKIE_DEV_SESSION.
+ */
+export async function topUpCredits(amount: number): Promise<TopUpResult> {
+  const safeAmount = Math.floor(amount);
+  if (!Number.isFinite(safeAmount) || safeAmount <= 0 || safeAmount > 100000) {
+    return { success: false, newCredits: 0, message: "Số lượt nạp không hợp lệ." };
+  }
+
+  // RULE 2: Local dev session
+  if (process.env.NODE_ENV !== "production") {
+    const cookieStore = await cookies();
+    const devCookie = cookieStore.get(COOKIE_DEV_SESSION)?.value;
+    const session = devCookie ? verifyDevSession(devCookie) : null;
+
+    if (session) {
+      const newCredits = session.credits + safeAmount;
+      cookieStore.set(COOKIE_DEV_SESSION, signDevSession({ ...session, credits: newCredits }), {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      });
+      revalidatePath("/workspace");
+      return {
+        success: true,
+        newCredits,
+        message: `Đã nạp thành công ${safeAmount} lượt tạo vào tài khoản của bạn.`,
+      };
+    }
+  }
+
+  // RULE 1: Supabase Auth
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        newCredits: 0,
+        message: "Vui lòng đăng nhập để nạp thêm lượt tạo.",
+      };
+    }
+
+    const { data: profile, error: readError } = await supabase
+      .from("profiles")
+      .select("credits_remaining")
+      .eq("id", user.id)
+      .single();
+
+    const currentCredits = readError ? 0 : profile?.credits_remaining ?? 0;
+    const newCredits = currentCredits + safeAmount;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ credits_remaining: newCredits })
+      .eq("id", user.id);
+
+    if (updateError) {
+      console.error("[Top-up Update Error]:", updateError);
+      return {
+        success: false,
+        newCredits: currentCredits,
+        message: "Không thể cập nhật số lượt. Vui lòng thử lại sau.",
+      };
+    }
+
+    revalidatePath("/workspace");
+    return {
+      success: true,
+      newCredits,
+      message: `Đã nạp thành công ${safeAmount} lượt tạo vào tài khoản của bạn.`,
+    };
+  } catch (error) {
+    console.error("[Top-up Exception]:", error);
+    return {
+      success: false,
+      newCredits: 0,
+      message: "Không thể kết nối máy chủ nạp lượt. Vui lòng thử lại.",
+    };
   }
 }
 
