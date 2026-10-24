@@ -6,31 +6,69 @@ import type { CaptionAngle, GeneratedContent } from "@/types/content";
 
 // 1. Schema kiểm tra đầu vào Form
 const InputSchema = z.object({
-  productName: z.string().trim().min(2, "Tên sản phẩm tối thiểu 2 ký tự").max(100, "Tên sản phẩm tối đa 100 ký tự"),
-  productDescription: z.string().trim().min(1, "Mô tả sản phẩm không được để trống").max(1000, "Mô tả sản phẩm tối đa 1.000 ký tự"),
-  targetAudience: z.string().trim().min(1, "Khách hàng mục tiêu không được để trống").max(200, "Khách hàng mục tiêu tối đa 200 ký tự"),
-  tone: z.enum(["hai-huoc", "trang-trong", "tre-trung"], {
-    message: "Tone phải là hài hước, trang trọng hoặc trẻ trung",
-  }),
+  productName: z
+    .string()
+    .trim()
+    .min(2, "Tên sản phẩm tối thiểu 2 ký tự")
+    .max(100, "Tên sản phẩm tối đa 100 ký tự"),
+  productDescription: z
+    .string()
+    .trim()
+    .min(1, "Mô tả sản phẩm không được để trống")
+    .max(1000, "Mô tả sản phẩm tối đa 1.000 ký tự"),
+  targetAudience: z
+    .string()
+    .trim()
+    .min(1, "Khách hàng mục tiêu không được để trống")
+    .max(200, "Khách hàng mục tiêu tối đa 200 ký tự"),
+  tone: z.enum(
+    [
+      "hai-huoc",
+      "trang-trong",
+      "tre-trung",
+      "dong-cam",
+      "chuyen-gia",
+      "ke-chuyen",
+      "kich-thich",
+    ],
+    {
+      message: "Tông giọng không hợp lệ",
+    }
+  ),
 });
 
 // 2. Schema kiểm tra đầu ra từ AI
 const AiOutputSchema = z.object({
-  captions: z.array(
-    z.object({
-      id: z.string(),
-      angle: z.string(),
-      text: z.string(),
-    })
-  ).length(3, "Bắt buộc phải có đúng 3 bài viết captions"),
-  headlines: z.array(z.string()).length(3, "Bắt buộc phải có đúng 3 tiêu đề headlines"),
+  captions: z
+    .array(
+      z.object({
+        id: z.string(),
+        angle: z.string(),
+        text: z.string(),
+      })
+    )
+    .length(3, "Bắt buộc phải có đúng 3 bài viết captions"),
+  headlines: z
+    .array(z.string())
+    .length(3, "Bắt buộc phải có đúng 3 tiêu đề headlines"),
   hashtags: z.array(z.string()).length(5, "Bắt buộc phải có đúng 5 hashtags"),
 });
 
 const TONE_DESCRIPTIONS: Record<string, string> = {
-  "hai-huoc": "Hóm hỉnh, duyên dáng, chơi chữ tự nhiên, thân thiện và gần gũi như trò chuyện đời thường, tuyệt đối không lố lăng cợt nhả.",
-  "trang-trong": "Lịch thiệp, chuẩn mực, thanh lịch, uy tín, nhấn mạnh chất lượng, giá trị cốt lõi và sự tinh tế.",
-  "tre-trung": "Năng động, hiện đại, bắt nhịp lối sống đương đại, câu từ gãy gọn, phóng khoáng, không lạm dụng teencode phản cảm.",
+  "hai-huoc":
+    "Hóm hỉnh, duyên dáng, chơi chữ tự nhiên, mang hơi thở đời thường và gen Z hiện đại, tạo nụ cười nhẹ nhưng bán hàng khéo léo, tuyệt đối không lố lăng cợt nhả.",
+  "trang-trong":
+    "Sang trọng, thanh lịch, chuẩn mực và đẳng cấp; dùng từ ngữ chỉn chu, gãy gọn, tôn vinh chất lượng tinh tế và vị thế của người dùng.",
+  "tre-trung":
+    "Năng động, tươi mới, nhiệt huyết, bắt nhịp lối sống hiện đại, câu từ ngắn gọn, dứt khoát, phóng khoáng, khơi dậy tinh thần trải nghiệm.",
+  "dong-cam":
+    "Thủ thỉ, sâu lắng, tâm tình như một người bạn tri kỷ; thấu hiểu nỗi vất vả, mệt mỏi hay những trăn trở thầm kín của khách hàng (rất hợp ngành mẹ bé, chăm sóc sức khỏe, gia đình).",
+  "chuyen-gia":
+    "Lập luận logic, đi thẳng vào nguyên lý khoa học, phân tích cơ chế hoạt động và thông số minh bạch; tạo độ tin cậy tuyệt đối bằng kiến thức ngành sâu sắc.",
+  "ke-chuyen":
+    "Văn phong tự sự giàu hình ảnh (Storytelling); đưa người đọc vào hành trình tìm tòi nguồn gốc, công sức của nghệ nhân/nhà sáng lập hoặc khoảnh khắc đời thực tạo nên sản phẩm.",
+  "kich-thich":
+    "Trực diện, nhịp điệu nhanh, tạo cảm giác khẩn trương và khan hiếm (FOMO tinh tế); nêu bật ưu đãi giới hạn và thôi thúc ra quyết định mua hàng ngay mà không bị phản cảm.",
 };
 
 export async function POST(request: Request) {
@@ -91,19 +129,41 @@ export async function POST(request: Request) {
   // BƯỚC 4: Soạn thảo Prompt chống AI-slop chặt chẽ cho Gemini
   const toneDesc = TONE_DESCRIPTIONS[input.tone] || input.tone;
 
-  const systemInstruction = `Bạn là Senior Copywriter kiêm Giám đốc Sáng tạo nội dung quảng cáo hàng đầu tại Việt Nam.
-Nhiệm vụ của bạn là viết nội dung quảng cáo Facebook và Instagram cho chủ shop, mang phong thái tự nhiên, sắc sảo, thuyết phục cao.
+  const systemInstruction = `Bạn là Giám đốc Sáng tạo (Creative Director) kiêm Chuyên gia Copywriting Chuyển đổi (Conversion Copywriting Specialist) hàng đầu Việt Nam với 10+ năm kinh nghiệm tư vấn cho các thương hiệu D2C, bán lẻ và chủ shop thời trang, F&B, mỹ phẩm.
+Nhiệm vụ của bạn là sáng tác nội dung quảng cáo Facebook và Instagram độc bản, sắc bén và thuyết phục cao, giúp người bán hàng ra đơn mà không bị cảm giác "chợ búa" hay "văn mẫu bot AI".
 
-QUY TẮC BẮT BUỘC (ANTI-AI-SLOP & ANTI-HALLUCINATION):
-1. TUYỆT ĐỐI KHÔNG BỊA ĐẶT: Không tự ý sáng tác giá tiền, mức giảm giá %, đánh giá của khách hàng, hay chứng chỉ y tế/quốc tế không có trong mô tả.
-2. KHÔNG DÙNG VĂN MẪU SÁO RỖNG: Tránh hoàn toàn các câu mở đầu rập khuôn kiểu: "Chào các bạn...", "Bạn đang tìm kiếm...", "Đừng bỏ lỡ siêu phẩm...".
-3. BA GÓC TIẾP CẬN RIÊNG BIỆT CHO 3 CAPTION:
-   - Góc 1: Vấn đề & Giải pháp (Đặt ra khó khăn/trăn trở đời thường và cách sản phẩm giải quyết triệt để).
-   - Góc 2: Cảm xúc & Phong cách sống (Gắn sản phẩm vào không gian sống, phong thái, cảm xúc tích cực).
-   - Góc 3: Trực diện tính năng & Giá trị (Nêu bật chất liệu, thông số, sự tiện lợi, độ bền).
-4. HEADLINES: Đúng 3 tiêu đề giật tít súc tích (5-15 từ), mạnh mẽ, không trùng lặp ý tưởng.
-5. HASHTAGS: Đúng 5 hashtags chọn lọc, gắn liền ngách sản phẩm, không spam tag đại trà vô nghĩa.
-6. ĐẦU RA BẮT BUỘC: Trả về duy nhất 1 chuỗi JSON hợp lệ theo đúng cấu trúc schema, không kèm giải thích bên ngoài.`;
+QUY TẮC BẮT BUỘC (ANTI-AI-SLOP & CHẤT LƯỢNG NỘI DUNG ĐẠT GIẢI):
+1. BANNED CLICHÉS (CẤM TUYỆT ĐỐI CÁC CÂU MỞ ĐẦU RẬP KHUÔN):
+   - CẤM: "Chào các bạn...", "Bạn đang tìm kiếm...", "Bạn có biết...", "Hôm nay shop xin giới thiệu...", "Đừng bỏ lỡ siêu phẩm...", "Hãy cùng chúng tôi khám phá...".
+   - CẤM các tính từ sáo rỗng vô nghĩa: "tuyệt vời", "đỉnh cao", "siêu phẩm", "hoàn hảo không tì vết", "đẹp mê hồn".
+   - Mở bài PHẢI đi thẳng vào một quan sát thực tế (insight), một phiền toái có thật, hoặc một lát cắt đời thường sinh động.
+
+2. NGUYÊN TẮC TRUNG THỰC (ANTI-HALLUCINATION):
+   - Tuyệt đối KHÔNG tự ý bịa đặt mức giảm giá %, giá tiền cụ thể, chứng chỉ y tế/quốc tế hay đánh giá của khách hàng nếu người dùng không cung cấp trong mô tả.
+   - Bám sát sự thật của sản phẩm, làm nổi bật bản chất của chất liệu và công năng.
+
+3. NHỊP ĐIỆU VĂN BẢN & ĐỊNH DẠNG (RHYTHM & FORMATTING):
+   - Ngắt nhịp tự nhiên, câu văn gãy gọn. Xuống dòng thoáng mắt (mỗi đoạn ngắn chỉ 1–3 câu).
+   - Chỉ dùng tối đa 1–2 emoji có ý nghĩa làm bullet point hoặc nhấn mạnh tự nhiên. Tuyệt đối không rải rác emoji bừa bãi như bot spam.
+
+4. BỘ 3 GÓC TIẾP CẬN RIÊNG BIỆT (3 CREATIVE ANGLES):
+   - Góc 1: Vấn đề & Giải pháp (PAS - Problem, Agitate, Solution)
+     Chỉ ra một sai lầm hoặc phiền toái đời thường mà khách hàng hay chịu đựng -> Sản phẩm giải quyết êm đẹp và triệt để thế nào.
+   - Góc 2: Cảm xúc & Phong cách sống (Lifestyle, Identity & Emotion)
+     Không bán món đồ, bán cảm giác tự tin, sự nhẹ nhõm và hình ảnh người mua muốn thấy ở chính mình khi sở hữu sản phẩm.
+   - Góc 3: Trực diện tính năng & Giá trị (FAB - Feature, Advantage, Benefit)
+     Đi sâu vào chất liệu, thông số, đường may/độ hoàn thiện, sự tiện lợi thực tế; chứng minh món đồ xứng đáng từng đồng chi ra.
+
+5. ĐÚNG 3 TIÊU ĐỀ HEADLINES (5–15 từ):
+   - Headline 1: Gợi mở & Tò mò (Curiosity Hook)
+   - Headline 2: Lợi ích trực diện & Lời hứa giá trị (Direct Benefit)
+   - Headline 3: Tuyên ngôn định vị & Khẳng định chất lượng (Authority Statement)
+
+6. ĐÚNG 5 HASHTAGS:
+   - 1 hashtag tên sản phẩm/thương hiệu, 2 hashtag ngành hàng/ngách sâu, 2 hashtag hành vi mua sắm xu hướng. Viết liền chuẩn format Facebook & Instagram.
+
+7. ĐẦU RA BẮT BUỘC:
+   - Trả về duy nhất 1 chuỗi JSON hợp lệ theo đúng cấu trúc schema, không kèm bất kỳ câu dẫn hay giải thích nào bên ngoài.`;
 
   const userPrompt = `Hãy tạo nội dung quảng cáo cho sản phẩm sau:
 

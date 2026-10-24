@@ -10,21 +10,53 @@ const MAX_PRODUCT_NAME = 100;
 const MAX_DESCRIPTION = 1000;
 const MAX_AUDIENCE = 200;
 
-const TONE_OPTIONS: { value: ToneOption; label: string; hint: string }[] = [
+const TONE_OPTIONS: {
+  value: ToneOption;
+  label: string;
+  hint: string;
+  icon: string;
+}[] = [
   {
     value: "hai-huoc",
-    label: "Hài hước",
-    hint: "Dí dỏm, duyên dáng, gần gũi",
+    label: "Hài hước & Viral",
+    hint: "Dí dỏm, chơi chữ tự nhiên, thân thiện",
+    icon: "😄",
   },
   {
     value: "trang-trong",
-    label: "Trang trọng",
-    hint: "Chuyên nghiệp, thanh lịch, chuẩn mực",
+    label: "Sang trọng & Cao cấp",
+    hint: "Thanh lịch, chuẩn mực, tôn vinh giá trị",
+    icon: "✨",
   },
   {
     value: "tre-trung",
-    label: "Trẻ trung",
-    hint: "Hiện đại, năng động, bắt nhịp xu hướng",
+    label: "Trẻ trung & Bắt trend",
+    hint: "Năng động, hiện đại, phóng khoáng",
+    icon: "⚡",
+  },
+  {
+    value: "dong-cam",
+    label: "Đồng cảm & Chữa lành",
+    hint: "Thủ thỉ, sâu lắng, chạm cảm xúc",
+    icon: "🌿",
+  },
+  {
+    value: "chuyen-gia",
+    label: "Chuyên gia & Logic",
+    hint: "Dẫn chứng thực tế, lập luận chặt chẽ",
+    icon: "🎯",
+  },
+  {
+    value: "ke-chuyen",
+    label: "Storytelling",
+    hint: "Kể chuyện di sản, cảm hứng làng nghề",
+    icon: "📖",
+  },
+  {
+    value: "kich-thich",
+    label: "Kích thích mua & FOMO",
+    hint: "Khẩn trương, ưu đãi giới hạn, kêu gọi mua",
+    icon: "🔥",
   },
 ];
 
@@ -252,7 +284,11 @@ export default function ProductForm({
             Tone of voice
           </span>
 
-          <div role="group" aria-label="Chọn tone of voice" className="space-y-1.5">
+          <div
+            role="group"
+            aria-label="Chọn tone of voice"
+            className="grid grid-cols-2 gap-1.5"
+          >
             {TONE_OPTIONS.map((option) => {
               const active = value.tone === option.value;
               return (
@@ -261,20 +297,24 @@ export default function ProductForm({
                   type="button"
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
-                  className={`w-full rounded-md border px-3 py-2 text-left transition-colors ${
+                  title={option.hint}
+                  className={`rounded-lg border p-2 text-left transition-colors ${
                     active
-                      ? "border-[#3B49DF] bg-[#3B49DF]/[0.05] ring-1 ring-[#3B49DF]/20"
+                      ? "border-[#3B49DF] bg-[#3B49DF]/[0.06] ring-1 ring-[#3B49DF]/20"
                       : "border-[#E4E4DE] bg-white hover:border-[#D4D4D8] hover:bg-[#F8F8F6]"
                   }`}
                 >
-                  <span
-                    className={`block text-[12.5px] font-medium ${
-                      active ? "text-[#3B49DF]" : "text-[#27272A]"
-                    }`}
-                  >
-                    {option.label}
-                  </span>
-                  <span className="mt-0.5 block text-[11px] leading-relaxed text-[#71717A]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs leading-none">{option.icon}</span>
+                    <span
+                      className={`block truncate text-[11px] font-semibold ${
+                        active ? "text-[#3B49DF]" : "text-[#18181B]"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                  </div>
+                  <span className="mt-1 line-clamp-1 block text-[9.5px] leading-tight text-[#71717A]">
                     {option.hint}
                   </span>
                 </button>

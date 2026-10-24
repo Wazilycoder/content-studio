@@ -1,4 +1,11 @@
-export type ToneOption = "hai-huoc" | "trang-trong" | "tre-trung";
+export type ToneOption =
+  | "hai-huoc"
+  | "trang-trong"
+  | "tre-trung"
+  | "dong-cam"
+  | "chuyen-gia"
+  | "ke-chuyen"
+  | "kich-thich";
 
 export type PlatformGuidance = "facebook" | "instagram" | "all";
 

@@ -22,7 +22,15 @@ interface GenerationRow {
   created_at: string;
 }
 
-const TONE_OPTIONS: ToneOption[] = ["hai-huoc", "trang-trong", "tre-trung"];
+const TONE_OPTIONS: ToneOption[] = [
+  "hai-huoc",
+  "trang-trong",
+  "tre-trung",
+  "dong-cam",
+  "chuyen-gia",
+  "ke-chuyen",
+  "kich-thich",
+];
 
 const CAPTION_ANGLES = [
   "Góc 1: Vấn đề & Giải pháp",

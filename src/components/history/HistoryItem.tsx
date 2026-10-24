@@ -6,8 +6,12 @@ import type { GenerationRecord, ToneOption } from "@/types/content";
 
 const TONE_LABELS: Record<ToneOption, string> = {
   "hai-huoc": "Hài hước",
-  "trang-trong": "Trang trọng",
+  "trang-trong": "Sang trọng",
   "tre-trung": "Trẻ trung",
+  "dong-cam": "Đồng cảm",
+  "chuyen-gia": "Chuyên gia",
+  "ke-chuyen": "Kể chuyện",
+  "kich-thich": "Kích thích mua",
 };
 
 function formatVnDateTime(iso: string): string {
