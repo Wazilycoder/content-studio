@@ -5,6 +5,7 @@ import Link from "next/link";
 import { login, signup } from "@/app/auth/actions";
 import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2, Home } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
+import FloatingSocialIcons from "@/components/ui/FloatingSocialIcons";
 
 interface AuthPageProps {
   initialMode?: "login" | "signup";
@@ -39,7 +40,8 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[var(--canvas)] text-[var(--ink-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen bg-[var(--canvas)] text-[var(--ink-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden">
+      <FloatingSocialIcons variant="auth" />
       {/* Top Bar with Home & ThemeToggle */}
       <div className="absolute top-4 inset-x-0 mx-auto max-w-4xl px-4 flex items-center justify-between">
         <Link

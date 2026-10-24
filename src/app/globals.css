@@ -244,6 +244,11 @@ body {
   box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px 2px rgba(79, 93, 255, 0.18);
 }
 
+/* Smooth Scroll Behavior cho toàn bộ trang */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Ánh sáng nền huyền ảo (Ambient Glow) cho Hero Section */
 .ambient-glow {
   background: radial-gradient(
@@ -261,4 +266,38 @@ body {
     transparent 80%
   );
 }
+
+/* 6 chuyển động lơ lửng đa pha cho Social Icons (Desynchronized Floating) */
+@keyframes floatPhase1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(4deg); }
+}
+@keyframes floatPhase2 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(-5deg); }
+}
+@keyframes floatPhase3 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+@keyframes floatPhase4 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-16px) rotate(-4deg); }
+}
+@keyframes floatPhase5 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+@keyframes floatPhase6 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-3deg); }
+}
+
+.animate-float-1 { animation: floatPhase1 6.5s ease-in-out infinite; }
+.animate-float-2 { animation: floatPhase2 8s ease-in-out infinite 0.8s; }
+.animate-float-3 { animation: floatPhase3 7s ease-in-out infinite 1.4s; }
+.animate-float-4 { animation: floatPhase4 9s ease-in-out infinite 0.4s; }
+.animate-float-5 { animation: floatPhase5 7.5s ease-in-out infinite 1.8s; }
+.animate-float-6 { animation: floatPhase6 8.5s ease-in-out infinite 1.1s; }
+
 
