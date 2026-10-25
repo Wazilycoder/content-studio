@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { Layers3, LogOut, ArrowRight, Home, Zap, Sparkles, Crown } from "lucide-react";
+import { Layers3, LogOut, ArrowRight, Home, Zap, Clock, Crown } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import { getPlanById } from "@/lib/config/pricing";
 import type { WorkspaceUser } from "./WorkspaceContainer";
@@ -71,7 +71,7 @@ function WorkspaceHeader({
                   {activePlan.id === "yearly" ? (
                     <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
                   ) : activePlan.id === "monthly" ? (
-                    <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                    <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                   ) : (
                     <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
                   )}

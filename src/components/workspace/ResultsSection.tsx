@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlignLeft, Copy, LayoutList, RefreshCw, Smartphone, Sparkles } from "lucide-react";
+import { AlignLeft, Copy, Layers3, LayoutList, RefreshCw, Smartphone, Type } from "lucide-react";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import CaptionCard from "./CaptionCard";
 import EmptyState from "./EmptyState";
@@ -53,7 +53,7 @@ export default function ResultsSection({
       <div className="mb-4 flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h2 className="flex items-center gap-1.5 text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
-            <Sparkles className="h-4 w-4 text-[var(--accent-navy)]" />
+            <Layers3 className="h-4 w-4 text-[var(--accent-navy)]" />
             Nội dung bài viết (3 Góc Nhìn)
           </h2>
           <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
@@ -179,7 +179,7 @@ export default function ResultsSection({
             style={{ animationDelay: "280ms" }}
           >
             <h3 className="mb-2.5 flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-[var(--ink-tertiary)]">
-              <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+              <Type className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
               3 headlines thu hút
             </h3>
             <div className="space-y-2">

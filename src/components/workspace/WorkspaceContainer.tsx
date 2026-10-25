@@ -22,11 +22,11 @@ import {
   PanelLeftOpen,
   PanelRightClose,
   PanelRightOpen,
-  RotateCcw,
-  Sparkles,
-  Wand2,
-  Zap,
-} from "lucide-react";
+    RefreshCw,
+    RotateCcw,
+    Wand2,
+    Zap,
+  } from "lucide-react";
 import ProductForm from "./ProductForm";
 import FacebookMockup from "./FacebookMockup";
 import AuthModal from "./AuthModal";
@@ -636,14 +636,14 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             {isPro ? (
               activePlan.id === "yearly" ? (
                 <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
-              ) : activePlan.id === "monthly" ? (
-                <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                ) : activePlan.id === "monthly" ? (
+                  <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                ) : (
+                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                )
               ) : (
-                <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-              )
-            ) : (
-              <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-            )}
+                <Zap className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+              )}
             <span>{isPro ? activePlan.tierBadge : "Nâng cấp Pro 0s"}</span>
           </button>
           <button
@@ -793,7 +793,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     {activePlan.id === "yearly" ? (
                       <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
                     ) : activePlan.id === "monthly" ? (
-                      <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                      <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
                     ) : (
                       <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
                     )}
@@ -876,7 +876,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                         {loading ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
                         ) : (
-                          <Sparkles className="h-3 w-3" />
+                          <RefreshCw className="h-3 w-3" />
                         )}
                         {loading ? "Đang tạo..." : "Tạo lại"}
                       </button>
@@ -1375,7 +1375,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     {loading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : cooldownSeconds > 0 && !isPro ? null : (
-                      <Sparkles className="h-4 w-4" />
+                      <Wand2 className="h-4 w-4" />
                     )}
                     <span>
                       {loading

@@ -8,7 +8,6 @@ import {
   Download,
   Globe,
   Heart,
-  Instagram,
   Layers3,
   Loader2,
   MessageCircle,
@@ -20,13 +19,33 @@ import {
 } from "lucide-react";
 import { toSafeFileName } from "@/lib/utils/filename";
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      stroke="currentColor"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
 const FB_PREVIEW_LIMIT = 125;
 
 type Platform = "facebook" | "instagram";
 
-const PLATFORM_TABS: Array<{ id: Platform; label: string; icon: typeof Globe }> = [
+const PLATFORM_TABS: Array<{ id: Platform; label: string; icon: React.ComponentType<{ className?: string }> }> = [
   { id: "facebook", label: "Facebook Post", icon: Globe },
-  { id: "instagram", label: "Instagram Feed", icon: Instagram },
+  { id: "instagram", label: "Instagram Feed", icon: InstagramIcon },
 ];
 
 function truncateToChars(text: string, limit: number) {

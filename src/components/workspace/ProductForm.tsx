@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { AlertCircle, Check, ChevronDown, Clock, FlaskConical, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Clock, FlaskConical, Loader2, Wand2 } from "lucide-react";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
 import type { ContentFormInput, ToneOption } from "@/types/content";
 
@@ -461,7 +461,7 @@ function ProductForm({
             </>
           ) : (
             <>
-              <Sparkles className="h-4 w-4" />
+              <Wand2 className="h-4 w-4" />
               <span>Tạo 3 góc bài viết</span>
             </>
           )}

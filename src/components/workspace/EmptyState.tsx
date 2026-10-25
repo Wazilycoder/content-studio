@@ -1,6 +1,6 @@
 "use client";
 
-import { Lightbulb, PenLine, Sparkles, Zap } from "lucide-react";
+import { Lightbulb, PenLine, Zap } from "lucide-react";
 
 export interface InspirationPreset {
   productName: string;
@@ -104,7 +104,7 @@ export default function EmptyState({ onSelectInspiration }: EmptyStateProps) {
               onClick={() => onSelectInspiration?.(preset)}
               className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--accent-navy)]/50 hover:text-[var(--ink-primary)]"
             >
-              <Sparkles className="h-3 w-3 text-[var(--accent-navy)]" />
+              <Lightbulb className="h-3 w-3 text-amber-500" />
               {preset.productName}
             </button>
           ))}
