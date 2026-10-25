@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PenLine, LogOut, ArrowRight, Home } from "lucide-react";
+import { PenLine, LogOut, ArrowRight, Home, Zap } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import type { WorkspaceUser } from "./WorkspaceContainer";
 
@@ -57,7 +57,8 @@ export default function WorkspaceHeader({
                   title="Bạn đang dùng Pro Turbo — 0s Cooldown"
                   className="btn-tactile flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[12px] font-semibold text-emerald-600 dark:text-emerald-400"
                 >
-                  ⚡ Pro Turbo
+                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                  <span>Pro Turbo</span>
                 </button>
               ) : (
                 <div className="flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-0.5">

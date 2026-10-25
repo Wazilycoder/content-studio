@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Copy, Loader2, ShieldCheck, Sparkles, X } from "lucide-react";
+import { Check, Copy, Loader2, ShieldCheck, Sparkles, X, Zap } from "lucide-react";
 import { topUpCredits } from "@/app/auth/actions";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { PRICING_PLANS as PACKAGES, BANK_INFO } from "@/lib/config/pricing";
@@ -186,8 +186,9 @@ export default function TopUpModal({
                     {pkg.price.toLocaleString("vi-VN")}đ
                   </p>
                   <p className="mt-0.5 text-[11px] text-[var(--ink-tertiary)]">{pkg.duration}</p>
-                  <p className="mt-0.5 text-[10.5px] font-semibold text-[var(--accent-emerald)]">
-                    ⚡ 0s Cooldown tức thì
+                  <p className="mt-0.5 inline-flex items-center gap-1 text-[10.5px] font-semibold text-[var(--accent-emerald)]">
+                    <Zap className="h-3 w-3 fill-emerald-500 text-emerald-500" />
+                    <span>0s Cooldown tức thì</span>
                   </p>
                 </div>
               </button>
@@ -249,8 +250,8 @@ export default function TopUpModal({
             disabled={pending}
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--accent-navy)]/50 bg-[var(--accent-navy)]/[0.06] px-3 py-2.5 text-[12px] font-semibold text-[var(--accent-navy)] transition-all hover:border-[var(--accent-navy)] hover:bg-[var(--accent-navy)]/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-            <span>⚡ Kích hoạt nhanh (Mô phỏng nâng cấp Pro Turbo)</span>
+            <Zap className="h-3.5 w-3.5 fill-current text-[var(--accent-navy)]" />
+            <span>Kích hoạt nhanh (Mô phỏng nâng cấp Pro Turbo)</span>
           </button>
           <button
             type="button"

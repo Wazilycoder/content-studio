@@ -6,6 +6,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Clock,
   Copy,
   Download,
   Globe,
@@ -14,6 +15,7 @@ import {
   RotateCcw,
   Sparkles,
   Wand2,
+  Zap,
 } from "lucide-react";
 import ProductForm from "./ProductForm";
 import FacebookMockup from "./FacebookMockup";
@@ -492,9 +494,13 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 onClick={() => setTopUpModalOpen(true)}
                 className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
               >
+                {isPro ? (
+                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                ) : (
                   <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                  <span>{isPro ? "⚡ Pro Turbo" : "Nâng cấp Pro 0s"}</span>
-                </button>
+                )}
+                <span>{isPro ? "Pro Turbo" : "Nâng cấp Pro 0s"}</span>
+              </button>
               <button
                 type="button"
                 onClick={handleOpenHistory}
@@ -522,7 +528,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
               {isPro ? (
                 <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-emerald)]/30 bg-[var(--accent-emerald)]/10 px-3 py-2 text-[12px] font-medium text-[var(--accent-emerald)]">
-                  ⚡ Tài khoản Pro Turbo · Không giới hạn &amp; 0s Chờ đợi
+                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                  <span>Tài khoản Pro Turbo · Không giới hạn &amp; 0s Chờ đợi</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
@@ -933,7 +940,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   {loading
                     ? "Đang tạo..."
                     : cooldownSeconds > 0 && !isPro
-                      ? `⏱️ Sạc AI: ${cooldownSeconds}s`
+                      ? `Sạc AI: ${cooldownSeconds}s`
                       : "Tạo 3 góc"}
                 </span>
               </button>

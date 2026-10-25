@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { AlertCircle, Check, ChevronDown, FlaskConical, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, Check, ChevronDown, Clock, FlaskConical, Loader2, Sparkles } from "lucide-react";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
 import type { ContentFormInput, ToneOption } from "@/types/content";
 
@@ -456,7 +456,7 @@ export default function ProductForm({
             </>
           ) : cooldownActive ? (
             <>
-              <span aria-hidden="true">⏱️</span>
+              <Clock className="h-4 w-4 animate-pulse text-[var(--ink-secondary)]" />
               <span>Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro để tạo ngay)</span>
             </>
           ) : (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Zap } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { PRICING_PLANS } from "@/lib/config/pricing";
 
@@ -86,8 +86,9 @@ export default function PricingSection() {
                   </div>
 
                   <div className="mt-8 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-5">
-                    <p className="text-center text-[12.5px] font-semibold text-[var(--ink-primary)]">
-                      ⚡ Pro Turbo — Tạo tức thì, không chờ đợi
+                    <p className="flex items-center justify-center gap-1.5 text-center text-[12.5px] font-semibold text-[var(--ink-primary)]">
+                      <Zap className="h-4 w-4 fill-emerald-500 text-emerald-500" />
+                      <span>Pro Turbo — Tạo tức thì, không chờ đợi</span>
                     </p>
                     <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                       {[
