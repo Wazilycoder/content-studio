@@ -5,6 +5,7 @@ import SocialTicker from "@/components/landing/SocialTicker";
 import InteractivePlayground from "@/components/landing/InteractivePlayground";
 import ThreeAnglesFramework from "@/components/landing/ThreeAnglesFramework";
 import FeatureGrid from "@/components/landing/FeatureGrid";
+import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import PricingSection from "@/components/landing/PricingSection";
 import FaqSection from "@/components/landing/FaqSection";
 import LandingFooter from "@/components/landing/LandingFooter";
@@ -22,6 +23,7 @@ export default async function HomePage() {
         <InteractivePlayground />
         <ThreeAnglesFramework />
         <FeatureGrid />
+        <TestimonialsSection />
         <PricingSection />
         <FaqSection />
       </main>

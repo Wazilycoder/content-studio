@@ -77,6 +77,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
 
   const [draftSaved, setDraftSaved] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
@@ -88,6 +89,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Khôi phục bản nháp tự động từ localStorage khi tải lại trang
   useEffect(() => {
@@ -123,14 +125,41 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     }
   }, [formInputs]);
 
+  // Đồng hồ sạc AI (Cooldown 45s) cho tài khoản Free sau mỗi lần tạo thành công
+  useEffect(() => {
+    if (cooldownSeconds <= 0) {
+      if (cooldownTimerRef.current) {
+        clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+      return;
+    }
+
+    if (cooldownTimerRef.current) return;
+
+    cooldownTimerRef.current = setInterval(() => {
+      setCooldownSeconds((prev) => {
+        if (prev <= 1) {
+          if (cooldownTimerRef.current) {
+            clearInterval(cooldownTimerRef.current);
+            cooldownTimerRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [cooldownSeconds]);
+
   useEffect(() => {
     return () => {
       if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    };
-  }, []);
+          if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+          if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+        };
+      }, []);
 
   // Reset trạng thái biên tập mỗi khi có kết quả AI mới (tạo mới / khôi phục lịch sử / nạp mẫu)
   useEffect(() => {
@@ -230,6 +259,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       }, [result, editedCaptions, formInputs, showToast]);
 
   const [credits, setCredits] = useState<number | null>(user?.credits ?? null);
+  const isPro = typeof credits === "number" && credits > 0;
 
   const refreshHistorySilently = useCallback(async () => {
     if (!user) return;
@@ -370,6 +400,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           if (typeof resData.creditsRemaining === "number") {
             setCredits(resData.creditsRemaining);
           }
+          setCooldownSeconds(isPro ? 0 : 45);
           showToast(successMessage);
           void refreshHistorySilently();
         } else {
@@ -382,15 +413,27 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         setLoading(false);
       }
     },
-    [user, showToast, refreshHistorySilently],
-  );
+      [user, showToast, refreshHistorySilently, isPro],
+    );
 
   const handleSubmit = () => {
+    if (cooldownSeconds > 0 && !isPro) {
+      showToast(
+        `Vui lòng chờ ${cooldownSeconds}s để AI sạc lại, hoặc nâng cấp Pro để tạo tức thì.`,
+      );
+      return;
+    }
     generate(formInputs, "Đã tạo 3 góc bài viết thành công!");
   };
 
   const handleRegenerate = () => {
     if (loading || !result) return;
+    if (cooldownSeconds > 0 && !isPro) {
+      showToast(
+        `Vui lòng chờ ${cooldownSeconds}s để AI sạc lại, hoặc nâng cấp Pro để tạo tức thì.`,
+      );
+      return;
+    }
     generate(formInputs, "Đã tạo lại nội dung thành công!");
   };
 
@@ -474,6 +517,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 onSubmit={handleSubmit}
                 onLoadSample={handleLoadSample}
                 loading={loading}
+                cooldownSeconds={cooldownSeconds}
+                isPro={isPro}
+                onOpenUpgrade={() => setTopUpModalOpen(true)}
               />
 
               <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/70 px-3 py-2 text-[12px] text-[var(--ink-tertiary)]">
@@ -884,15 +930,21 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               <button
                 type="submit"
                 form="product-form"
-                disabled={loading}
+                disabled={loading || (cooldownSeconds > 0 && !isPro)}
                 className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
+                ) : cooldownSeconds > 0 && !isPro ? null : (
                   <Sparkles className="h-4 w-4" />
                 )}
-                <span>{loading ? "Đang tạo..." : "Tạo 3 góc"}</span>
+                <span>
+                  {loading
+                    ? "Đang tạo..."
+                    : cooldownSeconds > 0 && !isPro
+                      ? `⏱️ Sạc AI: ${cooldownSeconds}s`
+                      : "Tạo 3 góc"}
+                </span>
               </button>
             </div>
           </div>

@@ -19,8 +19,8 @@ export default function PricingSection() {
               Bảng giá minh bạch. Không phí duy trì ẩn.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-              Đăng ký nhận ngay 10 lượt tạo miễn phí. Nạp thêm lượt khi cần, không tự
-              động gia hạn thẻ.
+              Gói Miễn Phí: Không giới hạn số bài tạo vĩnh viễn (Cooldown 45s). Nâng
+              cấp Pro: 0s Cooldown tạo tức thì, ưu tiên tài nguyên AI.
             </p>
           </div>
         </ScrollReveal>
@@ -82,9 +82,30 @@ export default function PricingSection() {
                 </Link>
               </div>
             </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+                    ))}
+                  </div>
+
+                  <div className="mt-8 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-5">
+                    <p className="text-center text-[12.5px] font-semibold text-[var(--ink-primary)]">
+                      ⚡ Pro Turbo — Tạo tức thì, không chờ đợi
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                      {[
+                        "0s Chờ đợi — Tạo tức thì liên tục",
+                        "Không giới hạn bài viết",
+                        "Lưu trữ lịch sử vĩnh viễn",
+                      ].map((benefit) => (
+                        <span
+                          key={benefit}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)]"
+                        >
+                          <Check className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+                          {benefit}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            );
+          }

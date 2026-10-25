@@ -51,4 +51,5 @@ export interface GenerationRecord {
   headlines: [string, string, string];
   hashtags: [string, string, string, string, string];
   createdAt: string;
+  starred?: boolean;
 }

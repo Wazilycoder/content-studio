@@ -15,7 +15,7 @@ graph TD
 
 ---
 
-## 🚀 CHI TIẾT CHẶNG 1: XUẤT BÀI & TRẢI NGHIỆM ĐA KÊNH (PHASE 5A)
+## 🚀 CHI TIẾT CHẶNG 1: XUẤT BÀI & TRẢI NGHIỆM ĐA KÊNH (PHASE 5A) — ✅ ĐÃ HOÀN THÀNH (100%)
 
 ### 🎯 Mục tiêu chặng 1:
 Mở rộng Vùng 3 của Creative Studio thành trung tâm xem trước và xuất bản đa kênh (Facebook Ads, TikTok Script, Shopee SEO), kèm công cụ xuất file văn bản `.txt` trọn gói và tải ảnh banner quảng cáo 1-click.
@@ -57,10 +57,12 @@ Mở rộng Vùng 3 của Creative Studio thành trung tâm xem trước và xu�
 
 ## 📦 CHI TIẾT CÁC CHẶNG TIẾP THEO
 
-### CHẶNG 2: THƯ VIỆN LỊCH SỬ NÂNG CAO & SOCIAL PROOF (PHASE 5B)
-- **5B.1 (Search History):** Thêm thanh tìm kiếm theo tên sản phẩm trong `HistoryDrawer`.
-- **5B.2 (Bookmark/Star):** Ghim các bài viết yêu thích lên đầu danh sách lịch sử.
-- **5B.3 (Landing Social Proof):** Bổ sung mục đánh giá thực tế từ các chủ shop bán hàng trên Landing Page.
+### CHẶNG 2: THƯ VIỆN LỊCH SỬ NÂNG CAO & SOCIAL PROOF (PHASE 5B) — ✅ HOÀN TẤT
+- **5B.1 (Search History):** ✅ Thanh tìm kiếm thời gian thực (Live Search) theo tên sản phẩm / mô tả / nội dung caption trong `HistoryDrawer`.
+- **5B.2 (Bookmark/Star):** ✅ Ghim (Star/Pin) bài viết yêu thích lên đầu danh sách, lưu bền vững qua `localStorage` (Zero DB schema migration).
+- **5B.3 (Landing Social Proof):** ✅ Section `TestimonialsSection` với 3 đánh giá thực tế từ chủ shop Facebook/TikTok/Shopee.
+- **5B.4 (Unlimited Free + Cooldown):** ✅ Gói Free tạo không giới hạn số bài với Cooldown 45s (AI Recharge Timer); Pro Turbo 0s tạo tức thì.
+- **5B.5 (Transparent Pricing Matrix):** ✅ Cập nhật `PricingSection` minh bạch Free (45s cooldown) vs Pro Turbo (0s cooldown).
 
 ### CHẶNG 3: BẢO MẬT ENV, METADATA SEO & SẴN SÀNG VERCEL (PHASE 5C)
 - **5C.1 (SEO Metadata):** Thẻ OpenGraph, Twitter Card, favicon SVG, canonical URL tại `layout.tsx`.

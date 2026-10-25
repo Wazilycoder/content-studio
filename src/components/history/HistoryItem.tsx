@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Loader2, RotateCcw, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, RotateCcw, Star, Trash2 } from "lucide-react";
 import type { GenerationRecord, ToneOption } from "@/types/content";
 
 const TONE_LABELS: Record<ToneOption, string> = {
@@ -37,12 +37,16 @@ interface HistoryItemProps {
   record: GenerationRecord;
   onRestore: (record: GenerationRecord) => void;
   onDelete: (id: string) => Promise<boolean>;
+  starred?: boolean;
+  onToggleStar?: (id: string) => void;
 }
 
 export default function HistoryItem({
   record,
   onRestore,
   onDelete,
+  starred = false,
+  onToggleStar,
 }: HistoryItemProps) {
   const [expanded, setExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -70,9 +74,27 @@ export default function HistoryItem({
           <h3 className="line-clamp-2 min-w-0 flex-1 text-xs font-semibold leading-5 text-[var(--ink-primary)]">
             {record.productName || "Bài viết không tên"}
           </h3>
-          <span className="shrink-0 rounded-md bg-[var(--surface-raised)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--ink-secondary)]">
-            {TONE_LABELS[record.tone] ?? "Khác"}
-          </span>
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onToggleStar?.(record.id)}
+              aria-label="Ghim bài viết yêu thích lên đầu"
+              aria-pressed={Boolean(starred)}
+              title="Ghim bài viết yêu thích lên đầu"
+              className="btn-tactile rounded p-0.5 transition-transform active:scale-90"
+            >
+              <Star
+                className={`h-3.5 w-3.5 transition-colors ${
+                  starred
+                    ? "fill-amber-400 text-amber-500"
+                    : "text-[var(--ink-tertiary)] hover:text-amber-500"
+                }`}
+              />
+            </button>
+            <span className="rounded-md bg-[var(--surface-raised)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--ink-secondary)]">
+              {TONE_LABELS[record.tone] ?? "Khác"}
+            </span>
+          </div>
         </div>
 
         <p className="mt-1 text-[10.5px] tabular-nums text-[var(--ink-tertiary)]">

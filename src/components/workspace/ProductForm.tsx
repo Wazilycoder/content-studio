@@ -66,6 +66,9 @@ interface ProductFormProps {
   onSubmit: () => void;
   onLoadSample: () => void;
   loading: boolean;
+  cooldownSeconds?: number;
+  isPro?: boolean;
+  onOpenUpgrade?: () => void;
 }
 
 function validate(values: ContentFormInput): FieldErrors {
@@ -120,6 +123,9 @@ export default function ProductForm({
   onSubmit,
   onLoadSample,
   loading,
+  cooldownSeconds = 0,
+  isPro = false,
+  onOpenUpgrade,
 }: ProductFormProps) {
   const [touched, setTouched] = useState<Record<FieldName, boolean>>({
     productName: false,
@@ -136,6 +142,7 @@ export default function ProductForm({
     (tone) => tone.value === value.tone,
   );
   const extendedVisible = showExtendedTones || selectedIsExtended;
+  const cooldownActive = Boolean(cooldownSeconds > 0 && !isPro);
 
   const showError = (field: FieldName): string | undefined => {
     if (!submitted && !touched[field]) return undefined;
@@ -433,11 +440,21 @@ export default function ProductForm({
 
       <div className="hidden px-5 pb-5 md:block">
         <button
-          type="submit"
+          type={cooldownActive ? "button" : "submit"}
+          onClick={cooldownActive ? onOpenUpgrade : undefined}
           disabled={loading}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.18)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          className={
+            cooldownActive
+              ? "inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
+              : "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.18)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+          }
         >
-          {loading ? (
+          {cooldownActive ? (
+            <>
+              <span aria-hidden="true">⏱️</span>
+              <span>Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro để tạo ngay)</span>
+            </>
+          ) : loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Đang biên soạn bài viết...</span>
@@ -449,6 +466,11 @@ export default function ProductForm({
             </>
           )}
         </button>
+
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[11.5px] leading-relaxed text-[var(--ink-tertiary)]">
+          <span className="text-[var(--accent-emerald)]">✓</span>
+          Gói Miễn Phí: Không giới hạn số bài tạo · Chờ 45s để điều tiết tài nguyên AI
+        </p>
 
         <p className="mt-2 text-center text-[12px] text-[var(--ink-tertiary)]">
           Nhấn{" "}
