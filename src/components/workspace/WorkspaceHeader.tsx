@@ -80,7 +80,7 @@ function WorkspaceHeader({
               ) : (
                 <div className="flex items-center gap-1.5">
                   <span className="hidden items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] sm:inline-flex">
-                    <Sparkles className="h-3.5 w-3.5 text-[var(--ink-tertiary)]" />
+                    <Clock className="h-3.5 w-3.5 text-[var(--ink-tertiary)]" />
                     Gói Miễn Phí (45s Chờ)
                   </span>
                   <button
