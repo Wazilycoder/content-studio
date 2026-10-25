@@ -50,37 +50,31 @@ const ICONS_AUTH = [
     name: "Facebook",
     src: "/assets/social/facebook.png",
     className: "top-16 left-4 sm:left-12 lg:left-24 animate-float-1",
-    glow: "rgba(59, 130, 246, 0.35)",
   },
   {
     name: "Instagram",
     src: "/assets/social/instagram.png",
     className: "top-20 right-4 sm:right-12 lg:right-24 animate-float-2",
-    glow: "rgba(236, 72, 153, 0.35)",
   },
   {
     name: "Twitter",
     src: "/assets/social/twitter.png",
     className: "bottom-28 left-6 sm:left-16 lg:left-28 animate-float-3",
-    glow: "rgba(14, 165, 233, 0.35)",
   },
   {
     name: "WhatsApp",
     src: "/assets/social/whatsapp.png",
     className: "bottom-24 right-6 sm:right-16 lg:right-28 animate-float-4",
-    glow: "rgba(34, 197, 94, 0.35)",
   },
   {
     name: "Messenger",
     src: "/assets/social/messenger.png",
     className: "top-1/2 -translate-y-1/2 left-2 sm:left-6 lg:left-12 animate-float-5",
-    glow: "rgba(6, 182, 212, 0.35)",
   },
   {
     name: "YouTube",
     src: "/assets/social/youtube.png",
     className: "top-1/2 -translate-y-1/2 right-2 sm:right-6 lg:right-12 animate-float-6",
-    glow: "rgba(239, 68, 68, 0.35)",
   },
 ];
 
@@ -90,24 +84,23 @@ export default function FloatingSocialIcons({ variant = "auth" }: FloatingSocial
   return (
     <div
       aria-hidden="true"
+      style={{ contain: "layout paint" }}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none"
     >
       {icons.map((icon) => (
         <div
           key={icon.name}
-          className={`absolute transition-transform duration-300 ${icon.className}`}
+          style={{ transform: "translateZ(0)", contain: "layout paint" }}
+          className={`absolute [content-visibility:auto] ${icon.className}`}
         >
-          <div
-            style={{ boxShadow: `0 8px 30px -4px ${icon.glow}` }}
-            className="group relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-200/80 bg-white/80 p-2 shadow-lg backdrop-blur-xl transition-all duration-300 hover:scale-115 sm:h-14 sm:w-14 sm:p-2.5 dark:border-white/15 dark:bg-white/[0.07]"
-          >
+          <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-200/80 bg-white/90 p-2 shadow-sm transition-transform duration-150 ease-out hover:-translate-y-0.5 sm:h-14 sm:w-14 sm:p-2.5 dark:border-white/15 dark:bg-white/[0.07]">
             <div className="relative h-full w-full">
               <Image
                 src={icon.src}
                 alt={icon.name}
                 fill
                 sizes="(max-width: 640px) 48px, 56px"
-                className="object-contain drop-shadow-md"
+                className="object-contain"
               />
             </div>
           </div>

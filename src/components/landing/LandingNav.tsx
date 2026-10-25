@@ -41,7 +41,7 @@ export default function LandingNav({ user }: LandingNavProps) {
 
   return (
     <header className="sticky top-3 z-50 mx-auto max-w-6xl px-4 transition-all duration-300 sm:top-4 sm:px-6">
-      <div className="flex h-14 items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/85 px-4 shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] sm:h-16 sm:px-6">
+      <div className="flex h-14 items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 shadow-[0_6px_20px_rgba(0,0,0,0.06)] dark:bg-[#0F0F12]/95 dark:shadow-[0_6px_20px_rgba(0,0,0,0.35)] sm:h-16 sm:px-6">
         {/* Brand */}
         <Link href="/" className="btn-tactile flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-navy)] to-indigo-500 text-white shadow-xs">
@@ -63,7 +63,7 @@ export default function LandingNav({ user }: LandingNavProps) {
               key={link.href}
               href={link.href}
               onClick={(event) => handleNavClick(event, link.href)}
-              className="rounded-lg px-3 py-1.5 text-[13px] font-medium text-[var(--ink-secondary)] transition-all hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+              className="rounded-lg px-3 py-1.5 text-[13px] font-medium text-[var(--ink-secondary)] transition-colors duration-150 hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
             >
               {link.label}
             </Link>
@@ -125,7 +125,7 @@ export default function LandingNav({ user }: LandingNavProps) {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="animate-fade-in mt-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/95 p-3 shadow-lg backdrop-blur-xl lg:hidden">
+        <div className="animate-fade-in mt-2 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3 shadow-lg lg:hidden dark:bg-[#0F0F12]">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link

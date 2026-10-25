@@ -41,7 +41,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
       <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
         {/* Top Eyebrow Badge */}
         <ScrollReveal direction="down" duration={550}>
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-indigo-500/25 bg-indigo-50/80 px-3 py-1 sm:px-4 sm:py-1.5 shadow-[0_0_24px_rgba(99,102,241,0.15)] backdrop-blur-md transition-all duration-200 hover:scale-105 hover:border-indigo-500/40 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:shadow-[0_0_24px_rgba(99,102,241,0.25)]">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-indigo-500/25 bg-indigo-50/90 px-3 py-1 sm:px-4 sm:py-1.5 shadow-sm transition-[transform,border-color,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-indigo-500/40 dark:border-indigo-500/30 dark:bg-indigo-500/10">
             <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500 animate-pulse dark:bg-emerald-400" />
             <span className="text-[10px] sm:text-xs font-semibold tracking-wide text-indigo-700 dark:text-indigo-300">
               AI Copywriting đầu tiên tại VN chuẩn Anti-AI-Slop
@@ -75,17 +75,17 @@ export default function HeroSection({ user }: HeroSectionProps) {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href={primaryHref}
-              className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-[0_0_35px_rgba(79,93,255,0.45)] transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_0_50px_rgba(79,93,255,0.7)] active:scale-[0.98] sm:w-auto"
-            >
-              <span>{primaryLabel}</span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-transform duration-200 group-hover:translate-x-1">
+                className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-md transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 sm:w-auto"
+              >
+                <span>{primaryLabel}</span>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 transition-transform duration-150 ease-out group-hover:translate-x-0.5">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>
 
             <a
               href="#demo"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-zinc-200/90 bg-white/80 px-6 py-3.5 text-sm font-semibold text-zinc-700 shadow-xs backdrop-blur-xl transition-all duration-200 hover:scale-[1.03] hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 active:scale-[0.98] sm:w-auto dark:border-white/20 dark:bg-white/[0.06] dark:text-zinc-100 dark:hover:border-white/40 dark:hover:bg-white/[0.12] dark:hover:text-white"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-zinc-200/90 bg-white/95 px-6 py-3.5 text-sm font-semibold text-zinc-700 shadow-xs transition-[transform,background-color,border-color,color] duration-150 ease-out hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 active:translate-y-0 sm:w-auto dark:border-white/20 dark:bg-white/[0.06] dark:text-zinc-100 dark:hover:border-white/40 dark:hover:bg-white/[0.12] dark:hover:text-white"
             >
               <PlayCircle className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
               <span>Xem bài viết mẫu</span>
@@ -99,7 +99,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
             {TRUST_ITEMS.map((item) => (
               <div
                 key={item}
-                className="flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/70 px-4 py-2 shadow-xs backdrop-blur-md transition-all duration-200 hover:scale-105 hover:border-indigo-500/30 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:border-indigo-500/40 dark:hover:bg-white/[0.08]"
+                className="flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/85 px-4 py-2 shadow-xs transition-[transform,border-color,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-indigo-500/30 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:border-indigo-500/40 dark:hover:bg-white/[0.08]"
               >
                 <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                   ✓

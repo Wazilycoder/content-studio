@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { PenLine, LogOut, ArrowRight, Home, Zap, Sparkles, Crown } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
@@ -14,7 +15,7 @@ interface WorkspaceHeaderProps {
   onSignOutAction?: () => Promise<void>;
 }
 
-export default function WorkspaceHeader({
+function WorkspaceHeader({
   user,
   credits,
   planId,
@@ -133,3 +134,5 @@ export default function WorkspaceHeader({
     </header>
   );
 }
+
+export default memo(WorkspaceHeader);

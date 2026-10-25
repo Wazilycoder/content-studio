@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { AlertCircle, Check, ChevronDown, Clock, FlaskConical, Loader2, Sparkles } from "lucide-react";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
@@ -117,7 +117,7 @@ function MicroBar({ value, max }: { value: number; max: number }) {
   );
 }
 
-export default function ProductForm({
+function ProductForm({
   value,
   onChange,
   onSubmit,
@@ -487,3 +487,5 @@ export default function ProductForm({
     </form>
   );
 }
+
+export default memo(ProductForm);

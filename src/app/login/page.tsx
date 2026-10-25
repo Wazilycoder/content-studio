@@ -10,6 +10,8 @@ import {
   Calculator,
   CheckCircle2,
   Database,
+  Globe,
+  Heart,
   Home,
   KeyRound,
   Loader2,
@@ -18,6 +20,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Sparkles,
+  ThumbsUp,
   X,
 } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
@@ -142,7 +145,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   return (
     <div className="flex min-h-screen w-full flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:grid lg:h-screen lg:grid-cols-2 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden">
       {/* ===== PRO NAVIGATION HEADER ===== */}
-      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface)]/80 px-6 py-3.5 backdrop-blur-md lg:col-span-2">
+      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-6 py-3.5 lg:col-span-2 dark:bg-[#0F0F12]/95">
         <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-sm">
@@ -256,13 +259,17 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Đang gửi yêu cầu...</span>
-                  </>
+                  className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-[transform,background-color] duration-150 ease-out hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Đang gửi yêu cầu...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="h-3.5 w-3.5" />
+                      <span>Gửi liên kết khôi phục</span>                  </>
                 ) : (
                   <>
                     <Mail className="h-3.5 w-3.5" />
@@ -436,7 +443,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-[transform,background-color] duration-150 ease-out hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -486,23 +493,32 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                                 Không còn văn mẫu AI sáo rỗng. Content Studio khai phóng sức mạnh ngôn từ với 3 góc tiếp cận tâm lý khách hàng độc bản.
                               </p>
 
-                              {/* KPI Social Proof */}
+                              {/* KPI Social Proof — Typographic High-Contrast Metrics (Zero Emoji Slop) */}
                               <div className="mt-5 grid grid-cols-3 gap-2">
-                                {[
-                                  { icon: "⚡", label: "0s Cooldown" },
-                                  { icon: "🎯", label: "125 Ký Tự Vàng" },
-                                  { icon: "📈", label: "+300% CTR" },
-                                ].map((kpi) => (
-                                  <div
-                                    key={kpi.label}
-                                    className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-2 text-center"
-                                  >
-                                    <div className="text-[16px] leading-none">{kpi.icon}</div>
-                                    <div className="mt-1 text-[10.5px] font-semibold text-[var(--ink-primary)]">
-                                      {kpi.label}
-                                    </div>
+                                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-2 text-center">
+                                  <div className="text-[15px] font-bold tracking-tight tabular-nums text-[var(--accent-navy)]">
+                                    0s
                                   </div>
-                                ))}
+                                  <div className="mt-0.5 text-[10.5px] font-medium text-[var(--ink-secondary)]">
+                                    Tạo tức thì
+                                  </div>
+                                </div>
+                                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-2 text-center">
+                                  <div className="text-[15px] font-bold tracking-tight tabular-nums text-[var(--accent-navy)]">
+                                    125
+                                  </div>
+                                  <div className="mt-0.5 text-[10.5px] font-medium text-[var(--ink-secondary)]">
+                                    Ký tự vàng
+                                  </div>
+                                </div>
+                                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-2 text-center">
+                                  <div className="text-[15px] font-bold tracking-tight tabular-nums text-[var(--accent-emerald)]">
+                                    +300%
+                                  </div>
+                                  <div className="mt-0.5 text-[10.5px] font-medium text-[var(--ink-secondary)]">
+                                    Tỷ lệ CTR
+                                  </div>
+                                </div>
                               </div>
 
                               {/* Interactive 3-Angle Tabs */}
@@ -548,7 +564,9 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <p className="truncate text-[13px] font-semibold">Thương Hiệu Của Bạn</p>
-                                    <p className="text-[11px] text-[#65676B] dark:text-[#B0B3B8]">Được tài trợ · 🌐</p>
+                                    <p className="flex items-center gap-1 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
+                                      Được tài trợ · <Globe className="h-3 w-3 opacity-60" />
+                                    </p>
                                   </div>
                                   <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-500">
                                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
@@ -604,7 +622,17 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between px-3 py-2 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
-                                  <span>👍❤️ 1.4k lượt thích</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="flex -space-x-1">
+                                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#1877F2] text-white">
+                                        <ThumbsUp className="h-2.5 w-2.5 fill-white" />
+                                      </span>
+                                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FA383E] text-white">
+                                        <Heart className="h-2.5 w-2.5 fill-white" />
+                                      </span>
+                                    </span>
+                                    <span className="font-medium text-[#65676B] dark:text-[#B0B3B8]">1.4k</span>
+                                  </div>
                                   <span>280 bình luận · 96 lượt chia sẻ</span>
                                 </div>
                               </div>

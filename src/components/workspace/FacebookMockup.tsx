@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   Bookmark,
   CheckCircle2,
@@ -131,7 +131,7 @@ interface FacebookMockupProps {
     onNotify?: (message: string) => void;
   }
 
-export default function FacebookMockup({
+function FacebookMockup({
   activeText,
   activeAngle,
   pageName,
@@ -761,3 +761,5 @@ export default function FacebookMockup({
                 </div>
               );
             }
+
+export default memo(FacebookMockup);

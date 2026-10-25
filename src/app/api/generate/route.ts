@@ -550,25 +550,25 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       }
     }
 
-    // BƯỚC 7: Lưu bản ghi lịch sử cho Dev Session (Local Persistence)
-    let historyRecord: DevHistoryRecord | null = null;
+    // BƯỚC 7: Bản ghi lịch sử (Hybrid Persistence cho cả Supabase Auth và Local Dev)
+    const historyRecord: DevHistoryRecord = {
+      id: crypto.randomUUID(),
+      userId: actorId,
+      productName: input.productName,
+      productDescription: input.productDescription,
+      targetAudience: input.targetAudience,
+      tone: input.tone,
+      captions: formattedOutput.captions.map((c) => ({
+        id: c.id,
+        angle: c.angle,
+        text: c.text,
+      })),
+      headlines: [...formattedOutput.headlines],
+      hashtags: [...formattedOutput.hashtags],
+      createdAt: new Date().toISOString(),
+    };
+
     if (!user && activeDevSession) {
-      historyRecord = {
-        id: crypto.randomUUID(),
-        userId: activeDevSession.id,
-        productName: input.productName,
-        productDescription: input.productDescription,
-        targetAudience: input.targetAudience,
-        tone: input.tone,
-        captions: formattedOutput.captions.map((c) => ({
-          id: c.id,
-          angle: c.angle,
-          text: c.text,
-        })),
-        headlines: [...formattedOutput.headlines],
-        hashtags: [...formattedOutput.hashtags],
-        createdAt: new Date().toISOString(),
-      };
       await appendDevHistory(historyRecord);
     }
 

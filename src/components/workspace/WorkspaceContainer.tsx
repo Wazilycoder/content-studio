@@ -47,6 +47,7 @@ import type {
 } from "@/types/content";
 
 export interface WorkspaceUser {
+  id?: string | null;
   credits?: number | null;
   email?: string | null;
   planId?: string | null;
@@ -112,13 +113,6 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const toggleZone = useCallback((zone: "zone1" | "zone2" | "zone3") => {
     setCollapsedZones((prev) => ({ ...prev, [zone]: !prev[zone] }));
   }, []);
-
-  const desktopGridCols = useMemo(() => {
-    const z1 = collapsedZones.zone1 ? "44px" : "minmax(0, 1fr)";
-    const z2 = collapsedZones.zone2 ? "44px" : "minmax(0, 1.15fr)";
-    const z3 = collapsedZones.zone3 ? "44px" : "minmax(0, 1fr)";
-    return `${z1} ${z2} ${z3}`;
-  }, [collapsedZones]);
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
@@ -318,57 +312,87 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const isPro = typeof credits === "number" && credits > 0;
 
   const refreshHistorySilently = useCallback(async () => {
-    if (!user) return;
     try {
       const res = await fetchUserHistory();
-      if (!res.error) {
-        const items = res.data ?? [];
-        setHistoryItems(items);
-        try {
-          localStorage.setItem("content_studio_history", JSON.stringify(items));
-        } catch {
-          // localStorage không khả dụng
-        }
+      if (!res.error && res.data && res.data.length > 0) {
+        setHistoryItems((prev) => {
+          const map = new Map<string, GenerationRecord>();
+          for (const item of res.data!) map.set(item.id, item);
+          for (const item of prev) {
+            if (!map.has(item.id)) map.set(item.id, item);
+          }
+          const merged = Array.from(map.values()).slice(0, 50);
+          try {
+            localStorage.setItem("content_studio_history", JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
       }
     } catch {
       // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
     }
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    void refreshHistorySilently();
+  }, [refreshHistorySilently]);
 
   const loadHistory = useCallback(async () => {
-    if (!user) return;
     setHistoryLoading(true);
     setHistoryError(null);
     try {
       const res = await fetchUserHistory();
       if (res.error) {
+        // Fallback sang localStorage nếu mạng lỗi
+        try {
+          const cached = localStorage.getItem("content_studio_history");
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setHistoryItems(parsed as GenerationRecord[]);
+              return;
+            }
+          }
+        } catch {}
         setHistoryError(res.error);
-        setHistoryItems([]);
       } else {
         const items = res.data ?? [];
-        setHistoryItems(items);
-        try {
-          localStorage.setItem("content_studio_history", JSON.stringify(items));
-        } catch {
-          // localStorage không khả dụng
+        if (items.length > 0) {
+          setHistoryItems((prev) => {
+            const map = new Map<string, GenerationRecord>();
+            for (const item of items) map.set(item.id, item);
+            for (const item of prev) {
+              if (!map.has(item.id)) map.set(item.id, item);
+            }
+            const merged = Array.from(map.values()).slice(0, 50);
+            try {
+              localStorage.setItem("content_studio_history", JSON.stringify(merged));
+            } catch {}
+            return merged;
+          });
         }
       }
     } catch {
+      try {
+        const cached = localStorage.getItem("content_studio_history");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setHistoryItems(parsed as GenerationRecord[]);
+            return;
+          }
+        }
+      } catch {}
       setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
-      setHistoryItems([]);
     } finally {
       setHistoryLoading(false);
     }
-  }, [user]);
+  }, []);
 
   const handleOpenHistory = useCallback(() => {
-    if (!user) {
-      showToast("Đăng nhập để xem và quản lý lịch sử bài viết đã tạo.");
-      return;
-    }
     setHistoryOpen(true);
     void loadHistory();
-  }, [user, showToast, loadHistory]);
+  }, [loadHistory]);
 
   const handleCloseHistory = useCallback(() => {
     setHistoryOpen(false);
@@ -474,6 +498,28 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           if (typeof resData.creditsRemaining === "number") {
             setCredits(resData.creditsRemaining);
           }
+
+          // Lưu tức thì bản ghi vào local state và localStorage (tầng 1 & 3 đồng bộ ngay)
+          const newHistoryRec: GenerationRecord = {
+            id: resData.historyRecord?.id ?? `gen-${Date.now()}`,
+            userId: user?.id ?? "local-user",
+            productName: input.productName,
+            productDescription: input.productDescription,
+            targetAudience: input.targetAudience,
+            tone: input.tone,
+            captions: resData.data.captions,
+            headlines: resData.data.headlines,
+            hashtags: resData.data.hashtags,
+            createdAt: resData.historyRecord?.createdAt ?? new Date().toISOString(),
+          };
+          setHistoryItems((prev) => {
+            const updated = [newHistoryRec, ...prev.filter((p) => p.id !== newHistoryRec.id)].slice(0, 50);
+            try {
+              localStorage.setItem("content_studio_history", JSON.stringify(updated));
+            } catch {}
+            return updated;
+          });
+
           // Chỉ kích hoạt cooldown SAU KHI nội dung đã hiển thị xong trên màn hình.
           if (!isPro) {
             setCooldownSeconds(45);
@@ -493,7 +539,11 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       [user, showToast, refreshHistorySilently, isPro],
     );
 
-  const handleSubmit = () => {
+  const handleOpenTopUp = useCallback(() => {
+    setTopUpModalOpen(true);
+  }, []);
+
+  const handleSubmit = useCallback(() => {
     if (cooldownSeconds > 0 && !isPro) {
       showToast(
         `Vui lòng chờ ${cooldownSeconds}s để AI sạc lại, hoặc nâng cấp Pro để tạo tức thì.`,
@@ -501,9 +551,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       return;
     }
     generate(formInputs, "Đã tạo 3 góc bài viết thành công!");
-  };
+  }, [cooldownSeconds, isPro, showToast, generate, formInputs]);
 
-  const handleRegenerate = () => {
+  const handleRegenerate = useCallback(() => {
     if (loading || !result) return;
     if (cooldownSeconds > 0 && !isPro) {
       showToast(
@@ -512,9 +562,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       return;
     }
     generate(formInputs, "Đã tạo lại nội dung thành công!");
-  };
+  }, [loading, result, cooldownSeconds, isPro, showToast, generate, formInputs]);
 
-  const handleLoadSample = () => {
+  const handleLoadSample = useCallback(() => {
     const scenario =
       SAMPLE_SCENARIOS[sampleIndexRef.current % SAMPLE_SCENARIOS.length];
     sampleIndexRef.current += 1;
@@ -522,107 +572,123 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     setResult(scenario.output);
     setMobileTab("editor");
     showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
-  };
+  }, [showToast]);
 
-    const activeCaption =
-      result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
-    const originalText = activeCaption?.text ?? "";
-    const currentText = editedCaptions[activeAngleIndex] ?? originalText;
-    const charCount = countUnicodeChars(currentText);
-    const isModified = currentText !== originalText;
-    const overLimit = charCount > 125;
+  // Memo hóa thanh công cụ tĩnh: không bị re-render bởi nhịp cooldown 1s hay các tick nội bộ khác
+  const toolbarRow = useMemo(
+    () => (
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
+              Không gian sáng tạo 3 vùng
+            </h1>
+            {draftSaved && (
+              <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
+                <Check className="h-3 w-3" />
+                Đã lưu nháp
+              </span>
+            )}
+          </div>
+          <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
+            Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin Facebook thời gian thực.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-0.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] p-0.5">
+            {[
+              { key: "zone1" as const, Icon: FileText, label: "Vùng 1" },
+              { key: "zone2" as const, Icon: Wand2, label: "Vùng 2" },
+              { key: "zone3" as const, Icon: Globe, label: "Vùng 3" },
+            ].map((zone) => {
+              const isCollapsed = collapsedZones[zone.key];
+              return (
+                <button
+                  key={zone.key}
+                  type="button"
+                  onClick={() => toggleZone(zone.key)}
+                  title={isCollapsed ? `Mở ${zone.label}` : `Thu gọn ${zone.label}`}
+                  className={`btn-tactile inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
+                    isCollapsed
+                      ? "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                      : "bg-[var(--accent-navy)] text-white shadow-xs"
+                  }`}
+                >
+                  <zone.Icon className="h-3 w-3 shrink-0" />
+                  <span>{zone.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenTopUp}
+            className={`btn-tactile inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-[color,background-color,border-color] duration-150 ${
+              isPro
+                ? activePlan.id === "yearly"
+                  ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15)]"
+                  : activePlan.id === "monthly"
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+            }`}
+          >
+            {isPro ? (
+              activePlan.id === "yearly" ? (
+                <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
+              ) : activePlan.id === "monthly" ? (
+                <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+              ) : (
+                <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+              )
+            ) : (
+              <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+            )}
+            <span>{isPro ? activePlan.tierBadge : "Nâng cấp Pro 0s"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleOpenHistory}
+            className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+          >
+            <History className="h-3.5 w-3.5" />
+            Lịch sử
+          </button>
+        </div>
+      </div>
+    ),
+    [
+      draftSaved,
+      collapsedZones,
+      toggleZone,
+      isPro,
+      activePlan,
+      handleOpenTopUp,
+      handleOpenHistory,
+    ],
+  );
 
-    return (
+  const activeCaption =
+    result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
+  const originalText = activeCaption?.text ?? "";
+  const currentText = editedCaptions[activeAngleIndex] ?? originalText;
+  const charCount = countUnicodeChars(currentText);
+  const isModified = currentText !== originalText;
+  const overLimit = charCount > 125;
+
+  return (
     <div className="flex min-h-screen flex-col lg:h-full lg:min-h-0 lg:overflow-hidden">
       <WorkspaceHeader
         user={user}
         credits={credits}
         planId={userPlanId}
-        onOpenTopUp={() => setTopUpModalOpen(true)}
+        onOpenTopUp={handleOpenTopUp}
         onSignOutAction={onSignOutAction}
       />
 
       <main className="w-full flex-1 lg:min-h-0 lg:overflow-hidden">
         <div className="mx-auto flex h-full w-full max-w-[1680px] flex-col px-3 pb-28 pt-3 sm:px-6 sm:py-4 md:pb-6 lg:py-3 lg:pb-3">
-          <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
-                  Không gian sáng tạo 3 vùng
-                </h1>
-                {draftSaved && (
-                  <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
-                    <Check className="h-3 w-3" />
-                    Đã lưu nháp
-                  </span>
-                )}
-              </div>
-              <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
-                Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin Facebook thời gian thực.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="hidden lg:flex items-center gap-0.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] p-0.5">
-                {([
-                  { key: "zone1", icon: "📝", label: "Vùng 1" },
-                  { key: "zone2", icon: "✍️", label: "Vùng 2" },
-                  { key: "zone3", icon: "📱", label: "Vùng 3" },
-                ] as const).map((zone) => {
-                  const isCollapsed = collapsedZones[zone.key];
-                  return (
-                    <button
-                      key={zone.key}
-                      type="button"
-                      onClick={() => toggleZone(zone.key)}
-                      title={isCollapsed ? `Mở ${zone.label}` : `Thu gọn ${zone.label}`}
-                      className={`btn-tactile inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-medium transition-colors ${
-                        isCollapsed
-                          ? "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                          : "bg-[var(--accent-navy)] text-white"
-                      }`}
-                    >
-                      <span aria-hidden>{zone.icon}</span>
-                      <span>{zone.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                type="button"
-                onClick={() => setTopUpModalOpen(true)}
-                className={`btn-tactile inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-all ${
-                  isPro
-                    ? activePlan.id === "yearly"
-                      ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15)]"
-                      : activePlan.id === "monthly"
-                      ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                    : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-                }`}
-              >
-                {isPro ? (
-                  activePlan.id === "yearly" ? (
-                    <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
-                  ) : activePlan.id === "monthly" ? (
-                    <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                  ) : (
-                    <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-                  )
-                ) : (
-                  <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                )}
-                <span>{isPro ? activePlan.tierBadge : "Nâng cấp Pro 0s"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleOpenHistory}
-                className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-              >
-                <History className="h-3.5 w-3.5" />
-                Lịch sử
-              </button>
-            </div>
-          </div>
+          {toolbarRow}
 
           {/* Mobile Segmented Zone Tabs */}
           <div className="mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-1 shadow-xs lg:hidden">
@@ -635,7 +701,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
-              <span>📝</span>
+              <FileText className="h-3.5 w-3.5 shrink-0" />
               <span>1. Thông tin</span>
             </button>
             <button
@@ -647,7 +713,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
-              <span>✍️</span>
+              <Wand2 className="h-3.5 w-3.5 shrink-0" />
               <span>2. Biên tập</span>
               {result && (
                 <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900" />
@@ -662,88 +728,100 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
-              <span>📱</span>
+              <Globe className="h-3.5 w-3.5 shrink-0" />
               <span>3. Xem trước</span>
             </button>
           </div>
 
-          <style>{`
-            @media (min-width: 1024px) {
-              .workspace-grid { grid-template-columns: ${desktopGridCols}; }
-            }
-          `}</style>
-          <div className="workspace-grid grid flex-1 gap-4 transition-all duration-300 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] grid-cols-1 md:grid-cols-2">
-            {/* ===== ZONE 1 — INPUT SPECIFICATION ===== */}
-            <aside
-              className={`min-w-0 flex-col gap-2.5 lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar ${
-                mobileTab === "input" ? "flex" : "hidden"
-              } ${collapsedZones.zone1 ? "lg:hidden" : "lg:flex"}`}
+          <div className="workspace-layout grid grid-cols-1 md:grid-cols-2 lg:flex lg:flex-row flex-1 gap-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
+            {/* ===== ZONE 1 — INPUT SPECIFICATION COLUMN ===== */}
+            <div
+              className={`workspace-zone ${
+                collapsedZones.zone1 ? "zone-collapsed" : "zone-expanded-1"
+              } min-w-0 relative lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+                mobileTab === "input" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+              }`}
             >
-              <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 shadow-xs">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-                    <FileText className="h-3.5 w-3.5" />
-                  </span>
-                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                    Vùng 1 · Thông tin sản phẩm
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => toggleZone("zone1")}
-                  title="Thu gọn Vùng 1"
-                  className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                >
-                  <PanelLeftClose className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <ProductForm
-                value={formInputs}
-                onChange={setFormInputs}
-                onSubmit={handleSubmit}
-                onLoadSample={handleLoadSample}
-                loading={loading}
-                cooldownSeconds={cooldownSeconds}
-                isPro={isPro}
-                onOpenUpgrade={() => setTopUpModalOpen(true)}
-              />
-
-              {isPro ? (
-                <div
-                  className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-[12px] font-medium transition-all ${
-                    activePlan.id === "yearly"
-                      ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.12)]"
-                      : activePlan.id === "monthly"
-                      ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.12)]"
-                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+              {/* Expanded View */}
+              <aside
+                className={`h-full w-full min-w-[300px] flex-col gap-2.5 lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar zone-panel-transition ${
+                    collapsedZones.zone1
+                      ? "zone-panel-hidden flex"
+                      : "zone-panel-visible flex"
                   }`}
-                >
-                  {activePlan.id === "yearly" ? (
-                    <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
-                  ) : activePlan.id === "monthly" ? (
-                    <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                  ) : (
-                    <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-                  )}
-                  <span>{activePlan.statusDescription}</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
-                  <span>Gói Miễn Phí: Không giới hạn bài viết</span> ·{" "}
+                  aria-hidden={collapsedZones.zone1}
+              >
+                <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+                      <FileText className="h-3.5 w-3.5" />
+                    </span>
+                    <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                      Vùng 1 · Thông tin sản phẩm
+                    </h2>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setTopUpModalOpen(true)}
-                    className="font-semibold text-[var(--accent-navy)] hover:underline"
+                    onClick={() => toggleZone("zone1")}
+                    title="Thu gọn Vùng 1"
+                    className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
                   >
-                    Nâng cấp Pro 0s
+                    <PanelLeftClose className="h-3.5 w-3.5" />
                   </button>
                 </div>
-              )}
-            </aside>
+                <ProductForm
+                  value={formInputs}
+                  onChange={setFormInputs}
+                  onSubmit={handleSubmit}
+                  onLoadSample={handleLoadSample}
+                  loading={loading}
+                  cooldownSeconds={cooldownSeconds}
+                  isPro={isPro}
+                  onOpenUpgrade={handleOpenTopUp}
+                />
 
-            {/* Desktop collapsed rail for Zone 1 */}
-            {collapsedZones.zone1 && (
-              <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
+                {isPro ? (
+                  <div
+                    className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-[12px] font-medium transition-all ${
+                      activePlan.id === "yearly"
+                        ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.12)]"
+                        : activePlan.id === "monthly"
+                        ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.12)]"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    }`}
+                  >
+                    {activePlan.id === "yearly" ? (
+                      <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
+                    ) : activePlan.id === "monthly" ? (
+                      <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                    ) : (
+                      <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                    )}
+                    <span>{activePlan.statusDescription}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
+                    <span>Gói Miễn Phí: Không giới hạn bài viết</span> ·{" "}
+                    <button
+                      type="button"
+                      onClick={handleOpenTopUp}
+                      className="font-semibold text-[var(--accent-navy)] hover:underline"
+                    >
+                      Nâng cấp Pro 0s
+                    </button>
+                  </div>
+                )}
+              </aside>
+
+              {/* Desktop Collapsed Rail */}
+              <aside
+                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                  collapsedZones.zone1
+                    ? "opacity-100 pointer-events-auto visible"
+                    : "opacity-0 pointer-events-none invisible"
+                }`}
+                aria-hidden={!collapsedZones.zone1}
+              >
                 <button
                   type="button"
                   onClick={() => toggleZone("zone1")}
@@ -759,14 +837,25 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 </div>
                 <div className="h-4" />
               </aside>
-            )}
+            </div>
 
-            {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR ===== */}
-            <section
-              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
-                mobileTab === "editor" ? "flex" : "hidden"
-              } ${collapsedZones.zone2 ? "lg:hidden" : "lg:flex"}`}
+            {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR COLUMN ===== */}
+            <div
+              className={`workspace-zone ${
+                collapsedZones.zone2 ? "zone-collapsed" : "zone-expanded-2"
+              } min-w-0 relative lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+                mobileTab === "editor" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+              }`}
             >
+              {/* Expanded View */}
+              <section
+                className={`h-full w-full min-w-[320px] flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
+                    collapsedZones.zone2
+                      ? "zone-panel-hidden flex"
+                      : "zone-panel-visible flex"
+                  }`}
+                  aria-hidden={collapsedZones.zone2}
+              >
               <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
@@ -1072,32 +1161,49 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 )}
               </section>
 
-              {/* Desktop collapsed rail for Zone 2 */}
-              {collapsedZones.zone2 && (
-                <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
-                  <button
-                    type="button"
-                    onClick={() => toggleZone("zone2")}
-                    title="Mở lại Vùng 2 (Biên tập)"
-                    className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
-                  >
-                    <Maximize2 className="h-4 w-4" />
-                  </button>
-                  <div className="flex flex-1 items-center justify-center">
-                    <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
-                      VÙNG 2 · BIÊN TẬP
-                    </span>
-                  </div>
-                  <div className="h-4" />
-                </aside>
-              )}
+              {/* Desktop Collapsed Rail */}
+              <aside
+                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                  collapsedZones.zone2
+                    ? "opacity-100 pointer-events-auto visible"
+                    : "opacity-0 pointer-events-none invisible"
+                }`}
+                aria-hidden={!collapsedZones.zone2}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleZone("zone2")}
+                  title="Mở lại Vùng 2 (Biên tập)"
+                  className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </button>
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
+                    VÙNG 2 · BIÊN TẬP
+                  </span>
+                </div>
+                <div className="h-4" />
+              </aside>
+            </div>
 
-              {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR ===== */}
-            <aside
-              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs md:col-span-2 lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
-                mobileTab === "preview" ? "flex" : "hidden"
-              } ${collapsedZones.zone3 ? "lg:hidden" : "lg:flex"}`}
+            {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR COLUMN ===== */}
+            <div
+              className={`workspace-zone ${
+                collapsedZones.zone3 ? "zone-collapsed" : "zone-expanded-3"
+              } min-w-0 relative md:col-span-2 lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+                mobileTab === "preview" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+              }`}
             >
+              {/* Expanded View */}
+              <aside
+                className={`h-full w-full min-w-[320px] flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
+                    collapsedZones.zone3
+                      ? "zone-panel-hidden flex"
+                      : "zone-panel-visible flex"
+                  }`}
+                  aria-hidden={collapsedZones.zone3}
+              >
               <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
@@ -1156,25 +1262,31 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   </div>
                 </aside>
 
-                {/* Desktop collapsed rail for Zone 3 */}
-                {collapsedZones.zone3 && (
-                  <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
-                    <button
-                      type="button"
-                      onClick={() => toggleZone("zone3")}
-                      title="Mở lại Vùng 3 (Xem trước)"
-                      className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
-                    >
-                      <PanelRightOpen className="h-4 w-4" />
-                    </button>
-                    <div className="flex flex-1 items-center justify-center">
-                      <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
-                        VÙNG 3 · XEM TRƯỚC
-                      </span>
-                    </div>
-                    <div className="h-4" />
-                  </aside>
-                )}
+                {/* Desktop Collapsed Rail */}
+                <aside
+                  className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                    collapsedZones.zone3
+                      ? "opacity-100 pointer-events-auto visible"
+                      : "opacity-0 pointer-events-none invisible"
+                  }`}
+                  aria-hidden={!collapsedZones.zone3}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleZone("zone3")}
+                    title="Mở lại Vùng 3 (Xem trước)"
+                    className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                  >
+                    <PanelRightOpen className="h-4 w-4" />
+                  </button>
+                  <div className="flex flex-1 items-center justify-center">
+                    <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
+                      VÙNG 3 · XEM TRƯỚC
+                    </span>
+                  </div>
+                  <div className="h-4" />
+                </aside>
+              </div>
               </div>
 
               <HistoryDrawer
