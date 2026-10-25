@@ -1,6 +1,7 @@
 import { getUserProfile } from "@/app/auth/actions";
 import LandingNav from "@/components/landing/LandingNav";
 import HeroSection from "@/components/landing/HeroSection";
+import SocialTicker from "@/components/landing/SocialTicker";
 import InteractivePlayground from "@/components/landing/InteractivePlayground";
 import ThreeAnglesFramework from "@/components/landing/ThreeAnglesFramework";
 import FeatureGrid from "@/components/landing/FeatureGrid";
@@ -17,6 +18,7 @@ export default async function HomePage() {
       <LandingNav user={user} />
       <main>
         <HeroSection user={user} />
+        <SocialTicker />
         <InteractivePlayground />
         <ThreeAnglesFramework />
         <FeatureGrid />

@@ -8,7 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import LandingFooter from "@/components/landing/LandingFooter";
-import { ThemeToggle } from "@/components/theme-toggle";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 interface PrivacySection {
   index: string;

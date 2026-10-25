@@ -10,16 +10,16 @@ const COLUMNS: FooterColumn[] = [
   {
     title: "Sản phẩm",
     links: [
-      { label: "Khung 3 góc nhìn", href: "#framework" },
-      { label: "Trải nghiệm thử", href: "#demo" },
-      { label: "Tính năng", href: "#features" },
-      { label: "Bảng giá", href: "#pricing" },
+      { label: "Khung 3 góc nhìn", href: "/#framework" },
+      { label: "Trải nghiệm thử", href: "/#demo" },
+      { label: "Tính năng", href: "/#features" },
+      { label: "Bảng giá", href: "/#pricing" },
     ],
   },
   {
     title: "Tài nguyên",
     links: [
-      { label: "FAQ", href: "#faq" },
+      { label: "FAQ", href: "/#faq" },
       { label: "Hướng dẫn sử dụng", href: "/guide" },
       { label: "Đăng nhập", href: "/login" },
       { label: "Đăng ký", href: "/register" },
