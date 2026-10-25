@@ -1,14 +1,32 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, Coins, History, Loader2, Sparkles } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Globe,
+  History,
+  Loader2,
+  MessageSquare,
+  MoreHorizontal,
+  RotateCcw,
+  Share2,
+  Sparkles,
+  ThumbsUp,
+  Wand2,
+} from "lucide-react";
 import ProductForm from "./ProductForm";
-import ResultsSection from "./ResultsSection";
 import AuthModal from "./AuthModal";
 import OutOfCreditsModal from "./OutOfCreditsModal";
+import TopUpModal from "./TopUpModal";
+import WorkspaceHeader from "./WorkspaceHeader";
 import HistoryDrawer from "@/components/history/HistoryDrawer";
 import { deleteHistoryItem, fetchUserHistory } from "@/app/history/actions";
 import { SAMPLE_SCENARIOS, findSampleResult } from "./sampleScenarios";
+import { copyToClipboard } from "@/lib/utils/clipboard";
+import { countUnicodeChars } from "@/lib/utils/charCounter";
 import type {
   ContentFormInput,
   GeneratedContent,
@@ -20,8 +38,9 @@ export interface WorkspaceUser {
   email?: string | null;
 }
 
-interface WorkspaceContainerProps {
+export interface WorkspaceContainerProps {
   user?: WorkspaceUser | null;
+  onSignOutAction?: () => Promise<void>;
 }
 
 const EMPTY_FORM: ContentFormInput = {
@@ -31,7 +50,13 @@ const EMPTY_FORM: ContentFormInput = {
   tone: "trang-trong",
 };
 
-export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
+const ANGLE_META: Array<{ tag: string; label: string }> = [
+  { tag: "PAS", label: "Vấn đề & Giải pháp" },
+  { tag: "Cảm xúc", label: "Cảm xúc & Phong cách" },
+  { tag: "FAB", label: "Tính năng & Lợi ích" },
+];
+
+export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceContainerProps) {
   const [formInputs, setFormInputs] = useState<ContentFormInput>(EMPTY_FORM);
   const [result, setResult] = useState<GeneratedContent | null>(null);
   const [loading, setLoading] = useState(false);
@@ -43,13 +68,22 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [outOfCreditsOpen, setOutOfCreditsOpen] = useState(false);
+  const [topUpModalOpen, setTopUpModalOpen] = useState(false);
 
   const [draftSaved, setDraftSaved] = useState(false);
+
+  const [activeAngleIndex, setActiveAngleIndex] = useState(0);
+  const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
+  const [fbExpanded, setFbExpanded] = useState(false);
+  const [headlinesOpen, setHeadlinesOpen] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [liked, setLiked] = useState(false);
 
   const sampleIndexRef = useRef(0);
   const generateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Khôi phục bản nháp tự động từ localStorage khi tải lại trang
   useEffect(() => {
@@ -90,8 +124,17 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
       if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
     };
   }, []);
+
+  // Reset trạng thái biên tập mỗi khi có kết quả AI mới (tạo mới / khôi phục lịch sử / nạp mẫu)
+  useEffect(() => {
+    setEditedCaptions({});
+    setActiveAngleIndex(0);
+    setFbExpanded(false);
+    setLiked(false);
+  }, [result]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -112,6 +155,21 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => setToast(null), 2200);
   }, []);
+
+  const handleCopyText = useCallback(
+    async (value: string, key: string, message: string) => {
+      const ok = await copyToClipboard(value);
+      if (!ok) {
+        showToast("Không thể sao chép tự động. Vui lòng chép thủ công.");
+        return;
+      }
+      setCopiedKey(key);
+      showToast(message);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedKey(null), 1500);
+    },
+    [showToast],
+  );
 
   const [credits, setCredits] = useState<number | null>(user?.credits ?? null);
 
@@ -284,140 +342,601 @@ export default function WorkspaceContainer({ user }: WorkspaceContainerProps) {
     sampleIndexRef.current += 1;
     setFormInputs(scenario.input);
     setResult(scenario.output);
-    showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
-  };
+      showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
+    };
 
-  return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 sm:px-6 sm:py-8 md:pb-8">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
-              Không gian sáng tạo
-            </h1>
-            {draftSaved && (
-              <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
-                <Check className="h-3 w-3" />
-                Đã lưu nháp
-              </span>
-            )}
+    const captions = result?.captions ?? [];
+    const activeCaption = captions[activeAngleIndex] ?? null;
+    const originalText = activeCaption?.text ?? "";
+    const currentText = editedCaptions[activeAngleIndex] ?? originalText;
+    const charCount = countUnicodeChars(currentText);
+    const isModified = currentText !== originalText;
+    const overLimit = charCount > 125;
+
+    return (
+    <div className="flex min-h-screen flex-col">
+      <WorkspaceHeader
+        user={user}
+        credits={credits}
+        onOpenTopUp={() => setTopUpModalOpen(true)}
+        onSignOutAction={onSignOutAction}
+      />
+
+      <main className="w-full flex-1">
+        <div className="mx-auto w-full max-w-[1680px] px-3 pb-28 pt-4 sm:px-6 sm:py-6 md:pb-8">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
+                  Không gian sáng tạo 3 vùng
+                </h1>
+                {draftSaved && (
+                  <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
+                    <Check className="h-3 w-3" />
+                    Đã lưu nháp
+                  </span>
+                )}
+              </div>
+              <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
+                Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin Facebook thời gian thực.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setTopUpModalOpen(true)}
+                className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+                {typeof credits === "number" ? (
+                  <span className="tabular-nums">
+                    <strong className="font-semibold text-[var(--ink-primary)]">{credits}</strong> lượt
+                  </span>
+                ) : (
+                  <span>Nạp lượt</span>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={handleOpenHistory}
+                className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+              >
+                <History className="h-3.5 w-3.5" />
+                Lịch sử
+              </button>
+            </div>
           </div>
-          <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
-            Nhập thông tin sản phẩm, nhận về 3 góc bài viết tối ưu.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handleOpenHistory}
-          className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-        >
-          <History className="h-3.5 w-3.5" />
-          Lịch sử
-        </button>
-      </div>
 
-      <div className="flex flex-col items-start gap-5 lg:flex-row lg:gap-6">
-        <aside className="w-full shrink-0 lg:sticky lg:top-[72px] lg:w-[420px]">
-          <ProductForm
-            value={formInputs}
-            onChange={setFormInputs}
-            onSubmit={handleSubmit}
-            onLoadSample={handleLoadSample}
-            loading={loading}
-          />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-[360px_minmax(0,1fr)_380px]">
+            {/* ===== ZONE 1 — INPUT SPECIFICATION ===== */}
+            <aside className="flex min-w-0 flex-col gap-2.5 lg:col-span-1 xl:col-span-1">
+              <ProductForm
+                value={formInputs}
+                onChange={setFormInputs}
+                onSubmit={handleSubmit}
+                onLoadSample={handleLoadSample}
+                loading={loading}
+              />
 
-          <p className="mt-2 text-center text-[12px] text-[var(--ink-tertiary)]">
-            {typeof credits === "number" ? (
-              <>
-                Còn{" "}
-                <span className="font-semibold tabular-nums text-[var(--ink-secondary)]">
-                  {credits}
-                </span>{" "}
-                lượt tạo trong tài khoản của bạn
-              </>
-            ) : (
-              "Đăng nhập để lưu lịch sử nội dung đã tạo"
-            )}
-          </p>
-        </aside>
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/70 px-3 py-2 text-[12px] text-[var(--ink-tertiary)]">
+                {typeof credits === "number" ? (
+                  <>
+                    <span>
+                      Còn{" "}
+                      <strong className="font-semibold tabular-nums text-[var(--ink-primary)]">
+                        {credits}
+                      </strong>{" "}
+                      lượt tạo
+                    </span>
+                    <span>·</span>
+                    <button
+                      type="button"
+                      onClick={() => setTopUpModalOpen(true)}
+                      className="font-semibold text-[var(--accent-navy)] transition-colors hover:underline"
+                    >
+                      + Nạp thêm lượt
+                    </button>
+                  </>
+                ) : (
+                  "Đăng nhập để lưu lịch sử nội dung đã tạo"
+                )}
+              </div>
+            </aside>
 
-        <section className="w-full min-w-0 flex-1">
-          <ResultsSection
-            result={result}
-            loading={loading}
-            onRegenerate={handleRegenerate}
-            onNotify={showToast}
-          />
-        </section>
-      </div>
+            {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR ===== */}
+            <section className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 xl:col-span-1">
+              <header className="flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+                    <Wand2 className="h-3.5 w-3.5" />
+                  </span>
+                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                    Vùng 2 · Biên tập góc bài viết
+                  </h2>
+                </div>
+                {result && (
+                  <button
+                    type="button"
+                    onClick={handleRegenerate}
+                    disabled={loading}
+                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Tạo lại
+                  </button>
+                )}
+              </header>
 
-      <HistoryDrawer
-        open={historyOpen}
-        loading={historyLoading}
-        error={historyError}
-        items={historyItems}
-        onClose={handleCloseHistory}
-        onRestore={handleRestore}
-        onDelete={handleDeleteHistoryItem}
-      />
-
-      <AuthModal
-        open={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        productName={formInputs.productName}
-      />
-
-      <OutOfCreditsModal
-        open={outOfCreditsOpen}
-        onClose={() => setOutOfCreditsOpen(false)}
-      />
-
-      {/* Mobile sticky action bar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md md:hidden">
-        <div className="mx-auto flex max-w-6xl items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
-              {typeof credits === "number" ? (
+              {result && activeCaption ? (
                 <>
-                  Còn{" "}
-                  <span className="font-semibold tabular-nums text-[var(--ink-primary)]">
-                    {credits}
-                  </span>{" "}
-                  lượt tạo
+                  {/* Angle tabs */}
+                  <div className="flex flex-wrap gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5">
+                    {result.captions.map((cap, index) => {
+                      const meta = ANGLE_META[index];
+                      const active = index === activeAngleIndex;
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => {
+                            setActiveAngleIndex(index);
+                            setFbExpanded(false);
+                          }}
+                          className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-medium transition-colors ${
+                            active
+                              ? "bg-[var(--accent-navy)] text-white"
+                              : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+                          }`}
+                        >
+                          <span
+                            className={`rounded px-1 py-0.5 text-[9.5px] font-bold uppercase ${
+                              active
+                                ? "bg-white/20 text-white"
+                                : "bg-[var(--surface)] text-[var(--ink-tertiary)]"
+                            }`}
+                          >
+                            {meta?.tag ?? `G${index + 1}`}
+                          </span>
+                          <span className="max-w-[150px] truncate">
+                            {meta?.label ?? cap.angle}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Hook metric */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
+                    <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
+                      <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
+                    </span>
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ${
+                        overLimit
+                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                          : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+                      }`}
+                    >
+                      {overLimit ? (
+                        <>
+                          <ChevronDown className="h-3 w-3" />
+                          Vượt 125 ký tự — cần bấm &quot;Xem thêm&quot;
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-3 w-3" />
+                          Hook chuẩn 125 ký tự
+                        </>
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Quick actions */}
+                  <div className="flex flex-wrap items-center gap-1.5 px-4 py-2.5">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void handleCopyText(
+                          currentText,
+                          `caption-${activeAngleIndex}`,
+                          "Đã sao chép bài viết vào clipboard.",
+                        )
+                      }
+                      className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11.5px] font-medium transition-colors ${
+                        copiedKey === `caption-${activeAngleIndex}`
+                          ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+                          : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                      }`}
+                    >
+                      {copiedKey === `caption-${activeAngleIndex}` ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
+                    </button>
+
+                    {isModified && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditedCaptions((prev) => {
+                            const next = { ...prev };
+                            delete next[activeAngleIndex];
+                            return next;
+                          });
+                          showToast("Đã khôi phục nội dung AI gốc.");
+                        }}
+                        className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-tertiary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Khôi phục AI gốc
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Inline textarea */}
+                  <div className="flex-1 px-4 pb-3">
+                    <textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = `${el.scrollHeight}px`;
+                        }
+                      }}
+                      value={currentText}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setEditedCaptions((prev) => ({ ...prev, [activeAngleIndex]: value }));
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      rows={8}
+                      className="w-full resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-3.5 text-[14.5px] leading-[1.75] text-[var(--ink-primary)] outline-hidden transition-colors focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
+                      placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
+                    />
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--ink-tertiary)]">
+                      125 ký tự đầu tiên là &quot;Hook&quot; — phần hiển thị trước nút &quot;Xem thêm&quot; trên bảng tin Facebook.
+                    </p>
+                  </div>
+
+                  {/* Headlines */}
+                  {result.headlines.length > 0 && (
+                    <div className="border-t border-[var(--border-subtle)]">
+                      <button
+                        type="button"
+                        onClick={() => setHeadlinesOpen((v) => !v)}
+                        className="flex w-full items-center justify-between px-4 py-2.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
+                      >
+                        <span>Tiêu đề quảng cáo ({result.headlines.length})</span>
+                        {headlinesOpen ? (
+                          <ChevronUp className="h-3.5 w-3.5" />
+                        ) : (
+                          <ChevronDown className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                      {headlinesOpen && (
+                        <ul className="space-y-1.5 px-4 pb-3">
+                          {result.headlines.map((headline, i) => (
+                            <li
+                              key={i}
+                              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-2.5 py-1.5"
+                            >
+                              <span className="min-w-0 truncate text-[12px] text-[var(--ink-primary)]">
+                                {headline}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  void handleCopyText(headline, `headline-${i}`, "Đã sao chép tiêu đề.")
+                                }
+                                aria-label="Sao chép tiêu đề"
+                                className="shrink-0 text-[var(--ink-tertiary)] transition-colors hover:text-[var(--ink-primary)]"
+                              >
+                                {copiedKey === `headline-${i}` ? (
+                                  <Check className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                                ) : (
+                                  <Copy className="h-3.5 w-3.5" />
+                                )}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Hashtags */}
+                  {result.hashtags.length > 0 && (
+                    <div className="border-t border-[var(--border-subtle)] px-4 py-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-[11.5px] font-medium text-[var(--ink-secondary)]">
+                          Hashtag gợi ý
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            void handleCopyText(
+                              result.hashtags.join(" "),
+                              "hashtags",
+                              "Đã sao chép toàn bộ hashtag.",
+                            )
+                          }
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-navy)] transition-opacity hover:underline"
+                        >
+                          {copiedKey === "hashtags" ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                          Sao chép tất cả
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {result.hashtags.map((tag, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] text-[var(--ink-secondary)]"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               ) : (
-                "Đăng nhập để lưu lịch sử"
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-16 text-center">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
+                    <Wand2 className="h-5 w-5" />
+                  </span>
+                  <p className="text-[13px] font-medium text-[var(--ink-primary)]">Chưa có nội dung</p>
+                  <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                    Nhập thông tin sản phẩm ở Vùng 1 và bấm &quot;Tạo 3 góc bài viết&quot; để AI kiến tạo nội dung.
+                  </p>
+                </div>
               )}
-            </p>
-          </div>
-          <button
-            type="submit"
-            form="product-form"
-            disabled={loading}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-            <span>{loading ? "Đang tạo..." : "Tạo 3 góc"}</span>
-          </button>
-        </div>
-      </div>
+            </section>
 
-      {toast ? (
-        <div className="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-4 md:bottom-6">
-          <div
-            role="status"
-            aria-live="polite"
-            className="animate-fade-in-up flex max-w-full items-center gap-2 rounded-lg bg-[var(--ink-primary)] px-3.5 py-2 text-[12px] font-medium text-[var(--surface)] shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
-          >
-            <Check className="h-3.5 w-3.5 shrink-0 text-[#4ADE80]" />
-            <span className="min-w-0 break-words">{toast}</span>
+            {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR ===== */}
+            <aside className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-2 xl:col-span-1">
+              <header className="flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+                    <Globe className="h-3.5 w-3.5" />
+                  </span>
+                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                    Vùng 3 · Xem trước Facebook
+                  </h2>
+                </div>
+                <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+                  Live
+                </span>
+              </header>
+
+              <div className="flex-1 p-3">
+                {result && activeCaption ? (
+                  <div className="mx-auto w-full max-w-[400px] overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-white text-[#050505] shadow-sm dark:bg-[#242526] dark:text-[#E4E6EB]">
+                    {/* Post header */}
+                    <div className="flex items-start justify-between gap-2 p-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[13px] font-bold text-white">
+                          {(formInputs.productName.trim() || "TB").slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-[13px] font-semibold">
+                            {formInputs.productName.trim() || "Thương Hiệu Của Bạn"}
+                          </p>
+                          <p className="flex items-center gap-1 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
+                            Được tài trợ · <Globe className="h-3 w-3" />
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[#65676B] dark:text-[#B0B3B8]">
+                        <MoreHorizontal className="h-5 w-5" />
+                      </span>
+                    </div>
+
+                    {/* Post body — live synced copy with "Xem thêm" truncation */}
+                    <div className="px-3 pb-2 text-[13.5px] leading-[1.5]">
+                      <p className="whitespace-pre-wrap break-words">
+                        {overLimit && !fbExpanded ? (
+                          <>
+                            {Array.from(currentText).slice(0, 125).join("")}...{" "}
+                            <button
+                              type="button"
+                              onClick={() => setFbExpanded(true)}
+                              className="font-semibold text-[#0866FF] hover:underline"
+                            >
+                              Xem thêm
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {currentText}
+                            {overLimit && (
+                              <>
+                                {" "}
+                                <button
+                                  type="button"
+                                  onClick={() => setFbExpanded(false)}
+                                  className="font-semibold text-[#0866FF] hover:underline"
+                                >
+                                  Thu gọn
+                                </button>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </p>
+                    </div>
+
+                    {/* Media banner */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)]">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+                        <Sparkles className="mb-2 h-6 w-6 opacity-80" />
+                        <p className="text-[15px] font-bold leading-tight">
+                          {formInputs.productName.trim() || "Thương Hiệu Của Bạn"}
+                        </p>
+                        <p className="mt-1 text-[11.5px] text-white/80">
+                          {result.headlines[0] ?? "Giải pháp tối ưu cho khách hàng của bạn"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Engagement stats */}
+                    <div className="flex items-center justify-between px-3 py-2 text-[11.5px] text-[#65676B] dark:text-[#B0B3B8]">
+                      <div className="flex items-center gap-1">
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#0866FF] text-white">
+                          <ThumbsUp className="h-2.5 w-2.5" />
+                        </span>
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#F02849] text-[9px] text-white">
+                          ♥
+                        </span>
+                        <span className="ml-1">1.8K lượt thích</span>
+                      </div>
+                      <span>246 bình luận · 89 lượt chia sẻ</span>
+                    </div>
+
+                    {/* Action footer */}
+                    <div className="mx-3 border-t border-[#CED0D4] py-1 dark:border-[#3E4042]">
+                      <div className="grid grid-cols-3">
+                        <button
+                          type="button"
+                          onClick={() => setLiked((v) => !v)}
+                          className={`inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${
+                            liked ? "text-[#0866FF]" : "text-[#65676B] dark:text-[#B0B3B8]"
+                          }`}
+                        >
+                          <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+                          Thích
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium text-[#65676B] transition-colors hover:bg-black/5 dark:text-[#B0B3B8] dark:hover:bg-white/5"
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                          Bình luận
+                        </button>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium text-[#65676B] transition-colors hover:bg-black/5 dark:text-[#B0B3B8] dark:hover:bg-white/5"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Chia sẻ
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
+                      <Globe className="h-5 w-5" />
+                    </span>
+                    <p className="text-[13px] font-medium text-[var(--ink-primary)]">
+                      Bản xem trước trực tiếp
+                    </p>
+                    <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                      Bài viết bạn tinh chỉnh ở Vùng 2 sẽ đồng bộ thời gian thực tại đây, mô phỏng đúng bảng tin Facebook.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </aside>
           </div>
+
+          <HistoryDrawer
+            open={historyOpen}
+            loading={historyLoading}
+            error={historyError}
+            items={historyItems}
+            onClose={handleCloseHistory}
+            onRestore={handleRestore}
+            onDelete={handleDeleteHistoryItem}
+          />
+
+          <AuthModal
+            open={authModalOpen}
+            onClose={() => setAuthModalOpen(false)}
+            productName={formInputs.productName}
+          />
+
+          <OutOfCreditsModal
+            open={outOfCreditsOpen}
+            onClose={() => setOutOfCreditsOpen(false)}
+            onUpgrade={() => {
+              setOutOfCreditsOpen(false);
+              setTopUpModalOpen(true);
+            }}
+          />
+
+          <TopUpModal
+            open={topUpModalOpen}
+            onClose={() => setTopUpModalOpen(false)}
+            userIdentifier={user?.email}
+            onSuccess={(newCredits, message) => {
+              setCredits(newCredits);
+              showToast(message);
+            }}
+          />
+
+          {/* Mobile sticky action bar */}
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md md:hidden">
+            <div className="mx-auto flex max-w-6xl items-center gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
+                  {typeof credits === "number" ? (
+                    <>
+                      Còn{" "}
+                      <strong className="font-semibold tabular-nums text-[var(--ink-primary)]">
+                        {credits}
+                      </strong>{" "}
+                      lượt
+                    </>
+                  ) : (
+                    "Đăng nhập để lưu lịch sử"
+                  )}
+                </p>
+                {typeof credits === "number" && (
+                  <button
+                    type="button"
+                    onClick={() => setTopUpModalOpen(true)}
+                    className="text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
+                  >
+                    + Nạp thêm
+                  </button>
+                )}
+              </div>
+              <button
+                type="submit"
+                form="product-form"
+                disabled={loading}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                <span>{loading ? "Đang tạo..." : "Tạo 3 góc"}</span>
+              </button>
+            </div>
+          </div>
+
+          {toast ? (
+            <div className="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-4 md:bottom-6">
+              <div
+                role="status"
+                aria-live="polite"
+                className="animate-fade-in-up flex max-w-full items-center gap-2 rounded-lg bg-[var(--ink-primary)] px-3.5 py-2 text-[12px] font-medium text-[var(--surface)] shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+              >
+                <Check className="h-3.5 w-3.5 shrink-0 text-[#4ADE80]" />
+                <span className="min-w-0 break-words">{toast}</span>
+              </div>
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </main>
     </div>
   );
 }

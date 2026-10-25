@@ -1,67 +1,7 @@
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-
-interface Plan {
-  name: string;
-  price: string;
-  unit: string;
-  description: string;
-  features: string[];
-  cta: string;
-  href: string;
-  highlight: boolean;
-  badge?: string;
-}
-
-const PLANS: Plan[] = [
-  {
-    name: "Khởi Đầu",
-    price: "0đ",
-    unit: "10 lượt tạo tặng sẵn",
-    description: "Dành cho chủ shop trải nghiệm chất lượng.",
-    features: [
-      "10 lượt tạo miễn phí",
-      "Đầy đủ 3 góc nhìn",
-      "3 headlines + 5 hashtags",
-      "Bộ đếm ký tự Unicode",
-    ],
-    cta: "Dùng thử miễn phí",
-    href: "/register",
-    highlight: false,
-  },
-  {
-    name: "Chủ Shop",
-    price: "99.000đ",
-    unit: "100 lượt tạo",
-    description: "~990đ/bài viết, rẻ hơn 50 lần thuê cộng tác viên content.",
-    features: [
-      "100 lượt tạo",
-      "Lưu lịch sử 50 bài viết",
-      "Đầy đủ 7 tông giọng",
-      "Không tự động gia hạn thẻ",
-    ],
-    cta: "Chọn gói Chủ Shop",
-    href: "/register",
-    highlight: true,
-    badge: "Phổ biến",
-  },
-  {
-    name: "Đội Ngũ / Agency",
-    price: "399.000đ",
-    unit: "500 lượt tạo",
-    description: "Xử lý hàng trăm sản phẩm mỗi tháng.",
-    features: [
-      "500 lượt tạo",
-      "Xử lý hàng trăm sản phẩm",
-      "Fallback AI đa nguồn",
-      "Hỗ trợ ưu tiên",
-    ],
-    cta: "Chọn gói Đội Ngũ",
-    href: "/register",
-    highlight: false,
-  },
-];
+import { PRICING_PLANS } from "@/lib/config/pricing";
 
 export default function PricingSection() {
   return (
@@ -86,9 +26,9 @@ export default function PricingSection() {
         </ScrollReveal>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {PLANS.map((plan, planIdx) => (
+          {PRICING_PLANS.map((plan, planIdx) => (
             <ScrollReveal
-              key={plan.name}
+              key={plan.id}
               direction="up"
               delay={planIdx * 110}
               duration={650}
@@ -110,10 +50,12 @@ export default function PricingSection() {
                 <h3 className="text-sm font-semibold text-[var(--ink-primary)]">{plan.name}</h3>
                 <div className="mt-3 flex items-baseline gap-1.5">
                   <span className="text-3xl font-semibold tracking-tight text-[var(--ink-primary)]">
-                    {plan.price}
+                    {plan.formattedPrice}
                   </span>
                 </div>
-                <p className="mt-1 text-xs font-medium text-[var(--accent-navy)]">{plan.unit}</p>
+                <p className="mt-1 text-xs font-medium text-[var(--accent-navy)]">
+                  {plan.credits} lượt tạo ({plan.perCredit})
+                </p>
                 <p className="mt-3 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                   {plan.description}
                 </p>
@@ -129,14 +71,14 @@ export default function PricingSection() {
                   ))}
                 </ul>
                 <Link
-                  href={plan.href}
+                  href="/register"
                   className={`btn-tactile mt-6 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-98 ${
                     plan.highlight
                       ? "bg-[var(--accent-navy)] text-white shadow-xs hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.2)]"
                       : "border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-primary)] hover:bg-[var(--surface-raised)] hover:border-[var(--border-strong)]"
                   }`}
                 >
-                  {plan.cta}
+                  {plan.highlight ? "Nạp gói Chủ Shop" : `Chọn gói ${plan.name}`}
                 </Link>
               </div>
             </ScrollReveal>

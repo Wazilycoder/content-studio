@@ -4,54 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Coins, Copy, Loader2, ShieldCheck, Sparkles, X } from "lucide-react";
 import { topUpCredits } from "@/app/auth/actions";
 import { copyToClipboard } from "@/lib/utils/clipboard";
-
-interface CreditPackage {
-  id: string;
-  name: string;
-  tagline: string;
-  price: number;
-  credits: number;
-  perCredit: string;
-  description: string;
-  badge?: string;
-}
-
-const PACKAGES: CreditPackage[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    tagline: "Khởi động",
-    price: 49000,
-    credits: 50,
-    perCredit: "~980đ/lượt",
-    description: "Phù hợp thử nghiệm ý tưởng và nhịp đăng bài nhẹ nhàng.",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    tagline: "Phổ biến nhất",
-    price: 99000,
-    credits: 170,
-    perCredit: "~580đ/lượt",
-    description: "150 lượt + tặng 20 lượt. Lựa chọn tối ưu cho shop bán hàng đều.",
-    badge: "TIẾT KIỆM 40%",
-  },
-  {
-    id: "agency",
-    name: "Agency",
-    tagline: "Quy mô lớn",
-    price: 199000,
-    credits: 500,
-    perCredit: "~398đ/lượt",
-    description: "500 lượt tạo + băng thông Gemini 3.5 ưu tiên cao nhất.",
-  },
-];
-
-const BANK_INFO = {
-  bank: "MB Bank (Ngân hàng Quân Đội)",
-  account: "0388888888",
-  holder: "CONTENT STUDIO AI",
-};
+import { PRICING_PLANS as PACKAGES, BANK_INFO } from "@/lib/config/pricing";
 
 export interface TopUpModalProps {
   open: boolean;

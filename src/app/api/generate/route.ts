@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { callUnifiedAi } from "@/lib/ai";
 import type { CaptionAngle, GeneratedContent } from "@/types/content";
 
@@ -175,13 +175,62 @@ function sanitizeString(str: string): string {
     .trim();
 }
 
+function extractAndParseAiJson(raw: string): unknown {
+  const trimmed = (raw || "").trim();
+
+  // 1. Thử parse trực tiếp chuỗi gốc
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    // Không thành công, tiếp tục thử trích xuất bằng ranh giới
+  }
+
+  // 2. Tìm khối markdown ```json ... ``` hoặc ``` ... ```
+  const markdownMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (markdownMatch && markdownMatch[1]) {
+    try {
+      return JSON.parse(markdownMatch[1].trim());
+    } catch {
+      // Tiếp tục fallback
+    }
+  }
+
+  // 3. Tìm ranh giới JSON Object ngoài cùng: từ dấu '{' đầu tiên đến dấu '}' cuối cùng
+  const firstBrace = trimmed.indexOf("{");
+  const lastBrace = trimmed.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const jsonSubstring = trimmed.slice(firstBrace, lastBrace + 1).trim();
+    try {
+      return JSON.parse(jsonSubstring);
+    } catch {
+      // Bỏ qua nếu vẫn lỗi
+    }
+  }
+
+  // 4. Fallback: gọt sạch backticks bất thường
+  const cleaned = trimmed
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/g, "")
+    .replace(/`{3,}/g, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Dữ liệu AI trả về không phải định dạng JSON hợp lệ (${msg}).`);
+  }
+}
+
 async function executeRefundWithVerification(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   requestId: string
 ): Promise<{ success: boolean; creditsRemaining?: number }> {
   try {
-    const { data, error } = await supabase.rpc("refund_credit_atomic", {
+    const adminClient = createAdminClient();
+    const client = adminClient ?? supabase;
+    const { data, error } = await client.rpc("refund_credit_atomic", {
       p_user_id: userId,
       p_request_id: requestId,
     });
@@ -426,15 +475,8 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       temperature: 0.7,
     });
 
-    // Parse JSON
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(rawAiResponse);
-    } catch {
-      // Làm sạch markdown backticks nếu model lỡ kèm ```json ... ```
-      const cleaned = rawAiResponse.replace(/```json/gi, "").replace(/```/g, "").trim();
-      parsedJson = JSON.parse(cleaned);
-    }
+    // Parse JSON an toàn đa tầng (chống vỡ markdown backticks và tiền tố hội thoại)
+    const parsedJson = extractAndParseAiJson(rawAiResponse);
 
     const validateResult = AiOutputSchema.safeParse(parsedJson);
     if (!validateResult.success) {

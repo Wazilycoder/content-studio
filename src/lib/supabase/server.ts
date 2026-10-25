@@ -33,3 +33,19 @@ export async function createClient() {
     }
   );
 }
+
+export function createAdminClient() {
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey || serviceKey === "your_service_role_key_here") {
+    return null;
+  }
+  return createServerClient(supabaseUrl, serviceKey, {
+    cookies: {
+      getAll: () => [],
+      setAll: () => {},
+    },
+  });
+}
+

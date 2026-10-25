@@ -11,23 +11,41 @@ export interface OpenRouterGenerateOptions {
 }
 
 export async function callOpenRouter(options: OpenRouterGenerateOptions): Promise<string> {
+  const provider = (process.env.AI_PROVIDER || "").toLowerCase();
+  const isOrca = provider === "orcarouter" || provider === "orca";
+
   const apiKey =
-    process.env.OPENROUTER_API_KEY || process.env.CUSTOM_AI_API_KEY || "";
+    process.env.ORCAROUTER_API_KEY ||
+    process.env.ORCA_API_KEY ||
+    process.env.CUSTOM_AI_API_KEY ||
+    process.env.OPENROUTER_API_KEY ||
+    "";
 
   if (!apiKey) {
+    const keyHint = isOrca
+      ? "ORCAROUTER_API_KEY"
+      : "ORCAROUTER_API_KEY hoặc OPENROUTER_API_KEY";
     throw new Error(
-      "Chưa cấu hình OPENROUTER_API_KEY hoặc CUSTOM_AI_API_KEY trong file .env.local."
+      `Chưa cấu hình ${keyHint} trong file .env.local. Vui lòng thêm API key để tiếp tục.`
     );
   }
 
+  const defaultBaseUrl = isOrca
+    ? "https://api.orcarouter.ai/v1"
+    : "https://openrouter.ai/api/v1";
+
   const baseUrl =
-    process.env.OPENROUTER_BASE_URL ||
+    process.env.ORCAROUTER_BASE_URL ||
+    process.env.ORCA_BASE_URL ||
     process.env.CUSTOM_AI_BASE_URL ||
-    "https://openrouter.ai/api/v1";
+    process.env.OPENROUTER_BASE_URL ||
+    defaultBaseUrl;
 
   const model =
-    process.env.OPENROUTER_MODEL ||
+    process.env.ORCAROUTER_MODEL ||
+    process.env.ORCA_MODEL ||
     process.env.CUSTOM_AI_MODEL ||
+    process.env.OPENROUTER_MODEL ||
     "deepseek/deepseek-chat";
 
   const endpoint = baseUrl.endsWith("/chat/completions")
@@ -65,12 +83,32 @@ export async function callOpenRouter(options: OpenRouterGenerateOptions): Promis
     "X-Title": "Content Studio",
   };
 
-  const response = await fetch(endpoint, {
+  let response = await fetch(endpoint, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(15000),
+    signal: AbortSignal.timeout(35000),
   });
+
+  // Tự động fallback nếu model free không hỗ trợ response_format { type: "json_object" }
+  if (!response.ok && body.response_format) {
+    const errorData = await response.clone().json().catch(() => ({}));
+    const errText = String(errorData?.error?.message || errorData?.message || "");
+    if (
+      response.status === 400 &&
+      (errText.toLowerCase().includes("response_format") ||
+        errText.toLowerCase().includes("json_object") ||
+        errText.toLowerCase().includes("not supported"))
+    ) {
+      delete body.response_format;
+      response = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(35000),
+      });
+    }
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

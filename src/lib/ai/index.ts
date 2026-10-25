@@ -12,14 +12,19 @@ export async function callUnifiedAi(options: UnifiedAiOptions): Promise<string> 
   const provider = (process.env.AI_PROVIDER || "gemini").toLowerCase();
 
   try {
-    if (provider === "openrouter" || provider === "custom") {
+    if (
+      provider === "openrouter" ||
+      provider === "orcarouter" ||
+      provider === "orca" ||
+      provider === "custom"
+    ) {
       return await callOpenRouter(options);
     }
     return await callGemini(options);
   } catch (err: unknown) {
     const error = err instanceof Error ? err : new Error(String(err));
     if (error.name === "TimeoutError" || error.message.includes("aborted")) {
-      throw new Error("Quá thời gian kết nối đến máy chủ AI (15 giây). Vui lòng thử lại.");
+      throw new Error("Quá thời gian kết nối đến máy chủ AI (30 giây). Vui lòng thử lại.");
     }
     throw error;
   }

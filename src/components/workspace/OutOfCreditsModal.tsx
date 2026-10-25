@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Coins, Sparkles, X, ArrowRight } from "lucide-react";
 
 interface OutOfCreditsModalProps {
@@ -70,14 +71,28 @@ export default function OutOfCreditsModal({
         </div>
 
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
-          <Link
-            href="/#pricing"
-            onClick={onClose}
-            className="group inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[var(--accent-navy-hover)] hover:shadow-md"
-          >
-            <span>Nâng cấp ngay</span>
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-          </Link>
+          {onUpgrade ? (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onUpgrade();
+              }}
+              className="group inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[var(--accent-navy-hover)] hover:shadow-md"
+            >
+              <span>Nâng cấp ngay</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </button>
+          ) : (
+            <Link
+              href="/#pricing"
+              onClick={onClose}
+              className="group inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[var(--accent-navy-hover)] hover:shadow-md"
+            >
+              <span>Nâng cấp ngay</span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          )}
           <button
             type="button"
             onClick={onClose}

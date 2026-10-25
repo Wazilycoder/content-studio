@@ -50,7 +50,7 @@ export async function callGemini(options: GeminiGenerateOptions) {
       generationConfig: {
         temperature: options.temperature ?? 0.7,
         responseMimeType: options.responseMimeType || "text/plain",
-        maxOutputTokens: 1500, // Tối ưu Free-Tier: Chặn runaway token
+        maxOutputTokens: 4096, // Đủ cho thinking tokens + 3 bài viết dài tiếng Việt
       },
     };
 
@@ -67,7 +67,7 @@ export async function callGemini(options: GeminiGenerateOptions) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(30000),
       });
 
       if (!response.ok) {
@@ -75,10 +75,27 @@ export async function callGemini(options: GeminiGenerateOptions) {
         const errorMessage =
           errorData?.error?.message || `HTTP ${response.status} ${response.statusText}`;
 
-        // Nếu chạm Rate Limit (429) hoặc Quota Limit và còn key dự phòng -> Thử key tiếp theo
-        if ((response.status === 429 || response.status === 403) && i < keys.length - 1) {
-          console.warn(`[Gemini Pool] Key #${i + 1} bị rate limit (${response.status}). Đang chuyển sang key #${i + 2}...`);
-          continue;
+        // Nếu chạm Rate Limit (429), Quota Limit (403), hoặc Spike quá tải (503)
+        if (response.status === 429 || response.status === 403 || response.status === 503) {
+          if (i < keys.length - 1) {
+            console.warn(`[Gemini Pool] Key #${i + 1} gặp lỗi (${response.status}). Đang chuyển sang key #${i + 2}...`);
+            continue;
+          }
+          // Nếu chỉ còn 1 key mà bị 503 (spikes temporary) -> Chờ 1.5s thử lại 1 lần
+          if (response.status === 503) {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            const retryRes = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+              signal: AbortSignal.timeout(30000),
+            });
+            if (retryRes.ok) {
+              const retryData = await retryRes.json();
+              const retryText = retryData?.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (retryText) return retryText;
+            }
+          }
         }
 
         throw new Error(`Lỗi Gemini API: ${errorMessage}`);

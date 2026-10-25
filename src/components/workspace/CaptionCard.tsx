@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertTriangle, Check, Copy, Pencil, RotateCcw } from "lucide-react";
+import { AlertTriangle, Check, Copy, Eye, Pencil, RotateCcw } from "lucide-react";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import {
   countUnicodeChars,
@@ -180,31 +180,33 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
       </div>
 
       {/* 3. Footer: Thước đo thông minh 125 ký tự trước nút "Xem thêm" */}
-      <footer className="space-y-2.5 border-t border-[var(--border-subtle)] bg-[var(--surface-raised)]/20 px-4 py-3 sm:px-5">
+      <footer className="space-y-2 border-t border-[var(--border-subtle)] bg-[var(--surface-raised)]/20 px-4 py-3 sm:px-5">
         <div className="flex items-center justify-between gap-2">
           <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
-            <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
+            Tổng cộng: <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
           </span>
 
           <span
-            className={`inline-flex items-center gap-1 text-[12px] font-medium ${
-              exceeded ? "text-[#B45309] dark:text-amber-400" : "text-[var(--accent-emerald)]"
+            className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11.5px] font-medium ${
+              exceeded
+                ? "bg-[var(--accent-navy)]/[0.08] text-[var(--accent-navy)]"
+                : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
             }`}
           >
             {exceeded ? (
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+              <Eye className="h-3 w-3 shrink-0" />
             ) : (
-              <Check className="h-3.5 w-3.5 shrink-0" />
+              <Check className="h-3 w-3 shrink-0" />
             )}
-            {exceeded ? "Vượt mốc 125 ký tự" : "Trong mốc 125 ký tự"}
+            {exceeded ? "Có nút 'Xem thêm' (> 125 ký tự)" : "Hiển thị trọn vẹn (≤ 125 ký tự)"}
           </span>
         </div>
 
-        {/* Vạch thước đo mốc 125 ký tự */}
+        {/* Thanh thể hiện mốc Hook 125 ký tự đầu */}
         <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
           <div
-            className={`h-full rounded-full transition-[width] duration-200 ${
-              exceeded ? "bg-[#B45309] dark:bg-amber-400" : "bg-[var(--accent-emerald)]"
+            className={`h-full rounded-full transition-[width] duration-300 ${
+              exceeded ? "bg-[var(--accent-navy)]" : "bg-[var(--accent-emerald)]"
             }`}
             style={{ width: `${ratio * 100}%` }}
           />
@@ -212,12 +214,12 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
 
         <p className="text-[11.5px] leading-relaxed text-[var(--ink-tertiary)]">
           {exceeded
-            ? "Đoạn văn này sẽ bị ngắt sau nút 'Xem thêm' trên bảng tin Facebook."
-            : "Toàn bộ bài viết hiển thị trực diện không cần bấm nút 'Xem thêm'."}
+            ? "Mẹo Facebook: 125 ký tự đầu đóng vai trò là 'Hook' giật tò mò trước nút 'Xem thêm'. Bấm tab 'Xem trước Facebook Post' bên trên để xem giao diện thật."
+            : "Bài viết ngắn gọn, hiển thị trực diện 100% trên bảng tin người xem mà không bị ngắt quãng."}
         </p>
 
         {instagram.status === "limit_exceeded" ? (
-          <p className="text-[11.5px] leading-relaxed text-[#DC2626] dark:text-rose-400">
+          <p className="text-[11.5px] leading-relaxed text-rose-600 dark:text-rose-400">
             {instagram.message}
           </p>
         ) : null}
