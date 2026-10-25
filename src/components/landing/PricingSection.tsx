@@ -78,7 +78,7 @@ export default function PricingSection() {
                       : "border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-primary)] hover:bg-[var(--surface-raised)] hover:border-[var(--border-strong)]"
                   }`}
                 >
-                  {plan.highlight ? "Nâng cấp Pro Turbo" : `Chọn gói ${plan.name}`}
+                  {plan.highlight ? `Nâng cấp ${plan.tierBadge}` : `Chọn gói ${plan.tierBadge}`}
                 </Link>
               </div>
             </ScrollReveal>

@@ -1,17 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
   Check,
   ChevronDown,
   ChevronUp,
   Clock,
   Copy,
+  Crown,
   Download,
   Globe,
   History,
   Loader2,
+  PanelLeftClose,
+  PanelLeftOpen,
   RotateCcw,
   Sparkles,
   Wand2,
@@ -29,6 +34,7 @@ import { SAMPLE_SCENARIOS, findSampleResult } from "./sampleScenarios";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
 import { toSafeFileName } from "@/lib/utils/filename";
+import { getPlanById } from "@/lib/config/pricing";
 import type {
   ContentFormInput,
   GeneratedContent,
@@ -38,6 +44,7 @@ import type {
 export interface WorkspaceUser {
   credits?: number | null;
   email?: string | null;
+  planId?: string | null;
 }
 
 export interface WorkspaceContainerProps {
@@ -78,8 +85,20 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const [outOfCreditsOpen, setOutOfCreditsOpen] = useState(false);
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
 
+  const [userPlanId, setUserPlanId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("cs_user_plan");
+      if (saved) return saved;
+    }
+    return user?.planId || "monthly";
+  });
+  const activePlan = useMemo(() => getPlanById(userPlanId), [userPlanId]);
+
   const [draftSaved, setDraftSaved] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  const [mobileTab, setMobileTab] = useState<"input" | "editor" | "preview">("input");
+  const [isZone1Collapsed, setIsZone1Collapsed] = useState(false);
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
@@ -319,6 +338,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         headlines: record.headlines,
         hashtags: record.hashtags,
       });
+      setMobileTab("editor");
       setHistoryOpen(false);
       showToast(`Đã khôi phục bài viết: ${record.productName}`);
       if (typeof window !== "undefined") {
@@ -363,6 +383,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           generateTimerRef.current = setTimeout(() => {
             setResult(sample);
             setLoading(false);
+            setMobileTab("editor");
             showToast("Đang xem dữ liệu mẫu. Đăng nhập để AI tạo bài viết riêng.");
           }, 400);
           return;
@@ -400,6 +421,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         if (resData.success && resData.data) {
           setResult(resData.data);
           setLoading(false);
+          setMobileTab("editor");
           if (typeof resData.creditsRemaining === "number") {
             setCredits(resData.creditsRemaining);
           }
@@ -448,9 +470,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       SAMPLE_SCENARIOS[sampleIndexRef.current % SAMPLE_SCENARIOS.length];
     sampleIndexRef.current += 1;
     setFormInputs(scenario.input);
-      setResult(scenario.output);
-      showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
-    };
+    setResult(scenario.output);
+    setMobileTab("editor");
+    showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
+  };
 
     const activeCaption =
       result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
@@ -461,17 +484,18 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     const overLimit = charCount > 125;
 
     return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col lg:h-full lg:min-h-0 lg:overflow-hidden">
       <WorkspaceHeader
         user={user}
         credits={credits}
+        planId={userPlanId}
         onOpenTopUp={() => setTopUpModalOpen(true)}
         onSignOutAction={onSignOutAction}
       />
 
-      <main className="w-full flex-1">
-        <div className="mx-auto w-full max-w-[1680px] px-3 pb-28 pt-4 sm:px-6 sm:py-6 md:pb-8">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <main className="w-full flex-1 lg:min-h-0 lg:overflow-hidden">
+        <div className="mx-auto flex h-full w-full max-w-[1680px] flex-col px-3 pb-28 pt-3 sm:px-6 sm:py-4 md:pb-6 lg:py-3 lg:pb-3">
+          <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
@@ -491,15 +515,47 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => setIsZone1Collapsed((prev) => !prev)}
+                title={isZone1Collapsed ? "Mở rộng Vùng 1 (Thông tin)" : "Thu gọn Vùng 1 (Tập trung biên tập)"}
+                className="btn-tactile hidden lg:inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+              >
+                {isZone1Collapsed ? (
+                  <>
+                    <PanelLeftOpen className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+                    <span>Mở lại Vùng 1</span>
+                  </>
+                ) : (
+                  <>
+                    <PanelLeftClose className="h-3.5 w-3.5" />
+                    <span>Thu gọn Vùng 1</span>
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
                 onClick={() => setTopUpModalOpen(true)}
-                className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                className={`btn-tactile inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-all ${
+                  isPro
+                    ? activePlan.id === "yearly"
+                      ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15)]"
+                      : activePlan.id === "monthly"
+                      ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                    : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                }`}
               >
                 {isPro ? (
-                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                  activePlan.id === "yearly" ? (
+                    <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
+                  ) : activePlan.id === "monthly" ? (
+                    <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                  ) : (
+                    <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                  )
                 ) : (
                   <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
                 )}
-                <span>{isPro ? "Pro Turbo" : "Nâng cấp Pro 0s"}</span>
+                <span>{isPro ? activePlan.tierBadge : "Nâng cấp Pro 0s"}</span>
               </button>
               <button
                 type="button"
@@ -512,9 +568,64 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-[360px_minmax(0,1fr)_380px]">
+          {/* Mobile Segmented Zone Tabs */}
+          <div className="mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-1 shadow-xs lg:hidden">
+            <button
+              type="button"
+              onClick={() => setMobileTab("input")}
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+                mobileTab === "input"
+                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+              }`}
+            >
+              <span>📝</span>
+              <span>1. Thông tin</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("editor")}
+              className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+                mobileTab === "editor"
+                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+              }`}
+            >
+              <span>✍️</span>
+              <span>2. Biên tập</span>
+              {result && (
+                <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("preview")}
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+                mobileTab === "preview"
+                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+              }`}
+            >
+              <span>📱</span>
+              <span>3. Xem trước</span>
+            </button>
+          </div>
+
+          <div
+            className={`grid flex-1 gap-4 transition-all duration-300 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] ${
+              isZone1Collapsed
+                ? "grid-cols-1 lg:grid-cols-[48px_minmax(0,1fr)_420px]"
+                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-[360px_minmax(0,1fr)_380px]"
+            }`}
+          >
             {/* ===== ZONE 1 — INPUT SPECIFICATION ===== */}
-            <aside className="flex min-w-0 flex-col gap-2.5 lg:col-span-1 xl:col-span-1">
+            <aside
+              className={`min-w-0 flex-col gap-2.5 ${
+                isZone1Collapsed
+                  ? "hidden lg:hidden"
+                  : "lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar"
+              } ${mobileTab === "input" ? "!flex" : "hidden lg:flex"}`}
+            >
               <ProductForm
                 value={formInputs}
                 onChange={setFormInputs}
@@ -527,9 +638,23 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               />
 
               {isPro ? (
-                <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-emerald)]/30 bg-[var(--accent-emerald)]/10 px-3 py-2 text-[12px] font-medium text-[var(--accent-emerald)]">
-                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-                  <span>Tài khoản Pro Turbo · Không giới hạn &amp; 0s Chờ đợi</span>
+                <div
+                  className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-[12px] font-medium transition-all ${
+                    activePlan.id === "yearly"
+                      ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.12)]"
+                      : activePlan.id === "monthly"
+                      ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.12)]"
+                      : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                  }`}
+                >
+                  {activePlan.id === "yearly" ? (
+                    <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
+                  ) : activePlan.id === "monthly" ? (
+                    <Sparkles className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                  ) : (
+                    <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                  )}
+                  <span>{activePlan.statusDescription}</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
@@ -545,9 +670,33 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               )}
             </aside>
 
+            {/* Desktop collapsed rail for Zone 1 */}
+            {isZone1Collapsed && (
+              <aside className="hidden lg:flex h-full flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-4 shadow-xs">
+                <button
+                  type="button"
+                  onClick={() => setIsZone1Collapsed(false)}
+                  title="Mở lại Vùng 1 (Thông tin sản phẩm)"
+                  className="btn-tactile flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                >
+                  <PanelLeftOpen className="h-4 w-4" />
+                </button>
+                <div className="flex flex-col items-center gap-2 [writing-mode:vertical-rl] rotate-180">
+                  <span className="text-[12px] font-semibold tracking-wider text-[var(--ink-secondary)]">
+                    VÙNG 1 · THÔNG TIN SẢN PHẨM
+                  </span>
+                </div>
+                <div className="h-6" />
+              </aside>
+            )}
+
             {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR ===== */}
-            <section className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 xl:col-span-1">
-              <header className="flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-4 py-3">
+            <section
+              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
+                mobileTab === "editor" ? "flex" : "hidden lg:flex"
+              }`}
+            >
+              <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                     <Wand2 className="h-3.5 w-3.5" />
@@ -563,15 +712,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     disabled={loading}
                     className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
                   >
-                          {loading ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                          ) : (
-                            <Sparkles className="h-3 w-3" />
-                          )}
-                          {loading ? "Đang tạo..." : "Tạo lại"}
-                        </button>
-                      )}
-                    </header>
+                    {loading ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                    {loading ? "Đang tạo..." : "Tạo lại"}
+                  </button>
+                )}
+              </header>
 
               {result && activeCaption ? (
                 <>
@@ -666,19 +815,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
                       )}
-                        {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
-                      </button>
+                      {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={handleExportFullPackageTxt}
-                        className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-navy)] hover:text-[var(--accent-navy)]"
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                        Xuất gói nội dung (.txt)
-                      </button>
+                    <button
+                      type="button"
+                      onClick={handleExportFullPackageTxt}
+                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-navy)] hover:text-[var(--accent-navy)]"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Xuất gói nội dung (.txt)
+                    </button>
 
-                      {isModified && (
+                    {isModified && (
                       <button
                         type="button"
                         onClick={() => {
@@ -806,6 +955,18 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       </div>
                     </div>
                   )}
+
+                  {/* Mobile navigation CTA to Zone 3 */}
+                  <div className="mt-4 border-t border-[var(--border-subtle)] p-4 lg:hidden">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab("preview")}
+                      className="btn-tactile flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] py-3 text-[13px] font-semibold text-white shadow-xs"
+                    >
+                      <span>Xem trước Mockup Facebook (Vùng 3)</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
                 </>
               ) : (
                 <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-16 text-center">
@@ -816,13 +977,27 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
                     Nhập thông tin sản phẩm ở Vùng 1 và bấm &quot;Tạo 3 góc bài viết&quot; để AI kiến tạo nội dung.
                   </p>
+                  <div className="mt-4 lg:hidden">
+                    <button
+                      type="button"
+                      onClick={() => setMobileTab("input")}
+                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)]"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      <span>Quay lại Vùng 1</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </section>
 
             {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR ===== */}
-            <aside className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-2 xl:col-span-1">
-              <header className="flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-4 py-3">
+            <aside
+              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs md:col-span-2 lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
+                mobileTab === "preview" ? "flex" : "hidden lg:flex"
+              }`}
+            >
+              <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                     <Globe className="h-3.5 w-3.5" />
@@ -831,9 +1006,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     Vùng 3 · Xem trước đa kênh
                   </h2>
                 </div>
-                <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
-                  Live
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("editor")}
+                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-1 text-[11px] font-medium text-[var(--ink-secondary)] lg:hidden"
+                  >
+                    <ArrowLeft className="h-3 w-3" />
+                    <span>Sửa bài (Vùng 2)</span>
+                  </button>
+                  <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+                    Live
+                  </span>
+                </div>
               </header>
 
               <div className="flex-1 p-3">
@@ -892,58 +1077,123 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             open={topUpModalOpen}
             onClose={() => setTopUpModalOpen(false)}
             userIdentifier={user?.email}
-            onSuccess={(newCredits, message) => {
+            currentPlanId={userPlanId}
+            onSuccess={(newCredits, message, planId) => {
               setCredits(newCredits);
+              if (planId) {
+                setUserPlanId(planId);
+                try {
+                  localStorage.setItem("cs_user_plan", planId);
+                } catch {
+                  // Ignore localStorage error in private mode
+                }
+              }
               showToast(message);
             }}
           />
 
           {/* Mobile sticky action bar */}
-          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md md:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md lg:hidden">
             <div className="mx-auto flex max-w-6xl items-center gap-3">
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
-                  {typeof credits === "number" ? (
-                    <>
-                      Còn{" "}
-                      <strong className="font-semibold tabular-nums text-[var(--ink-primary)]">
-                        {credits}
-                      </strong>{" "}
-                      lượt
-                    </>
-                  ) : (
-                    "Đăng nhập để lưu lịch sử"
-                  )}
-                </p>
-                {typeof credits === "number" && (
+              {mobileTab === "input" ? (
+                <>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
+                      {isPro ? (
+                        <span
+                          className={`font-semibold ${
+                            activePlan.id === "yearly"
+                              ? "text-purple-600 dark:text-purple-400"
+                              : activePlan.id === "monthly"
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-emerald-600 dark:text-emerald-400"
+                          }`}
+                        >
+                          {activePlan.tierBadge} · 0s Chờ
+                        </span>
+                      ) : user ? (
+                        "Gói Miễn Phí (45s Chờ)"
+                      ) : (
+                        "Đăng nhập lưu lịch sử"
+                      )}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setTopUpModalOpen(true)}
+                      className="text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
+                    >
+                      {isPro ? "Đổi gói" : "+ Nâng cấp"}
+                    </button>
+                  </div>
+                  <button
+                    type="submit"
+                    form="product-form"
+                    disabled={loading || (cooldownSeconds > 0 && !isPro)}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : cooldownSeconds > 0 && !isPro ? null : (
+                      <Sparkles className="h-4 w-4" />
+                    )}
+                    <span>
+                      {loading
+                        ? "Đang tạo..."
+                        : cooldownSeconds > 0 && !isPro
+                          ? `Sạc AI: ${cooldownSeconds}s`
+                          : "Tạo 3 góc"}
+                    </span>
+                  </button>
+                </>
+              ) : mobileTab === "editor" ? (
+                <>
                   <button
                     type="button"
-                    onClick={() => setTopUpModalOpen(true)}
-                    className="text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
+                    onClick={() => setMobileTab("input")}
+                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
                   >
-                    + Nạp thêm
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span>Vùng 1</span>
                   </button>
-                )}
-              </div>
-              <button
-                type="submit"
-                form="product-form"
-                disabled={loading || (cooldownSeconds > 0 && !isPro)}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : cooldownSeconds > 0 && !isPro ? null : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                <span>
-                  {loading
-                    ? "Đang tạo..."
-                    : cooldownSeconds > 0 && !isPro
-                      ? `Sạc AI: ${cooldownSeconds}s`
-                      : "Tạo 3 góc"}
-                </span>
-              </button>
+                  <div className="flex-1" />
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("preview")}
+                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
+                  >
+                    <span>Xem trước (Vùng 3)</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab("editor")}
+                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span>Sửa bài (Vùng 2)</span>
+                  </button>
+                  <div className="flex-1" />
+                  {result && activeCaption && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void handleCopyText(
+                          currentText,
+                          `caption-mobile`,
+                          "Đã sao chép bài viết.",
+                        )
+                      }
+                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      <span>Sao chép bài viết</span>
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
 

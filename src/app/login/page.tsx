@@ -103,31 +103,57 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:flex-row">
-      {/* ===== COLUMN A — AUTHENTICATION ENGINE ===== */}
-      <div className="relative flex w-full flex-col lg:w-1/2">
-        <div className="flex items-center justify-between px-5 py-4 sm:px-6">
-          <Link href="/" className="inline-flex items-center gap-2">
+    <div className="flex min-h-screen w-full flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:grid lg:h-screen lg:grid-cols-2 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden">
+      {/* ===== PRO NAVIGATION HEADER ===== */}
+      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface)]/80 px-6 py-3.5 backdrop-blur-md lg:col-span-2">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
+          <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-sm">
               <Sparkles className="h-4 w-4" />
             </span>
             <span className="text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
               Content Studio
             </span>
+            <span className="hidden rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-tertiary)] sm:inline-block">
+              v3.2 AI
+            </span>
           </Link>
-          <div className="flex items-center gap-1.5">
+
+          <nav className="hidden items-center gap-1 md:flex">
             <Link
               href="/"
-              className="btn-tactile inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
+              className="btn-tactile inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
             >
               <Home className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Trang chủ</span>
+              <span>Trang chủ</span>
             </Link>
+            <Link
+              href="/#features"
+              className="btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+            >
+              Tính năng AIDA &amp; PAS
+            </Link>
+            <Link
+              href="/#pricing"
+              className="btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+            >
+              Bảng giá Pro Turbo
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <span className="hidden items-center gap-1.5 rounded-full border border-[var(--accent-emerald)]/25 bg-[var(--accent-emerald)]/[0.08] px-2.5 py-1 text-[11px] font-medium text-[var(--accent-emerald)] sm:inline-flex">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Bảo mật SSL 256-bit
+            </span>
             <ThemeToggle />
           </div>
         </div>
+      </header>
 
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start px-5 pb-10 pt-8 sm:pt-14 lg:pt-16 sm:px-6">
+      {/* ===== COLUMN A — AUTHENTICATION ENGINE (LOCKED / CENTERED) ===== */}
+      <div className="flex w-full flex-col items-center justify-center px-6 py-8 sm:px-12 lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar">
+        <div className="my-auto w-full max-w-md">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-primary)]">
               {forgotMode ? "Khôi phục mật khẩu" : isLogin ? "Chào mừng trở lại" : "Bắt đầu sáng tạo"}
@@ -389,24 +415,22 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
             </>
           )}
 
-                    <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-[var(--ink-tertiary)]">
-                      <ShieldCheck className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
-                      <span>Bảo mật chuẩn mã hóa SSL & Supabase Row-Level Security</span>
+                        <div className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-[var(--ink-tertiary)]">
+                          <ShieldCheck className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                          <span>Bảo mật chuẩn mã hóa SSL &amp; Supabase Row-Level Security</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* ===== COLUMN B — DARK EDITORIAL SHOWCASE ===== */}
-                <div className="relative hidden w-1/2 flex-col justify-center overflow-hidden border-l border-[var(--border-subtle)] bg-[var(--surface-raised)] lg:flex">
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-navy) 20%, transparent), transparent 60%)",
-                    }}
-                  />
-                  <div className="relative z-10 mx-auto w-full max-w-lg px-10 py-12">
+                    {/* ===== COLUMN B — EDITORIAL SHOWCASE (INDEPENDENT SCROLL) ===== */}
+                    <div
+                      className="relative hidden flex-col border-l border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-8 py-10 xl:px-14 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar"
+                      style={{
+                        backgroundImage:
+                          "radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-navy) 15%, transparent), transparent 70%)",
+                      }}
+                    >
+                      <div className="relative z-10 mx-auto my-auto w-full max-w-lg">
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)] backdrop-blur-sm">
                         <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
                         NỀN TẢNG KIẾN TẠO NỘI DUNG CHUYỂN ĐỔI CAO

@@ -19,6 +19,7 @@ interface DevSession {
   id: string;
   email: string;
   credits: number;
+  planId?: string;
 }
 
 interface AuthResult {
@@ -75,6 +76,7 @@ function verifyDevSession(cookieValue: string): DevSession | null {
         id: parsed.id ?? "local-dev-user",
         email: parsed.email,
         credits: typeof parsed.credits === "number" ? parsed.credits : 10,
+        planId: typeof parsed.planId === "string" ? parsed.planId : "monthly",
       };
     }
   } catch {
@@ -83,13 +85,14 @@ function verifyDevSession(cookieValue: string): DevSession | null {
   return null;
 }
 
-async function setDevSession(email: string): Promise<void> {
+async function setDevSession(email: string, planId: string = "monthly"): Promise<void> {
   if (process.env.NODE_ENV === "production") return;
   const cookieStore = await cookies();
   const session: DevSession = {
     id: "local-dev-user",
     email,
     credits: 10,
+    planId,
   };
   cookieStore.set(COOKIE_DEV_SESSION, signDevSession(session), {
     httpOnly: true,
@@ -329,6 +332,7 @@ interface TopUpResult {
   success: boolean;
   newCredits: number;
   message: string;
+  planId?: string;
 }
 
 /**
@@ -336,7 +340,7 @@ interface TopUpResult {
  * RULE 1: Supabase Auth -> cộng trực tiếp vào profiles.credits_remaining.
  * RULE 2: Dev session -> cộng vào payload HMAC và ký lại COOKIE_DEV_SESSION.
  */
-export async function topUpCredits(amount: number): Promise<TopUpResult> {
+export async function topUpCredits(amount: number, planId?: string): Promise<TopUpResult> {
   const safeAmount = Math.floor(amount);
   if (!Number.isFinite(safeAmount) || safeAmount <= 0 || safeAmount > 100000) {
     return { success: false, newCredits: 0, message: "Số lượt nạp không hợp lệ." };
@@ -350,17 +354,23 @@ export async function topUpCredits(amount: number): Promise<TopUpResult> {
 
     if (session) {
       const newCredits = session.credits + safeAmount;
-      cookieStore.set(COOKIE_DEV_SESSION, signDevSession({ ...session, credits: newCredits }), {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      const targetPlan = planId || session.planId || "monthly";
+      cookieStore.set(
+        COOKIE_DEV_SESSION,
+        signDevSession({ ...session, credits: newCredits, planId: targetPlan }),
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        },
+      );
       revalidatePath("/workspace");
       return {
         success: true,
         newCredits,
+        planId: targetPlan,
         message: `Đã nạp thành công ${safeAmount} lượt tạo vào tài khoản của bạn.`,
       };
     }

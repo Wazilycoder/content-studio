@@ -180,7 +180,7 @@ export default function ProductForm({
       id="product-form"
       onSubmit={handleSubmit}
       noValidate
-      className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
+      className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
     >
       <div className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] px-5 pb-4 pt-5">
         <div className="min-w-0">

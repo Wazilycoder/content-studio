@@ -12,11 +12,11 @@ export default async function WorkspacePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--canvas)] text-[var(--ink-primary)]">
+    <div className="flex min-h-screen flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:h-screen lg:overflow-hidden">
       <WorkspaceContainer user={user} onSignOutAction={signOut} />
 
-      {/* Footer */}
-      <footer className="border-t border-[var(--border-subtle)] bg-[var(--surface)] py-4 text-center text-[12px] text-[var(--ink-tertiary)]">
+      {/* Footer (Hiển thị trên mobile, ẩn trên Desktop Studio để nhường không gian cho 3 cột độc lập) */}
+      <footer className="border-t border-[var(--border-subtle)] bg-[var(--surface)] py-3 text-center text-[12px] text-[var(--ink-tertiary)] lg:hidden">
         Content Studio — Không gian sáng tạo nội dung Facebook &amp; Instagram chuyên nghiệp. Zero AI-Slop.
       </footer>
     </div>
