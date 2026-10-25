@@ -19,8 +19,8 @@ export default function PricingSection() {
               Bảng giá minh bạch. Không phí duy trì ẩn.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-              Gói Miễn Phí: Không giới hạn số bài tạo vĩnh viễn (Cooldown 45s). Nâng
-              cấp Pro: 0s Cooldown tạo tức thì, ưu tiên tài nguyên AI.
+              Gói Miễn Phí: Không giới hạn số bài tạo vĩnh viễn (Cooldown 45s sạc năng
+              lượng). Nâng cấp Pro Turbo: 0s Cooldown tạo tức thì, ưu tiên GPU.
             </p>
           </div>
         </ScrollReveal>
@@ -54,7 +54,7 @@ export default function PricingSection() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs font-medium text-[var(--accent-navy)]">
-                  {plan.credits} lượt tạo ({plan.perCredit})
+                  {plan.duration}
                 </p>
                 <p className="mt-3 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                   {plan.description}
@@ -78,7 +78,7 @@ export default function PricingSection() {
                       : "border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-primary)] hover:bg-[var(--surface-raised)] hover:border-[var(--border-strong)]"
                   }`}
                 >
-                  {plan.highlight ? "Nạp gói Chủ Shop" : `Chọn gói ${plan.name}`}
+                  {plan.highlight ? "Nâng cấp Pro Turbo" : `Chọn gói ${plan.name}`}
                 </Link>
               </div>
             </ScrollReveal>

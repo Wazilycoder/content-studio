@@ -449,15 +449,15 @@ export default function ProductForm({
               : "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.18)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
           }
         >
-          {cooldownActive ? (
-            <>
-              <span aria-hidden="true">⏱️</span>
-              <span>Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro để tạo ngay)</span>
-            </>
-          ) : loading ? (
+          {loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Đang biên soạn bài viết...</span>
+            </>
+          ) : cooldownActive ? (
+            <>
+              <span aria-hidden="true">⏱️</span>
+              <span>Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro để tạo ngay)</span>
             </>
           ) : (
             <>

@@ -75,8 +75,8 @@ export default function AuthModal({ open, onClose, productName }: AuthModalProps
             href="/register"
             className="btn-tactile inline-flex flex-1 items-center justify-center rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[var(--accent-navy-hover)]"
           >
-            Đăng ký nhận 10 lượt
-          </Link>
+              Tạo tài khoản miễn phí
+            </Link>
           <Link
             href="/login"
             className="btn-tactile inline-flex flex-1 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-2.5 text-xs font-medium text-[var(--ink-primary)] transition-colors hover:bg-[var(--surface-raised)]"

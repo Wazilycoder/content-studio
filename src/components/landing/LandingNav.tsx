@@ -3,7 +3,7 @@
 import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, ArrowRight, Coins, Menu, X } from "lucide-react";
+import { Sparkles, ArrowRight, Menu, X } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 
@@ -77,10 +77,13 @@ export default function LandingNav({ user }: LandingNavProps) {
           {user ? (
             <>
               <div className="hidden items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs font-medium text-[var(--ink-secondary)] sm:flex">
-                <Coins className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                <span>
-                  <strong className="text-[var(--ink-primary)]">{user.credits}</strong> lượt tạo
-                </span>
+                {typeof user.credits === "number" && user.credits > 0 ? (
+                  <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                    ⚡ Studio Pro
+                  </span>
+                ) : (
+                  <span>Gói Miễn Phí</span>
+                )}
               </div>
               <Link
                 href="/workspace"
@@ -139,11 +142,12 @@ export default function LandingNav({ user }: LandingNavProps) {
             {user ? (
               <>
                 <div className="flex items-center justify-between rounded-lg bg-[var(--surface-raised)] px-3 py-2 text-xs text-[var(--ink-secondary)]">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Coins className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                    Số dư credit
-                  </span>
-                  <strong className="text-[var(--ink-primary)]">{user.credits} lượt</strong>
+                  <span>Gói dịch vụ</span>
+                  <strong className="text-[var(--ink-primary)]">
+                    {typeof user.credits === "number" && user.credits > 0
+                      ? "⚡ Studio Pro"
+                      : "Gói Miễn Phí"}
+                  </strong>
                 </div>
                 <Link
                   href="/workspace"

@@ -397,10 +397,14 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
         if (resData.success && resData.data) {
           setResult(resData.data);
+          setLoading(false);
           if (typeof resData.creditsRemaining === "number") {
             setCredits(resData.creditsRemaining);
           }
-          setCooldownSeconds(isPro ? 0 : 45);
+          // Chỉ kích hoạt cooldown SAU KHI nội dung đã hiển thị xong trên màn hình.
+          if (!isPro) {
+            setCooldownSeconds(45);
+          }
           showToast(successMessage);
           void refreshHistorySilently();
         } else {
@@ -488,15 +492,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 onClick={() => setTopUpModalOpen(true)}
                 className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
               >
-                <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                {typeof credits === "number" ? (
-                  <span className="tabular-nums">
-                    <strong className="font-semibold text-[var(--ink-primary)]">{credits}</strong> lượt
-                  </span>
-                ) : (
-                  <span>Nạp lượt</span>
-                )}
-              </button>
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
+                  <span>{isPro ? "⚡ Pro Turbo" : "Nâng cấp Pro 0s"}</span>
+                </button>
               <button
                 type="button"
                 onClick={handleOpenHistory}
@@ -522,29 +520,22 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 onOpenUpgrade={() => setTopUpModalOpen(true)}
               />
 
-              <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)]/70 px-3 py-2 text-[12px] text-[var(--ink-tertiary)]">
-                {typeof credits === "number" ? (
-                  <>
-                    <span>
-                      Còn{" "}
-                      <strong className="font-semibold tabular-nums text-[var(--ink-primary)]">
-                        {credits}
-                      </strong>{" "}
-                      lượt tạo
-                    </span>
-                    <span>·</span>
-                    <button
-                      type="button"
-                      onClick={() => setTopUpModalOpen(true)}
-                      className="font-semibold text-[var(--accent-navy)] transition-colors hover:underline"
-                    >
-                      + Nạp thêm lượt
-                    </button>
-                  </>
-                ) : (
-                  "Đăng nhập để lưu lịch sử nội dung đã tạo"
-                )}
-              </div>
+              {isPro ? (
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--accent-emerald)]/30 bg-[var(--accent-emerald)]/10 px-3 py-2 text-[12px] font-medium text-[var(--accent-emerald)]">
+                  ⚡ Tài khoản Pro Turbo · Không giới hạn &amp; 0s Chờ đợi
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
+                  <span>Gói Miễn Phí: Không giới hạn bài viết</span> ·{" "}
+                  <button
+                    type="button"
+                    onClick={() => setTopUpModalOpen(true)}
+                    className="font-semibold text-[var(--accent-navy)] hover:underline"
+                  >
+                    Nâng cấp Pro 0s
+                  </button>
+                </div>
+              )}
             </aside>
 
             {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR ===== */}

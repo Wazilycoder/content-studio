@@ -260,7 +260,8 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                 <div className="animate-fade-in mb-5 flex items-start gap-2.5 rounded-lg border border-[var(--accent-emerald)]/20 bg-[var(--accent-emerald)]/[0.08] p-3 text-xs leading-relaxed text-[var(--accent-emerald)]">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>
-                    Tặng ngay <strong>10 lượt tạo nội dung miễn phí</strong> vào tài khoản sau khi đăng ký.
+                    <strong>Tài khoản Miễn Phí:</strong> Tạo không giới hạn bài viết trọn đời
+                    (Cooldown 45s để điều tiết tài nguyên).
                   </span>
                 </div>
               )}
@@ -379,7 +380,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                     </>
                   ) : (
                     <>
-                      <span>{isLogin ? "Đăng nhập vào Studio" : "Tạo tài khoản nhận 10 lượt"}</span>
+                      <span>{isLogin ? "Đăng nhập vào Studio" : "Tạo tài khoản miễn phí"}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </>
                   )}

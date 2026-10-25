@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Coins, Copy, Loader2, ShieldCheck, Sparkles, X } from "lucide-react";
+import { Check, Copy, Loader2, ShieldCheck, Sparkles, X } from "lucide-react";
 import { topUpCredits } from "@/app/auth/actions";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { PRICING_PLANS as PACKAGES, BANK_INFO } from "@/lib/config/pricing";
@@ -19,7 +19,7 @@ export default function TopUpModal({
   userIdentifier,
   onSuccess,
 }: TopUpModalProps) {
-  const [selectedId, setSelectedId] = useState("pro");
+  const [selectedId, setSelectedId] = useState("monthly");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -67,10 +67,13 @@ export default function TopUpModal({
         setError(result.message);
         return;
       }
-      onSuccess?.(result.newCredits, result.message);
-      onClose();
-    } catch {
-      setError("Không thể kết nối máy chủ nạp lượt. Vui lòng thử lại.");
+        onSuccess?.(
+          result.newCredits,
+          "Đã nâng cấp Pro Turbo thành công! Bạn có thể tạo ngay lập tức không cần chờ.",
+        );
+        onClose();
+      } catch {
+        setError("Không thể kết nối máy chủ nâng cấp. Vui lòng thử lại.");
     } finally {
       setPending(false);
     }
@@ -182,9 +185,9 @@ export default function TopUpModal({
                   <p className="text-[13px] font-semibold tabular-nums text-[var(--ink-primary)]">
                     {pkg.price.toLocaleString("vi-VN")}đ
                   </p>
-                  <p className="mt-0.5 flex items-center justify-end gap-1 text-[11px] tabular-nums text-[var(--ink-tertiary)]">
-                    <Coins className="h-3 w-3 text-amber-500" />
-                    {pkg.credits} lượt · {pkg.perCredit}
+                  <p className="mt-0.5 text-[11px] text-[var(--ink-tertiary)]">{pkg.duration}</p>
+                  <p className="mt-0.5 text-[10.5px] font-semibold text-[var(--accent-emerald)]">
+                    ⚡ 0s Cooldown tức thì
                   </p>
                 </div>
               </button>
@@ -247,7 +250,7 @@ export default function TopUpModal({
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--accent-navy)]/50 bg-[var(--accent-navy)]/[0.06] px-3 py-2.5 text-[12px] font-semibold text-[var(--accent-navy)] transition-all hover:border-[var(--accent-navy)] hover:bg-[var(--accent-navy)]/10 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-            <span>⚡ Xác nhận nhanh (Mô phỏng nạp +50 lượt)</span>
+            <span>⚡ Kích hoạt nhanh (Mô phỏng nâng cấp Pro Turbo)</span>
           </button>
           <button
             type="button"
@@ -260,7 +263,7 @@ export default function TopUpModal({
 
         <p className="relative mt-3 flex items-center justify-center gap-1.5 text-[11px] text-[var(--ink-tertiary)]">
           <ShieldCheck className="h-3 w-3 text-emerald-500" />
-          Giao dịch được đối soát thủ công trong 1–3 phút và cộng lượt tự động.
+          Giao dịch được đối soát thủ công trong 1–3 phút và kích hoạt Pro Turbo tự động.
         </p>
       </div>
     </div>

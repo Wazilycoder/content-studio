@@ -11,7 +11,7 @@ interface HeroSectionProps {
 
 const TRUST_ITEMS = [
   "0đ chi phí bắt đầu",
-  "10 lượt tạo tặng ngay",
+  "Tạo không giới hạn bài viết",
   "Chuẩn 125 ký tự trước nút 'Xem thêm'",
   "7 tông giọng chuyên sâu",
 ];
@@ -20,7 +20,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
   const primaryHref = user ? "/workspace" : "/register";
   const primaryLabel = user
     ? "Vào Workspace làm việc"
-    : "Bắt đầu miễn phí (Tặng 10 lượt)";
+    : "Bắt đầu miễn phí (Không giới hạn)";
 
   return (
     <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28">

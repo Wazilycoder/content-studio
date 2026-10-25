@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { PenLine, LogOut, ArrowRight, Coins, Home, Plus } from "lucide-react";
+import { PenLine, LogOut, ArrowRight, Home } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import type { WorkspaceUser } from "./WorkspaceContainer";
 
@@ -16,9 +16,11 @@ export default function WorkspaceHeader({
   user,
   credits,
   onOpenTopUp,
-  onSignOutAction,
-}: WorkspaceHeaderProps) {
-  return (
+    onSignOutAction,
+  }: WorkspaceHeaderProps) {
+    const isPro = typeof credits === "number" && credits > 0;
+
+    return (
     <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[var(--surface)]/90 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -47,30 +49,30 @@ export default function WorkspaceHeader({
         <div className="flex items-center gap-2 sm:gap-3">
           {user ? (
             <>
-              {/* Interactive Credit Pill with Real-time Count & Top-up CTA */}
-              <div className="flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-0.5 shadow-xs transition-all hover:border-[var(--border-strong)]">
+              {/* Service tier pill — Pro Turbo hoặc Gói Miễn Phí */}
+              {isPro ? (
                 <button
                   type="button"
                   onClick={onOpenTopUp}
-                  className="btn-tactile flex items-center gap-1.5 px-2.5 py-1 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
-                  title="Xem số dư và nạp thêm lượt"
+                  title="Bạn đang dùng Pro Turbo — 0s Cooldown"
+                  className="btn-tactile flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[12px] font-semibold text-emerald-600 dark:text-emerald-400"
                 >
-                  <Coins className="h-3.5 w-3.5 text-amber-500" />
-                  <span>
-                    <strong className="tabular-nums text-[var(--ink-primary)]">{credits ?? 0}</strong>{" "}
-                    lượt tạo
+                  ⚡ Pro Turbo
+                </button>
+              ) : (
+                <div className="flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-0.5">
+                  <span className="px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)]">
+                    Gói Miễn Phí
                   </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={onOpenTopUp}
-                  className="btn-tactile inline-flex items-center gap-1 rounded-full bg-[var(--accent-navy)] px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition-all hover:bg-[var(--accent-navy-hover)] hover:shadow-sm active:scale-95"
-                  title="Nạp thêm lượt tạo AI"
-                >
-                  <Plus className="h-3 w-3" />
-                  <span>Nạp thêm</span>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    onClick={onOpenTopUp}
+                    className="btn-tactile rounded-full bg-[var(--accent-navy)] px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-[var(--accent-navy-hover)]"
+                  >
+                    Nâng Pro 0s
+                  </button>
+                </div>
+              )}
 
               {/* User email */}
               <span className="hidden max-w-[150px] truncate text-[12px] text-[var(--ink-tertiary)] lg:inline">
