@@ -16,15 +16,57 @@ export default function HeadlineCard({
   onNotify,
 }: HeadlineCardProps) {
   const [copied, setCopied] = useState(false);
+  const [displayedHeadline, setDisplayedHeadline] = useState(headline);
+  const [isStreaming, setIsStreaming] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const streamIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevHeadlineRef = useRef(headline);
+
+  useEffect(() => {
+    if (headline && headline !== prevHeadlineRef.current) {
+      prevHeadlineRef.current = headline;
+      setIsStreaming(true);
+      setDisplayedHeadline("");
+
+      let currentIndex = 0;
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+
+      streamIntervalRef.current = setInterval(() => {
+        currentIndex = Math.min(currentIndex + 2, headline.length);
+        setDisplayedHeadline(headline.slice(0, currentIndex));
+
+        if (currentIndex >= headline.length) {
+          if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+          setIsStreaming(false);
+        }
+      }, 18);
+
+      return () => {
+        if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+      };
+    } else {
+      setDisplayedHeadline(headline);
+      setIsStreaming(false);
+    }
+  }, [headline]);
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
     };
   }, []);
 
+  const finishStreaming = () => {
+    if (isStreaming) {
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+      setDisplayedHeadline(headline);
+      setIsStreaming(false);
+    }
+  };
+
   const handleCopy = async () => {
+    finishStreaming();
     const succeeded = await copyToClipboard(headline);
     if (!succeeded) {
       onNotify?.("Không thể sao chép tự động. Vui lòng bôi đen và chép thủ công.");
@@ -38,13 +80,19 @@ export default function HeadlineCard({
   };
 
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[var(--border-strong)]">
+    <div
+      onClick={finishStreaming}
+      className="flex cursor-pointer items-start gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[var(--border-strong)]"
+    >
       <span className="mt-[1px] inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[var(--surface-raised)] text-[10.5px] font-semibold tabular-nums text-[var(--ink-tertiary)]">
         {String(index + 1).padStart(2, "0")}
       </span>
 
       <p className="min-w-0 flex-1 break-words text-[13px] font-medium leading-relaxed text-[var(--ink-primary)]">
-        {headline}
+        {displayedHeadline}
+        {isStreaming && (
+          <span className="ml-1 inline-block h-[13px] w-[2px] animate-pulse rounded-xs bg-indigo-500 align-middle" />
+        )}
       </p>
 
       <button
