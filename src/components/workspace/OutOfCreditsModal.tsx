@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Coins, Sparkles, X, ArrowRight } from "lucide-react";
+import { Coins, Zap, X, ArrowRight } from "lucide-react";
 
 interface OutOfCreditsModalProps {
   open: boolean;
@@ -62,7 +62,7 @@ export default function OutOfCreditsModal({
 
         <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3.5 text-xs text-[var(--ink-secondary)] space-y-1.5">
           <div className="flex items-center gap-2 font-medium text-[var(--ink-primary)]">
-            <Sparkles className="h-4 w-4 text-[var(--accent-navy)]" />
+            <Zap className="h-4 w-4 text-[var(--accent-navy)]" />
             <span>Quyền lợi gói Studio Pro:</span>
           </div>
           <p>• Không giới hạn lượt tạo bài viết Facebook &amp; Instagram.</p>

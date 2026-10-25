@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const SKELETON_ROWS: string[][] = [
   ["w-[92%]", "w-full", "w-[88%]", "w-[64%]"],
@@ -50,7 +50,7 @@ export default function SkeletonResults() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-xs">
-              <Sparkles className="h-4 w-4 animate-spin text-white" />
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
             </div>
             <div>
               <span className="block text-[11px] font-semibold uppercase tracking-wider text-[var(--accent-navy)]">

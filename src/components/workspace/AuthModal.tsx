@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, X } from "lucide-react";
+import { Layers3, X } from "lucide-react";
 
 interface AuthModalProps {
   open: boolean;
@@ -45,7 +45,7 @@ export default function AuthModal({ open, onClose, productName }: AuthModalProps
         </button>
 
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-          <Sparkles className="h-5 w-5" />
+          <Layers3 className="h-5 w-5" />
         </div>
 
         <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]">

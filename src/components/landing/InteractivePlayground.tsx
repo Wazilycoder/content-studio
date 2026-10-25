@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Copy, Hash, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Copy, Hash, Layers3 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 interface AngleCaption {
@@ -279,7 +279,7 @@ export default function InteractivePlayground() {
             {/* Headlines */}
             <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[var(--accent-navy)]" />
+                <Layers3 className="h-4 w-4 text-[var(--accent-navy)]" />
                 <span className="text-xs font-semibold text-[var(--ink-primary)]">
                   3 Headlines giật tít
                 </span>

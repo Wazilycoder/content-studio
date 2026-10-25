@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, CheckCircle2, Copy, Crown, Loader2, ShieldCheck, Sparkles, X, Zap, ZoomIn } from "lucide-react";
+import { Check, CheckCircle2, Copy, Crown, Layers3, Loader2, ShieldCheck, X, Zap, ZoomIn } from "lucide-react";
 import { topUpCredits } from "@/app/auth/actions";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { PRICING_PLANS as PACKAGES, BANK_INFO } from "@/lib/config/pricing";
@@ -133,7 +133,7 @@ export default function TopUpModal({
             {selected.id === "yearly" ? (
               <Crown className="h-5 w-5 fill-white text-white" />
             ) : selected.id === "monthly" ? (
-              <Sparkles className="h-5 w-5 fill-white text-white" />
+              <Layers3 className="h-5 w-5 text-white" />
             ) : (
               <Zap className="h-5 w-5 fill-white text-white" />
             )}
@@ -184,7 +184,7 @@ export default function TopUpModal({
                         {isYearly ? (
                           <Crown className="h-3.5 w-3.5 shrink-0 fill-purple-500 text-purple-500" />
                         ) : isMonthly ? (
-                          <Sparkles className="h-3.5 w-3.5 shrink-0 fill-amber-500 text-amber-500" />
+                          <Zap className="h-3.5 w-3.5 shrink-0 fill-amber-500 text-amber-500" />
                         ) : (
                           <Zap className="h-3.5 w-3.5 shrink-0 fill-emerald-500 text-emerald-500" />
                         )}
@@ -257,7 +257,7 @@ export default function TopUpModal({
                 ) : selected.id === "yearly" ? (
                   <Crown className="h-4 w-4 fill-purple-500 text-purple-500" />
                 ) : selected.id === "monthly" ? (
-                  <Sparkles className="h-4 w-4 fill-amber-500 text-amber-500" />
+                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
                 ) : (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 )}
