@@ -90,50 +90,61 @@ const TESTIMONIALS: Testimonial[] = [
 const AUTO_PLAY_MS = 4000;
 const SWIPE_THRESHOLD = 45;
 
-function getOffset(index: number, activeIndex: number, total: number): number {
-  let offset = index - activeIndex;
-  if (offset > total / 2) offset -= total;
-  if (offset < -total / 2) offset += total;
-  return offset;
+type Slot = "center" | "left" | "right" | "far-left" | "far-right";
+
+function getSlot(index: number, activeIndex: number, total: number): Slot {
+  const diff = (index - activeIndex + total) % total;
+  if (diff === 0) return "center";
+  if (diff === 1) return "right";
+  if (diff === 2) return "far-right";
+  if (diff === 3) return "far-left";
+  if (diff === 4) return "left";
+  return "far-right";
 }
 
-function getCardStyle(offset: number): CSSProperties {
-  // scale(1) tuyệt đối cho thẻ trung tâm để chữ sắc nét 100%, không bị nhòe pixel (anti-subpixel-blur)
-  if (offset === 0) {
-    return {
-      transform:
-        "translate(-50%, -50%) translateX(0px) translateZ(0px) rotateY(0deg) scale(1)",
-      opacity: 1,
-      zIndex: 20,
-      pointerEvents: "auto",
-    };
+function getSlotStyle(slot: Slot): CSSProperties {
+  switch (slot) {
+    case "center":
+      return {
+        transform:
+          "translate3d(-50%, -50%, 0px) translateX(0px) rotateY(0deg) scale(1)",
+        opacity: 1,
+        zIndex: 20,
+        pointerEvents: "auto",
+      };
+    case "left":
+      return {
+        transform:
+          "translate3d(-50%, -50%, -40px) translateX(-68%) rotateY(18deg) scale(0.88)",
+        opacity: 0.55,
+        zIndex: 10,
+        pointerEvents: "auto",
+      };
+    case "right":
+      return {
+        transform:
+          "translate3d(-50%, -50%, -40px) translateX(68%) rotateY(-18deg) scale(0.88)",
+        opacity: 0.55,
+        zIndex: 10,
+        pointerEvents: "auto",
+      };
+    case "far-left":
+      return {
+        transform:
+          "translate3d(-50%, -50%, -100px) translateX(-125%) rotateY(28deg) scale(0.75)",
+        opacity: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+      };
+    case "far-right":
+      return {
+        transform:
+          "translate3d(-50%, -50%, -100px) translateX(125%) rotateY(-28deg) scale(0.75)",
+        opacity: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+      };
   }
-  if (offset === -1) {
-    return {
-      transform:
-        "translate(-50%, -50%) translateX(-68%) translateZ(-40px) rotateY(20deg) scale(0.88)",
-      opacity: 0.5,
-      zIndex: 10,
-      pointerEvents: "auto",
-    };
-  }
-  if (offset === 1) {
-    return {
-      transform:
-        "translate(-50%, -50%) translateX(68%) translateZ(-40px) rotateY(-20deg) scale(0.88)",
-      opacity: 0.5,
-      zIndex: 10,
-      pointerEvents: "auto",
-    };
-  }
-  return {
-    transform: `translate(-50%, -50%) translateX(${offset * 75}%) translateZ(-100px) rotateY(${
-      offset > 0 ? -30 : 30
-    }deg) scale(0.78)`,
-    opacity: 0,
-    zIndex: 0,
-    pointerEvents: "none",
-  };
 }
 
 export default function TestimonialsSection() {
@@ -142,6 +153,7 @@ export default function TestimonialsSection() {
   const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef<number | null>(null);
+  const prevSlotsRef = useRef<Record<number, Slot>>({});
   const total = TESTIMONIALS.length;
 
   const goTo = useCallback(
@@ -150,6 +162,15 @@ export default function TestimonialsSection() {
     },
     [total],
   );
+
+  // Lưu lịch sử slot để nhận diện thẻ nhảy giữa far-left và far-right
+  useEffect(() => {
+    const nextSlots: Record<number, Slot> = {};
+    TESTIMONIALS.forEach((_, idx) => {
+      nextSlots[idx] = getSlot(idx, activeIndex, total);
+    });
+    prevSlotsRef.current = nextSlots;
+  }, [activeIndex, total]);
 
   // Auto-play ticking: chạy đều đặn ngay cả khi chuột ở trạng thái idle
   useEffect(() => {
@@ -236,9 +257,14 @@ export default function TestimonialsSection() {
             style={{ transformStyle: "preserve-3d" }}
           >
             {TESTIMONIALS.map((item, index) => {
-              const offset = getOffset(index, activeIndex, total);
-              const isActive = offset === 0;
-              const isAdjacent = Math.abs(offset) === 1;
+              const slot = getSlot(index, activeIndex, total);
+              const isActive = slot === "center";
+              const isAdjacent = slot === "left" || slot === "right";
+
+              const prevSlot = prevSlotsRef.current[index];
+              const isJumping =
+                (prevSlot === "far-left" && slot === "far-right") ||
+                (prevSlot === "far-right" && slot === "far-left");
 
               return (
                 <div
@@ -254,21 +280,23 @@ export default function TestimonialsSection() {
                     if (isActive) setIsHoveringCard(false);
                   }}
                   style={{
-                    ...getCardStyle(offset),
-                    transition: "all 600ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    ...getSlotStyle(slot),
+                    transition: isJumping
+                      ? "none"
+                      : "transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 500ms ease",
                     backfaceVisibility: "hidden",
                     WebkitFontSmoothing: "antialiased",
+                    willChange: "transform, opacity",
                   }}
                   className={[
-                    "absolute left-1/2 top-1/2 h-full w-[90%] max-w-[25.5rem] transition-all",
-                    isActive ? "block" : isAdjacent ? "hidden md:block" : "hidden",
-                    isAdjacent ? "cursor-pointer hover:opacity-75" : "",
+                    "absolute left-1/2 top-1/2 h-full w-[90%] max-w-[25.5rem]",
+                    isAdjacent ? "cursor-pointer hover:opacity-85" : "",
                   ].join(" ")}
                 >
                   {/* Outer Bezel (Doppelrand luxury styling) */}
                   <div
                     className={[
-                      "h-full w-full rounded-[2rem] p-1.5 sm:p-2 transition-all duration-300",
+                      "h-full w-full rounded-[2rem] p-1.5 sm:p-2 transition-colors duration-300",
                       isActive
                         ? "bg-gradient-to-b from-indigo-500/30 via-indigo-500/10 to-transparent border border-indigo-500/40 shadow-[0_24px_60px_-15px_rgba(99,102,241,0.25)]"
                         : "bg-black/5 dark:bg-white/5 border border-[var(--border-subtle)] dark:border-white/10 shadow-lg",

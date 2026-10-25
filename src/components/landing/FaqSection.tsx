@@ -9,7 +9,7 @@ import {
   Megaphone,
   Search,
   ShieldCheck,
-  Sparkles,
+  SlidersHorizontal,
   Wallet,
   X,
   type LucideIcon,
@@ -34,7 +34,7 @@ interface CategoryMeta {
 const CATEGORIES: CategoryMeta[] = [
   { id: "all", label: "Tất cả câu hỏi", icon: Layers3 },
   { id: "pricing", label: "Chi phí & Gói cước", icon: Wallet },
-  { id: "quality", label: "Chuẩn Anti-AI-Slop", icon: Sparkles },
+  { id: "quality", label: "Chuẩn Anti-AI-Slop", icon: SlidersHorizontal },
   { id: "ads", label: "Chạy Ads FB & Insta", icon: Megaphone },
   { id: "security", label: "Bảo mật & Bản quyền", icon: ShieldCheck },
 ];
@@ -98,12 +98,47 @@ const FAQS: FaqItem[] = [
   },
 ];
 
-const CATEGORY_ICONS: Record<Exclude<CategoryId, "all">, LucideIcon> = {
-  pricing: Wallet,
-  quality: Sparkles,
-  ads: Megaphone,
-  security: ShieldCheck,
+const CATEGORY_CONFIG: Record<
+  Exclude<CategoryId, "all">,
+  { icon: LucideIcon; colorClass: string }
+> = {
+  pricing: {
+    icon: Wallet,
+    colorClass:
+      "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400",
+  },
+  quality: {
+    icon: SlidersHorizontal,
+    colorClass:
+      "text-indigo-500 bg-indigo-500/10 border-indigo-500/20 dark:text-indigo-400",
+  },
+  ads: {
+    icon: Megaphone,
+    colorClass:
+      "text-sky-500 bg-sky-500/10 border-sky-500/20 dark:text-sky-400",
+  },
+  security: {
+    icon: ShieldCheck,
+    colorClass:
+      "text-teal-500 bg-teal-500/10 border-teal-500/20 dark:text-teal-400",
+  },
 };
+
+function getBadgeStyle(badge: string) {
+  if (badge.includes("Phổ biến"))
+    return "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400";
+  if (badge.includes("Khuyên dùng"))
+    return "border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400";
+  if (badge.includes("Tối ưu Ads"))
+    return "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400";
+  if (badge.includes("Pro Turbo"))
+    return "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400";
+  if (badge.includes("Bảo mật"))
+    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+  if (badge.includes("Soạn thảo"))
+    return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400";
+  return "border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)]";
+}
 
 export default function FaqSection() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>("all");
@@ -153,6 +188,7 @@ export default function FaqSection() {
 
         <ScrollReveal direction="up" delay={120} duration={650}>
           <div className="mt-10">
+            {/* Search Bar */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="relative flex-1">
                 <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ink-secondary)]" />
@@ -160,7 +196,7 @@ export default function FaqSection() {
                   type="text"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Tìm nhanh thắc mắc..."
+                  placeholder="Tìm nhanh thắc mắc (quảng cáo, hoàn tiền, trùng lặp)..."
                   aria-label="Tìm nhanh câu hỏi thường gặp"
                   className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] py-2.5 pl-10 pr-10 text-[13.5px] text-[var(--ink-primary)] outline-none transition-colors placeholder:text-[var(--ink-secondary)]/70 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 />
@@ -180,6 +216,7 @@ export default function FaqSection() {
               </span>
             </div>
 
+            {/* Category Filter Tabs */}
             <div className="mt-4 flex flex-wrap gap-2">
               {CATEGORIES.map((category) => {
                 const Icon = category.icon;
@@ -192,7 +229,7 @@ export default function FaqSection() {
                     aria-pressed={isActive}
                     className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium transition-colors ${
                       isActive
-                        ? "border-indigo-600 bg-indigo-600 text-white"
+                        ? "border-indigo-600 bg-indigo-600 text-white shadow-xs"
                         : "border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:border-indigo-500/40 hover:text-[var(--ink-primary)]"
                     }`}
                   >
@@ -203,7 +240,8 @@ export default function FaqSection() {
               })}
             </div>
 
-            <div className="mt-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-2 shadow-[0_1px_3px_rgba(0,0,0,0.02)] sm:p-3">
+            {/* Accordion List */}
+            <div className="mt-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-2 shadow-sm sm:p-3">
               {filteredFaqs.length === 0 ? (
                 <div className="px-4 py-10 text-center">
                   <p className="text-sm font-medium text-[var(--ink-primary)]">
@@ -214,34 +252,48 @@ export default function FaqSection() {
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-[var(--border-subtle)]/60">
+                <div className="space-y-1">
                   {filteredFaqs.map((faq, index) => {
                     const isOpen = openIndex === index;
-                    const CategoryIcon = CATEGORY_ICONS[faq.category];
+                    const config = CATEGORY_CONFIG[faq.category];
+                    const CategoryIcon = config.icon;
                     return (
-                      <div key={faq.question}>
+                      <div
+                        key={faq.question}
+                        className={`overflow-hidden rounded-xl border transition-all duration-200 ${
+                          isOpen
+                            ? "border-indigo-500/30 bg-[var(--surface-raised)]/50"
+                            : "border-transparent hover:bg-[var(--surface-raised)]/30"
+                        }`}
+                      >
                         <button
                           type="button"
                           onClick={() => toggleFaq(index)}
                           aria-expanded={isOpen}
-                          className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl p-4 text-left transition-colors hover:bg-[var(--surface-raised)]/60 focus:outline-none sm:p-5"
+                          className="flex w-full cursor-pointer items-center justify-between gap-4 p-3.5 text-left transition-colors sm:p-4.5"
                         >
-                          <span className="flex items-start gap-3">
-                            <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)]">
+                          <span className="flex items-center gap-3 min-w-0">
+                            <span
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[var(--ink-secondary)] ${config.colorClass}`}
+                            >
                               <CategoryIcon className="h-3.5 w-3.5" />
                             </span>
-                            <span className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-2">
-                              <span className="text-[13.5px] font-medium text-[var(--ink-primary)] sm:text-sm">
+                            <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2.5 min-w-0">
+                              <span className="text-[13.5px] font-semibold text-[var(--ink-primary)] sm:text-[14px]">
                                 {faq.question}
                               </span>
-                              <span className="w-fit shrink-0 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-secondary)]">
+                              <span
+                                className={`w-fit shrink-0 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold ${getBadgeStyle(
+                                  faq.badge,
+                                )}`}
+                              >
                                 {faq.badge}
                               </span>
                             </span>
                           </span>
                           <ChevronDown
                             className={`h-4 w-4 shrink-0 text-[var(--ink-secondary)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                              isOpen ? "rotate-180 text-[var(--accent-navy)]" : ""
+                              isOpen ? "rotate-180 text-indigo-600 dark:text-indigo-400" : ""
                             }`}
                           />
                         </button>
@@ -251,7 +303,7 @@ export default function FaqSection() {
                           }`}
                         >
                           <div className="overflow-hidden">
-                            <p className="pb-4 pl-4 pr-4 text-[13.5px] leading-relaxed text-[var(--ink-secondary)] sm:pb-5 sm:pl-[3.75rem] sm:pr-5 sm:text-[14px]">
+                            <p className="border-t border-[var(--border-subtle)]/60 px-4 py-3.5 text-[13.5px] leading-relaxed text-[var(--ink-secondary)] sm:px-5 sm:py-4 sm:pl-[3.75rem] sm:text-[14px]">
                               {faq.answer}
                             </p>
                           </div>
