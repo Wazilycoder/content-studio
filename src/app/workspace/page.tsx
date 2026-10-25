@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getUserProfile, signOut } from "@/app/auth/actions";
 import WorkspaceContainer from "@/components/workspace/WorkspaceContainer";
 
@@ -5,6 +6,10 @@ export const dynamic = "force-dynamic";
 
 export default async function WorkspacePage() {
   const user = await getUserProfile();
+
+  if (!user) {
+    redirect("/login?from=/workspace");
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--canvas)] text-[var(--ink-primary)]">

@@ -71,6 +71,6 @@ export const PRICING_PLANS: PricingPlan[] = [
 
 export const BANK_INFO = {
   bank: "MB Bank (Ngân hàng Quân Đội)",
-  account: "0388888888",
-  holder: "CONTENT STUDIO AI",
+  account: "7909082011",
+  holder: "DUONG HUYNH TRONG NGHIA",
 };
