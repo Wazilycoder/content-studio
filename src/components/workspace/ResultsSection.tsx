@@ -30,6 +30,7 @@ export default function ResultsSection({
   onSelectInspiration,
 }: ResultsSectionProps) {
   const [view, setView] = useState<ViewMode>("cards");
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const handleCopyAll = async () => {
     if (!result) return;
@@ -43,6 +44,9 @@ export default function ResultsSection({
         : "Không thể sao chép tự động. Vui lòng thử lại.",
     );
   };
+
+  const previewCaption =
+    result?.captions[previewIndex] ?? result?.captions[0] ?? null;
 
   return (
     <div className="relative">
@@ -117,7 +121,33 @@ export default function ResultsSection({
       ) : !result ? (
         <EmptyState onSelectInspiration={onSelectInspiration} />
       ) : view === "facebook_mockup" ? (
-        <FacebookMockup captions={result.captions} />
+        <div className="animate-fade-in">
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {result.captions.map((caption, index) => {
+              const isActive = caption === previewCaption;
+              return (
+                <button
+                  key={caption.id}
+                  type="button"
+                  onClick={() => setPreviewIndex(index)}
+                  className={`btn-tactile shrink-0 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200 ${
+                    isActive
+                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
+                      : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                  }`}
+                >
+                  Góc {index + 1}: {caption.angle.split(":")[1]?.trim() || caption.angle}
+                </button>
+              );
+            })}
+          </div>
+          {previewCaption ? (
+            <FacebookMockup
+              activeText={previewCaption.text}
+              activeAngle={previewCaption.angle}
+            />
+          ) : null}
+        </div>
       ) : (
         <div className="space-y-6">
           <section className="animate-fade-in-up">

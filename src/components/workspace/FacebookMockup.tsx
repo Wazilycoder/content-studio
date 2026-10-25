@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Globe, MessageCircle, Share2, ThumbsUp } from "lucide-react";
-import type { CaptionItem } from "@/types/content";
+import { Globe, MessageCircle, Share2, Sparkles, ThumbsUp } from "lucide-react";
 
 const FB_PREVIEW_LIMIT = 125;
 
@@ -15,94 +14,83 @@ function truncateToChars(text: string, limit: number) {
 }
 
 interface FacebookMockupProps {
-  captions: CaptionItem[];
+  /** Nội dung đang biên tập trực tiếp tại Vùng 2 — đồng bộ thời gian thực */
+  activeText: string;
+  /** Tên góc bài viết đang chọn (PAS / Cảm xúc / FAB) */
+  activeAngle?: string;
+  /** Tên trang Facebook, suy ra từ tên sản phẩm */
+  pageName?: string;
+  /** Tiêu đề quảng cáo hiển thị trên ảnh mô phỏng */
+  headline?: string;
 }
 
-export default function FacebookMockup({ captions }: FacebookMockupProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
+export default function FacebookMockup({
+  activeText,
+  activeAngle,
+  pageName,
+  headline,
+}: FacebookMockupProps) {
   const [expanded, setExpanded] = useState(false);
-  const [fading, setFading] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likeBouncing, setLikeBouncing] = useState(false);
-  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const bounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Mỗi khi đổi góc bài viết -> thu gọn lại phần "Xem thêm"
+  useEffect(() => {
+    setExpanded(false);
+  }, [activeAngle]);
 
   useEffect(() => {
     return () => {
-      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+      if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
     };
   }, []);
 
-  const safeIndex = Math.min(activeIndex, captions.length - 1);
-  const active = captions[safeIndex];
-  if (!active) return null;
-
-  const { preview, truncated } = truncateToChars(active.text, FB_PREVIEW_LIMIT);
-
-  const handleSelectAngle = (index: number) => {
-    if (index === safeIndex) return;
-    if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
-    setFading(true);
-    setExpanded(false);
-    fadeTimerRef.current = setTimeout(() => {
-      setActiveIndex(index);
-      setFading(false);
-    }, 150);
-  };
+  const { preview, truncated } = truncateToChars(activeText, FB_PREVIEW_LIMIT);
+  const brandName = pageName?.trim() || "Thương Hiệu Của Bạn";
+  const brandInitials = (pageName?.trim() || "TB").slice(0, 2).toUpperCase();
 
   const handleToggleLike = () => {
     setLiked((prev) => !prev);
     setLikeBouncing(true);
-    setTimeout(() => setLikeBouncing(false), 450);
+    if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
+    bounceTimerRef.current = setTimeout(() => setLikeBouncing(false), 450);
   };
 
   return (
     <div className="animate-fade-in">
-      {/* Swipeable angle tabs */}
-      <div className="mb-3 flex snap-x gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {captions.map((caption, index) => {
-          const isActive = index === safeIndex;
-          return (
-            <button
-              key={caption.id}
-              type="button"
-              onClick={() => handleSelectAngle(index)}
-              className={`btn-tactile shrink-0 snap-start whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-200 ${
-                isActive
-                  ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
-                  : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-              }`}
-            >
-              Góc {index + 1}: {caption.angle.split(":")[1]?.trim() || caption.angle}
-            </button>
-          );
-        })}
-      </div>
+      {activeAngle ? (
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-navy)]/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent-navy)]">
+            Đang hiển thị: {activeAngle}
+          </span>
+          <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+            Đồng bộ trực tiếp
+          </span>
+        </div>
+      ) : null}
 
       {/* Facebook post card */}
       <div className="mx-auto w-full max-w-[560px] overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:border-[#393A3B] dark:bg-[#242526] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
         {/* Post Header */}
         <div className="flex items-center gap-2.5 px-3 pt-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent-navy)] text-[13px] font-semibold text-white">
-            CH
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[13px] font-semibold text-white">
+            {brandInitials}
           </div>
           <div className="min-w-0">
             <p className="truncate text-[14px] font-semibold text-[#050505] dark:text-[#E4E6EB]">
-              Cửa Hàng Của Bạn
+              {brandName}
             </p>
             <p className="flex items-center gap-1 text-[12px] text-[#65676B] dark:text-[#B0B3B8]">
-              Vừa xong · <Globe className="h-3 w-3" />
+              Được tài trợ · <Globe className="h-3 w-3" />
             </p>
           </div>
         </div>
 
         {/* Post Text with smooth fade transition */}
-        <div
-          className={`px-3 py-2.5 transition-all duration-150 ${
-            fading ? "scale-[0.99] opacity-30" : "scale-100 opacity-100"
-          }`}
-        >
+        <div className="px-3 py-2.5">
           <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.4] text-[#050505] dark:text-[#E4E6EB]">
-            {expanded || !truncated ? active.text : `${preview}... `}
+            {expanded || !truncated ? activeText : `${preview}... `}
             {truncated && !expanded ? (
               <button
                 type="button"
@@ -124,11 +112,13 @@ export default function FacebookMockup({ captions }: FacebookMockupProps) {
           </p>
         </div>
 
-        {/* Placeholder Post Media */}
-        <div className="flex aspect-[4/3] w-full items-center justify-center border-y border-[#E4E6EB] bg-[#F0F2F5] dark:border-[#3A3B3C] dark:bg-[#18191A]">
-          <span className="text-[13px] text-[#8A8D91] dark:text-[#A8ABAF]">
-            Hình ảnh / Video sản phẩm
-          </span>
+        {/* Post Media — lấy tiêu đề quảng cáo làm visual mô phỏng */}
+        <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-1.5 overflow-hidden border-y border-[#E4E6EB] bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)] px-6 text-center dark:border-[#3A3B3C]">
+          <Sparkles className="h-5 w-5 text-white/80" />
+          <p className="text-[15px] font-bold leading-tight text-white">{brandName}</p>
+          <p className="text-[11.5px] leading-snug text-white/85">
+            {headline?.trim() || "Giải pháp tối ưu cho khách hàng của bạn"}
+          </p>
         </div>
 
         {/* Reaction counters */}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  AlertTriangle,
   Check,
   ChevronDown,
   ChevronUp,
@@ -9,15 +10,12 @@ import {
   Globe,
   History,
   Loader2,
-  MessageSquare,
-  MoreHorizontal,
   RotateCcw,
-  Share2,
   Sparkles,
-  ThumbsUp,
   Wand2,
 } from "lucide-react";
 import ProductForm from "./ProductForm";
+import FacebookMockup from "./FacebookMockup";
 import AuthModal from "./AuthModal";
 import OutOfCreditsModal from "./OutOfCreditsModal";
 import TopUpModal from "./TopUpModal";
@@ -74,10 +72,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
-  const [fbExpanded, setFbExpanded] = useState(false);
   const [headlinesOpen, setHeadlinesOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [liked, setLiked] = useState(false);
 
   const sampleIndexRef = useRef(0);
   const generateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,8 +128,6 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   useEffect(() => {
     setEditedCaptions({});
     setActiveAngleIndex(0);
-    setFbExpanded(false);
-    setLiked(false);
   }, [result]);
 
   useEffect(() => {
@@ -341,12 +335,12 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       SAMPLE_SCENARIOS[sampleIndexRef.current % SAMPLE_SCENARIOS.length];
     sampleIndexRef.current += 1;
     setFormInputs(scenario.input);
-    setResult(scenario.output);
+      setResult(scenario.output);
       showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
     };
 
-    const captions = result?.captions ?? [];
-    const activeCaption = captions[activeAngleIndex] ?? null;
+    const activeCaption =
+      result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
     const originalText = activeCaption?.text ?? "";
     const currentText = editedCaptions[activeAngleIndex] ?? originalText;
     const charCount = countUnicodeChars(currentText);
@@ -461,11 +455,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     disabled={loading}
                     className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
                   >
-                    <Sparkles className="h-3 w-3" />
-                    Tạo lại
-                  </button>
-                )}
-              </header>
+                          {loading ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3 w-3" />
+                          )}
+                          {loading ? "Đang tạo..." : "Tạo lại"}
+                        </button>
+                      )}
+                    </header>
 
               {result && activeCaption ? (
                 <>
@@ -478,10 +476,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                         <button
                           key={index}
                           type="button"
-                          onClick={() => {
-                            setActiveAngleIndex(index);
-                            setFbExpanded(false);
-                          }}
+                          onClick={() => setActiveAngleIndex(index)}
                           className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-medium transition-colors ${
                             active
                               ? "bg-[var(--accent-navy)] text-white"
@@ -505,30 +500,40 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     })}
                   </div>
 
-                  {/* Hook metric */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
-                    <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
-                      <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
-                    </span>
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                        overLimit
-                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                          : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
-                      }`}
-                    >
-                      {overLimit ? (
-                        <>
-                          <ChevronDown className="h-3 w-3" />
-                          Vượt 125 ký tự — cần bấm &quot;Xem thêm&quot;
-                        </>
-                      ) : (
-                        <>
-                          <Check className="h-3 w-3" />
-                          Hook chuẩn 125 ký tự
-                        </>
-                      )}
-                    </span>
+                  {/* Hook metric — thước đo 125 ký tự vàng */}
+                  <div className="space-y-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
+                        <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ${
+                          overLimit
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+                        }`}
+                      >
+                        {overLimit ? (
+                          <>
+                            <AlertTriangle className="h-3 w-3" />
+                            Vượt 125 ký tự — người xem cần bấm &quot;Xem thêm&quot;
+                          </>
+                        ) : (
+                          <>
+                            <Check className="h-3 w-3" />
+                            Hook vàng — hiển thị trọn vẹn trước &quot;Xem thêm&quot;
+                          </>
+                        )}
+                      </span>
+                    </div>
+                    <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                      <div
+                        className={`h-full rounded-full transition-[width] duration-300 ${
+                          overLimit ? "bg-amber-500" : "bg-[var(--accent-emerald)]"
+                        }`}
+                        style={{ width: `${Math.min((charCount / 125) * 100, 100)}%` }}
+                      />
+                    </div>
                   </div>
 
                   {/* Quick actions */}
@@ -716,118 +721,12 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
               <div className="flex-1 p-3">
                 {result && activeCaption ? (
-                  <div className="mx-auto w-full max-w-[400px] overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-white text-[#050505] shadow-sm dark:bg-[#242526] dark:text-[#E4E6EB]">
-                    {/* Post header */}
-                    <div className="flex items-start justify-between gap-2 p-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[13px] font-bold text-white">
-                          {(formInputs.productName.trim() || "TB").slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-[13px] font-semibold">
-                            {formInputs.productName.trim() || "Thương Hiệu Của Bạn"}
-                          </p>
-                          <p className="flex items-center gap-1 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
-                            Được tài trợ · <Globe className="h-3 w-3" />
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-[#65676B] dark:text-[#B0B3B8]">
-                        <MoreHorizontal className="h-5 w-5" />
-                      </span>
-                    </div>
-
-                    {/* Post body — live synced copy with "Xem thêm" truncation */}
-                    <div className="px-3 pb-2 text-[13.5px] leading-[1.5]">
-                      <p className="whitespace-pre-wrap break-words">
-                        {overLimit && !fbExpanded ? (
-                          <>
-                            {Array.from(currentText).slice(0, 125).join("")}...{" "}
-                            <button
-                              type="button"
-                              onClick={() => setFbExpanded(true)}
-                              className="font-semibold text-[#0866FF] hover:underline"
-                            >
-                              Xem thêm
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            {currentText}
-                            {overLimit && (
-                              <>
-                                {" "}
-                                <button
-                                  type="button"
-                                  onClick={() => setFbExpanded(false)}
-                                  className="font-semibold text-[#0866FF] hover:underline"
-                                >
-                                  Thu gọn
-                                </button>
-                              </>
-                            )}
-                          </>
-                        )}
-                      </p>
-                    </div>
-
-                    {/* Media banner */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)]">
-                      <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-                        <Sparkles className="mb-2 h-6 w-6 opacity-80" />
-                        <p className="text-[15px] font-bold leading-tight">
-                          {formInputs.productName.trim() || "Thương Hiệu Của Bạn"}
-                        </p>
-                        <p className="mt-1 text-[11.5px] text-white/80">
-                          {result.headlines[0] ?? "Giải pháp tối ưu cho khách hàng của bạn"}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Engagement stats */}
-                    <div className="flex items-center justify-between px-3 py-2 text-[11.5px] text-[#65676B] dark:text-[#B0B3B8]">
-                      <div className="flex items-center gap-1">
-                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#0866FF] text-white">
-                          <ThumbsUp className="h-2.5 w-2.5" />
-                        </span>
-                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#F02849] text-[9px] text-white">
-                          ♥
-                        </span>
-                        <span className="ml-1">1.8K lượt thích</span>
-                      </div>
-                      <span>246 bình luận · 89 lượt chia sẻ</span>
-                    </div>
-
-                    {/* Action footer */}
-                    <div className="mx-3 border-t border-[#CED0D4] py-1 dark:border-[#3E4042]">
-                      <div className="grid grid-cols-3">
-                        <button
-                          type="button"
-                          onClick={() => setLiked((v) => !v)}
-                          className={`inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${
-                            liked ? "text-[#0866FF]" : "text-[#65676B] dark:text-[#B0B3B8]"
-                          }`}
-                        >
-                          <ThumbsUp className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
-                          Thích
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium text-[#65676B] transition-colors hover:bg-black/5 dark:text-[#B0B3B8] dark:hover:bg-white/5"
-                        >
-                          <MessageSquare className="h-4 w-4" />
-                          Bình luận
-                        </button>
-                        <button
-                          type="button"
-                          className="inline-flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[12px] font-medium text-[#65676B] transition-colors hover:bg-black/5 dark:text-[#B0B3B8] dark:hover:bg-white/5"
-                        >
-                          <Share2 className="h-4 w-4" />
-                          Chia sẻ
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <FacebookMockup
+                    activeText={currentText}
+                    activeAngle={activeCaption.angle}
+                    pageName={formInputs.productName}
+                    headline={result.headlines[0]}
+                  />
                 ) : (
                   <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">

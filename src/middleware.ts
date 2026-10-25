@@ -17,11 +17,22 @@ function applySecurityHeaders(response: NextResponse) {
     "max-age=31536000; includeSubDomains; preload"
   );
   const isProd = process.env.NODE_ENV === "production";
-  const scriptSrc = isProd
-    ? "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
-    : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';";
+  const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://*.supabase.co";
 
-  response.headers.set("Content-Security-Policy", scriptSrc);
+  const cspDirectives = [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://img.vietqr.io https://*.vietqr.io https://*.supabase.co",
+    "font-src 'self' data:",
+    `connect-src 'self' ${supabaseOrigin} https://api.orcarouter.ai https://openrouter.ai https://generativelanguage.googleapis.com`,
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+
+  response.headers.set("Content-Security-Policy", cspDirectives);
   return response;
 }
 

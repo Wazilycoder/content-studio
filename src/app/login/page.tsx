@@ -406,32 +406,32 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                   />
                   <div className="relative z-10 mx-auto w-full max-w-lg px-10 py-12">
                     <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)] backdrop-blur-sm">
-                      <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
-                      STUDIO NỘI DUNG CHUẨN AIDA & PAS
-                    </div>
+                        <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                        NỀN TẢNG KIẾN TẠO NỘI DUNG CHUYỂN ĐỔI CAO
+                      </div>
 
                     <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
                       Chinh phục 125 ký tự vàng.{" "}
-                      <span className="text-[var(--accent-navy)]">Tăng gấp 3 lần</span> tỷ lệ nhấp quảng cáo Facebook.
+                      <span className="text-[var(--accent-navy)]">Nhân 3 tỷ lệ nhấp chuột</span> Facebook Ads.
                     </h2>
 
                     <p className="mt-3 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
-                      Không còn văn mẫu AI sáo rỗng. Content Studio phân tích sản phẩm, đào sâu tâm lý khách hàng và kiến tạo 3 góc bài viết độc bản chỉ sau 3 giây.
+                      Không còn văn mẫu AI sáo rỗng. Content Studio khai phóng sức mạnh ngôn từ với 3 góc tiếp cận tâm lý khách hàng độc bản.
                     </p>
 
                     <div className="mt-7 space-y-2.5">
                       {[
                         {
                           title: "Góc 1: Vấn đề & Giải pháp (PAS)",
-                          desc: "Khơi gợi nỗi đau, định vị sản phẩm là cứu cánh.",
+                          desc: "Đào sâu insight, gỡ bỏ phiền toái.",
                         },
                         {
                           title: "Góc 2: Cảm xúc & Phong cách sống",
                           desc: "Bán hình tượng khách hàng khao khát trở thành.",
                         },
                         {
-                          title: "Góc 3: Trực diện tính năng & Lợi ích (FAB)",
-                          desc: "Tôn vinh chất lượng và ưu thế cạnh tranh.",
+                          title: "Góc 3: Trực diện tính năng & Giá trị (FAB)",
+                          desc: "Tôn vinh chất liệu và thông số vượt trội.",
                         },
                       ].map((feature) => (
                         <div
