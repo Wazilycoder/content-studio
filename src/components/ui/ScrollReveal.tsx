@@ -74,7 +74,7 @@ export default function ScrollReveal({
         transitionDelay: `${delay}ms`,
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
       }}
-      className={`transition-all will-change-transform ${getInitialTransform()} ${className}`}
+      className={`transition-[transform,opacity] ${isVisible ? "" : "will-change-transform"} ${getInitialTransform()} ${className}`}
     >
       {children}
     </div>

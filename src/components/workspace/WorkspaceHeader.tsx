@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import { PenLine, LogOut, ArrowRight, Home, Zap, Sparkles, Crown } from "lucide-react";
+import { Layers3, LogOut, ArrowRight, Home, Zap, Sparkles, Crown } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import { getPlanById } from "@/lib/config/pricing";
 import type { WorkspaceUser } from "./WorkspaceContainer";
@@ -39,11 +39,11 @@ function WorkspaceHeader({
           </Link>
           <span className="hidden text-[var(--border-strong)] sm:inline">/</span>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-xs">
-              <PenLine className="h-4 w-4" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-600 text-white shadow-xs">
+              <Layers3 className="h-3.5 w-3.5" />
             </div>
             <span className="text-[13px] font-semibold tracking-tight text-[var(--ink-primary)]">
-              Studio
+              Content Studio
             </span>
             <span className="hidden rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11.5px] font-medium text-[var(--ink-tertiary)] sm:inline-block">
               v3.2 Pro

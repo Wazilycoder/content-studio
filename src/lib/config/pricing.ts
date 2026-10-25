@@ -9,6 +9,10 @@ export interface PricingPlan {
   tagline: string;
   price: number;
   formattedPrice: string;
+  yearlyPrice?: number;
+  yearlyFormattedPrice?: string;
+  monthlyEquivalentPrice?: number;
+  monthlyEquivalentFormattedPrice?: string;
   duration: string;
   description: string;
   badge?: string;
@@ -49,6 +53,10 @@ export const PRICING_PLANS: PricingPlan[] = [
     tagline: "Phổ biến nhất",
     price: 99000,
     formattedPrice: "99.000đ",
+    yearlyPrice: 768000,
+    yearlyFormattedPrice: "768.000đ",
+    monthlyEquivalentPrice: 64000,
+    monthlyEquivalentFormattedPrice: "64.000đ",
     duration: "30 ngày truy cập Turbo",
     description:
       "Lựa chọn tối ưu cho chủ shop kinh doanh đều đặn mỗi ngày.",

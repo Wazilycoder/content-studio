@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Layers3 } from "lucide-react";
 
 interface FooterColumn {
   title: string;
@@ -42,8 +42,8 @@ export default function LandingFooter() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div className="max-w-xs">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-xs">
-                <Sparkles className="h-4 w-4" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-600 text-white shadow-xs">
+                <Layers3 className="h-4 w-4" />
               </div>
               <span className="text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
                 Content Studio

@@ -815,10 +815,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
               {/* Desktop Collapsed Rail */}
               <aside
-                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
                   collapsedZones.zone1
-                    ? "opacity-100 pointer-events-auto visible"
-                    : "opacity-0 pointer-events-none invisible"
+                    ? "zone-rail-visible"
+                    : "zone-rail-hidden"
                 }`}
                 aria-hidden={!collapsedZones.zone1}
               >
@@ -1163,10 +1163,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
               {/* Desktop Collapsed Rail */}
               <aside
-                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
                   collapsedZones.zone2
-                    ? "opacity-100 pointer-events-auto visible"
-                    : "opacity-0 pointer-events-none invisible"
+                    ? "zone-rail-visible"
+                    : "zone-rail-hidden"
                 }`}
                 aria-hidden={!collapsedZones.zone2}
               >
@@ -1264,10 +1264,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
                 {/* Desktop Collapsed Rail */}
                 <aside
-                  className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs zone-panel-transition ${
+                  className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
                     collapsedZones.zone3
-                      ? "opacity-100 pointer-events-auto visible"
-                      : "opacity-0 pointer-events-none invisible"
+                      ? "zone-rail-visible"
+                      : "zone-rail-hidden"
                   }`}
                   aria-hidden={!collapsedZones.zone3}
                 >

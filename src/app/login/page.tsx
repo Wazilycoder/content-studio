@@ -269,13 +269,9 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                   ) : (
                     <>
                       <Mail className="h-3.5 w-3.5" />
-                      <span>Gửi liên kết khôi phục</span>                  </>
-                ) : (
-                  <>
-                    <Mail className="h-3.5 w-3.5" />
-                    <span>Gửi liên kết khôi phục</span>
-                  </>
-                )}
+                      <span>Gửi liên kết khôi phục</span>
+                    </>
+                  )}
               </button>
 
               <button

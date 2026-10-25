@@ -3,7 +3,7 @@
 import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, ArrowRight, Menu, X, Zap } from "lucide-react";
+import { Layers3, ArrowRight, Menu, X, Zap } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 
@@ -44,8 +44,8 @@ export default function LandingNav({ user }: LandingNavProps) {
       <div className="flex h-14 items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 shadow-[0_6px_20px_rgba(0,0,0,0.06)] dark:bg-[#0F0F12]/95 dark:shadow-[0_6px_20px_rgba(0,0,0,0.35)] sm:h-16 sm:px-6">
         {/* Brand */}
         <Link href="/" className="btn-tactile flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--accent-navy)] to-indigo-500 text-white shadow-xs">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-600 text-white shadow-xs">
+            <Layers3 className="h-4 w-4" />
           </div>
           <span className="text-sm font-bold tracking-tight text-[var(--ink-primary)]">
             Content Studio
