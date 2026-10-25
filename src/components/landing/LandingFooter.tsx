@@ -20,7 +20,7 @@ const COLUMNS: FooterColumn[] = [
     title: "Tài nguyên",
     links: [
       { label: "FAQ", href: "#faq" },
-      { label: "Hướng dẫn sử dụng", href: "/workspace" },
+      { label: "Hướng dẫn sử dụng", href: "/guide" },
       { label: "Đăng nhập", href: "/login" },
       { label: "Đăng ký", href: "/register" },
     ],
@@ -28,9 +28,9 @@ const COLUMNS: FooterColumn[] = [
   {
     title: "Pháp lý",
     links: [
-      { label: "Điều khoản sử dụng", href: "/" },
-      { label: "Chính sách bảo mật", href: "/" },
-      { label: "Chính sách hoàn tiền", href: "/" },
+      { label: "Điều khoản sử dụng", href: "/terms" },
+      { label: "Chính sách bảo mật", href: "/privacy" },
+      { label: "Chính sách hoàn tiền", href: "/refund" },
     ],
   },
 ];
