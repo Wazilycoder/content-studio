@@ -12,11 +12,16 @@ import {
   Copy,
   Crown,
   Download,
+  FileText,
   Globe,
   History,
   Loader2,
+  Maximize2,
+  Minimize2,
   PanelLeftClose,
   PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
   RotateCcw,
   Sparkles,
   Wand2,
@@ -98,7 +103,22 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   const [mobileTab, setMobileTab] = useState<"input" | "editor" | "preview">("input");
-  const [isZone1Collapsed, setIsZone1Collapsed] = useState(false);
+  const [collapsedZones, setCollapsedZones] = useState({
+    zone1: false,
+    zone2: false,
+    zone3: false,
+  });
+
+  const toggleZone = useCallback((zone: "zone1" | "zone2" | "zone3") => {
+    setCollapsedZones((prev) => ({ ...prev, [zone]: !prev[zone] }));
+  }, []);
+
+  const desktopGridCols = useMemo(() => {
+    const z1 = collapsedZones.zone1 ? "44px" : "minmax(0, 1fr)";
+    const z2 = collapsedZones.zone2 ? "44px" : "minmax(0, 1.15fr)";
+    const z3 = collapsedZones.zone3 ? "44px" : "minmax(0, 1fr)";
+    return `${z1} ${z2} ${z3}`;
+  }, [collapsedZones]);
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
@@ -124,6 +144,21 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       }
     } catch {
       // Bỏ qua lỗi parse nếu localStorage bị lỗi
+    }
+  }, []);
+
+  // Khôi phục bộ đệm lịch sử ngoại tuyến (tầng 3) từ localStorage
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem("content_studio_history");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setHistoryItems(parsed as GenerationRecord[]);
+        }
+      }
+    } catch {
+      // Bỏ qua nếu bộ đệm không hợp lệ
     }
   }, []);
 
@@ -286,7 +321,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     if (!user) return;
     try {
       const res = await fetchUserHistory();
-      if (!res.error) setHistoryItems(res.data ?? []);
+      if (!res.error) {
+        const items = res.data ?? [];
+        setHistoryItems(items);
+        try {
+          localStorage.setItem("content_studio_history", JSON.stringify(items));
+        } catch {
+          // localStorage không khả dụng
+        }
+      }
     } catch {
       // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
     }
@@ -302,7 +345,13 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         setHistoryError(res.error);
         setHistoryItems([]);
       } else {
-        setHistoryItems(res.data ?? []);
+        const items = res.data ?? [];
+        setHistoryItems(items);
+        try {
+          localStorage.setItem("content_studio_history", JSON.stringify(items));
+        } catch {
+          // localStorage không khả dụng
+        }
       }
     } catch {
       setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
@@ -513,24 +562,31 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setIsZone1Collapsed((prev) => !prev)}
-                title={isZone1Collapsed ? "Mở rộng Vùng 1 (Thông tin)" : "Thu gọn Vùng 1 (Tập trung biên tập)"}
-                className="btn-tactile hidden lg:inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-              >
-                {isZone1Collapsed ? (
-                  <>
-                    <PanelLeftOpen className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-                    <span>Mở lại Vùng 1</span>
-                  </>
-                ) : (
-                  <>
-                    <PanelLeftClose className="h-3.5 w-3.5" />
-                    <span>Thu gọn Vùng 1</span>
-                  </>
-                )}
-              </button>
+              <div className="hidden lg:flex items-center gap-0.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] p-0.5">
+                {([
+                  { key: "zone1", icon: "📝", label: "Vùng 1" },
+                  { key: "zone2", icon: "✍️", label: "Vùng 2" },
+                  { key: "zone3", icon: "📱", label: "Vùng 3" },
+                ] as const).map((zone) => {
+                  const isCollapsed = collapsedZones[zone.key];
+                  return (
+                    <button
+                      key={zone.key}
+                      type="button"
+                      onClick={() => toggleZone(zone.key)}
+                      title={isCollapsed ? `Mở ${zone.label}` : `Thu gọn ${zone.label}`}
+                      className={`btn-tactile inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11.5px] font-medium transition-colors ${
+                        isCollapsed
+                          ? "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                          : "bg-[var(--accent-navy)] text-white"
+                      }`}
+                    >
+                      <span aria-hidden>{zone.icon}</span>
+                      <span>{zone.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <button
                 type="button"
                 onClick={() => setTopUpModalOpen(true)}
@@ -611,21 +667,36 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             </button>
           </div>
 
-          <div
-            className={`grid flex-1 gap-4 transition-all duration-300 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] ${
-              isZone1Collapsed
-                ? "grid-cols-1 lg:grid-cols-[48px_minmax(0,1fr)_420px]"
-                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-[360px_minmax(0,1fr)_380px]"
-            }`}
-          >
+          <style>{`
+            @media (min-width: 1024px) {
+              .workspace-grid { grid-template-columns: ${desktopGridCols}; }
+            }
+          `}</style>
+          <div className="workspace-grid grid flex-1 gap-4 transition-all duration-300 lg:h-full lg:min-h-0 lg:grid-rows-[minmax(0,1fr)] grid-cols-1 md:grid-cols-2">
             {/* ===== ZONE 1 — INPUT SPECIFICATION ===== */}
             <aside
-              className={`min-w-0 flex-col gap-2.5 ${
-                isZone1Collapsed
-                  ? "hidden lg:hidden"
-                  : "lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar"
-              } ${mobileTab === "input" ? "!flex" : "hidden lg:flex"}`}
+              className={`min-w-0 flex-col gap-2.5 lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar ${
+                mobileTab === "input" ? "flex" : "hidden"
+              } ${collapsedZones.zone1 ? "lg:hidden" : "lg:flex"}`}
             >
+              <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 shadow-xs">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+                    <FileText className="h-3.5 w-3.5" />
+                  </span>
+                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                    Vùng 1 · Thông tin sản phẩm
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggleZone("zone1")}
+                  title="Thu gọn Vùng 1"
+                  className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                >
+                  <PanelLeftClose className="h-3.5 w-3.5" />
+                </button>
+              </div>
               <ProductForm
                 value={formInputs}
                 onChange={setFormInputs}
@@ -671,30 +742,30 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             </aside>
 
             {/* Desktop collapsed rail for Zone 1 */}
-            {isZone1Collapsed && (
-              <aside className="hidden lg:flex h-full flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-4 shadow-xs">
+            {collapsedZones.zone1 && (
+              <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
                 <button
                   type="button"
-                  onClick={() => setIsZone1Collapsed(false)}
+                  onClick={() => toggleZone("zone1")}
                   title="Mở lại Vùng 1 (Thông tin sản phẩm)"
-                  className="btn-tactile flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                  className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
                 >
                   <PanelLeftOpen className="h-4 w-4" />
                 </button>
-                <div className="flex flex-col items-center gap-2 [writing-mode:vertical-rl] rotate-180">
-                  <span className="text-[12px] font-semibold tracking-wider text-[var(--ink-secondary)]">
-                    VÙNG 1 · THÔNG TIN SẢN PHẨM
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
+                    VÙNG 1 · THÔNG TIN
                   </span>
                 </div>
-                <div className="h-6" />
+                <div className="h-4" />
               </aside>
             )}
 
             {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR ===== */}
             <section
-              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
-                mobileTab === "editor" ? "flex" : "hidden lg:flex"
-              }`}
+              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
+                mobileTab === "editor" ? "flex" : "hidden"
+              } ${collapsedZones.zone2 ? "lg:hidden" : "lg:flex"}`}
             >
               <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
@@ -705,22 +776,32 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     Vùng 2 · Biên tập góc bài viết
                   </h2>
                 </div>
-                {result && (
-                  <button
-                    type="button"
-                    onClick={handleRegenerate}
-                    disabled={loading}
-                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-3 w-3" />
+                  <div className="flex items-center gap-1.5">
+                    {result && (
+                      <button
+                        type="button"
+                        onClick={handleRegenerate}
+                        disabled={loading}
+                        className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
+                      >
+                        {loading ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3 w-3" />
+                        )}
+                        {loading ? "Đang tạo..." : "Tạo lại"}
+                      </button>
                     )}
-                    {loading ? "Đang tạo..." : "Tạo lại"}
-                  </button>
-                )}
-              </header>
+                    <button
+                      type="button"
+                      onClick={() => toggleZone("zone2")}
+                      title="Thu gọn Vùng 2"
+                      className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                    >
+                      <Minimize2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </header>
 
               {result && activeCaption ? (
                 <>
@@ -988,14 +1069,34 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     </button>
                   </div>
                 </div>
-              )}
-            </section>
+                )}
+              </section>
 
-            {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR ===== */}
+              {/* Desktop collapsed rail for Zone 2 */}
+              {collapsedZones.zone2 && (
+                <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
+                  <button
+                    type="button"
+                    onClick={() => toggleZone("zone2")}
+                    title="Mở lại Vùng 2 (Biên tập)"
+                    className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                  </button>
+                  <div className="flex flex-1 items-center justify-center">
+                    <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
+                      VÙNG 2 · BIÊN TẬP
+                    </span>
+                  </div>
+                  <div className="h-4" />
+                </aside>
+              )}
+
+              {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR ===== */}
             <aside
-              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs md:col-span-2 lg:col-span-1 lg:h-full lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
-                mobileTab === "preview" ? "flex" : "hidden lg:flex"
-              }`}
+              className={`min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs md:col-span-2 lg:col-span-1 lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar ${
+                mobileTab === "preview" ? "flex" : "hidden"
+              } ${collapsedZones.zone3 ? "lg:hidden" : "lg:flex"}`}
             >
               <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
                 <div className="flex items-center gap-2">
@@ -1015,11 +1116,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     <ArrowLeft className="h-3 w-3" />
                     <span>Sửa bài (Vùng 2)</span>
                   </button>
-                  <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
-                    Live
-                  </span>
-                </div>
-              </header>
+                      <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+                        Live
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleZone("zone3")}
+                        title="Thu gọn Vùng 3"
+                        className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                      >
+                        <PanelRightClose className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </header>
 
               <div className="flex-1 p-3">
                 {result && activeCaption ? (
@@ -1044,11 +1153,31 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     </p>
                   </div>
                 )}
-              </div>
-            </aside>
-          </div>
+                  </div>
+                </aside>
 
-          <HistoryDrawer
+                {/* Desktop collapsed rail for Zone 3 */}
+                {collapsedZones.zone3 && (
+                  <aside className="hidden lg:flex h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs">
+                    <button
+                      type="button"
+                      onClick={() => toggleZone("zone3")}
+                      title="Mở lại Vùng 3 (Xem trước)"
+                      className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                    >
+                      <PanelRightOpen className="h-4 w-4" />
+                    </button>
+                    <div className="flex flex-1 items-center justify-center">
+                      <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
+                        VÙNG 3 · XEM TRƯỚC
+                      </span>
+                    </div>
+                    <div className="h-4" />
+                  </aside>
+                )}
+              </div>
+
+              <HistoryDrawer
             open={historyOpen}
             loading={historyLoading}
             error={historyError}

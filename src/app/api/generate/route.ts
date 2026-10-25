@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { callUnifiedAi } from "@/lib/ai";
+import { appendDevHistory, type DevHistoryRecord } from "@/lib/devHistory";
 import type { CaptionAngle, GeneratedContent } from "@/types/content";
 
 const COOKIE_DEV_SESSION = "cs_dev_session";
@@ -549,11 +550,34 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       }
     }
 
+    // BƯỚC 7: Lưu bản ghi lịch sử cho Dev Session (Local Persistence)
+    let historyRecord: DevHistoryRecord | null = null;
+    if (!user && activeDevSession) {
+      historyRecord = {
+        id: crypto.randomUUID(),
+        userId: activeDevSession.id,
+        productName: input.productName,
+        productDescription: input.productDescription,
+        targetAudience: input.targetAudience,
+        tone: input.tone,
+        captions: formattedOutput.captions.map((c) => ({
+          id: c.id,
+          angle: c.angle,
+          text: c.text,
+        })),
+        headlines: [...formattedOutput.headlines],
+        hashtags: [...formattedOutput.hashtags],
+        createdAt: new Date().toISOString(),
+      };
+      await appendDevHistory(historyRecord);
+    }
+
     return jsonWithDevSession(
       {
         success: true,
         data: formattedOutput,
         creditsRemaining,
+        historyRecord,
       },
       200,
       activeDevSession

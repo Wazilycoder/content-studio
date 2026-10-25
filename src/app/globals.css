@@ -64,11 +64,17 @@ body {
   background: #3F3F46;
 }
 
-/* Chống tràn ngang tuyệt đối, không phá vỡ position: sticky */
-html,
-body {
+/* Chống tràn ngang tuyệt đối, thanh cuộn luôn bám sát 100% mép phải màn hình */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  overflow-x: hidden;
   max-width: 100%;
-  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+body {
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Phản hồi xúc giác cho mọi điểm chạm */
@@ -246,10 +252,7 @@ body {
   box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45), 0 0 16px 2px rgba(79, 93, 255, 0.18);
 }
 
-/* Smooth Scroll Behavior cho toàn bộ trang */
-html {
-  scroll-behavior: smooth;
-}
+/* Smooth Scroll Behavior đã được gộp vào khối html phía trên */
 
 /* Ánh sáng nền huyền ảo (Ambient Glow) cho Hero Section */
 .ambient-glow {

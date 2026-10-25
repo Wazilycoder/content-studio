@@ -7,19 +7,54 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  Calculator,
   CheckCircle2,
+  Database,
   Home,
+  KeyRound,
   Loader2,
+  Lock,
   Mail,
   RefreshCw,
   ShieldCheck,
   Sparkles,
+  X,
 } from "lucide-react";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 
 interface AuthPageProps {
   initialMode?: "login" | "signup";
 }
+
+const SHOWCASE_ANGLES = [
+  {
+    tag: "PAS",
+    label: "Vấn đề & Giải pháp",
+    short: "Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác...",
+    full: "Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác khi bạn hoàn toàn có thể sở hữu làn da căng bóng, rạng rỡ chỉ sau 14 ngày với Serum Vitamin C nguyên chất thế hệ mới. Công thức thẩm thấu sâu, mờ thâm nám và phục hồi hàng rào ẩm tự nhiên.",
+    headline: "Serum Vitamin C Thế Hệ Mới",
+    sub: "#1 Bán chạy — Da sáng mịn sau 14 ngày",
+    hashtags: ["#SerumVitaminC", "#TrangDaMoTham", "#ChamSocDa", "#LamDepTuNhien", "#ContentStudio"],
+  },
+  {
+    tag: "Cảm xúc",
+    label: "Cảm xúc & Phong cách",
+    short: "6 giờ sáng, bạn xứng đáng bước ra đường với làn da tự tin như vừa rời spa...",
+    full: "6 giờ sáng, bạn xứng đáng bước ra đường với làn da tự tin như vừa rời spa. Serum Vitamin C thế hệ mới — người bạn đồng hành thầm lặng của phụ nữ hiện đại, giúp bạn luôn rạng rỡ trong mọi khoảnh khắc: từ cuộc họp quan trọng đến buổi hẹn hò lãng mạn. Bởi vì sự tự tin, đôi khi bắt đầu từ làn da.",
+    headline: "Tỏa Sáng Mỗi Ngày",
+    sub: "Làn da khỏe — Tự tin tỏa sáng mọi khoảnh khắc",
+    hashtags: ["#ToaSangMoiNgay", "#SerumVitaminC", "#PhuNuHienDai", "#ChamSocDa", "#ContentStudio"],
+  },
+  {
+    tag: "FAB",
+    label: "Tính năng & Lợi ích",
+    short: "Nồng độ Vitamin C 15% tinh khiết kết hợp HA phân tử thấp — thẩm thấu sâu gấp 3 lần...",
+    full: "Nồng độ Vitamin C 15% tinh khiết kết hợp HA phân tử thấp — công thức độc quyền thẩm thấu sâu gấp 3 lần, giúp da hấp thu trọn vẹn dưỡng chất. Chai thủy tinh tối màu chống oxy hóa, vòi nhỏ giọt tiện lợi. Mỗi giọt serum là một cam kết về chất lượng và hiệu quả thực sự, xứng đáng từng đồng bạn chi ra.",
+    headline: "15% Vitamin C Nguyên Chất",
+    sub: "Công thức độc quyền — Thẩm thấu sâu gấp 3 lần",
+    hashtags: ["#VitaminC15", "#SerumDocQuyen", "#ChamSocDaChuyenSau", "#SkincareRoutine", "#ContentStudio"],
+  },
+] as const;
 
 export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [isLogin, setIsLogin] = useState(initialMode === "login");
@@ -30,6 +65,8 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [captchaLoading, setCaptchaLoading] = useState(false);
   const [toast, setToast] = useState<{ type: "error" | "success"; message: string } | null>(null);
   const [showcaseExpanded, setShowcaseExpanded] = useState(false);
+  const [showcaseAngle, setShowcaseAngle] = useState(0);
+  const [securityModalOpen, setSecurityModalOpen] = useState(false);
   const emailInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshCaptcha = useCallback(async () => {
@@ -142,10 +179,14 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
           </nav>
 
           <div className="flex items-center gap-2">
-            <span className="hidden items-center gap-1.5 rounded-full border border-[var(--accent-emerald)]/25 bg-[var(--accent-emerald)]/[0.08] px-2.5 py-1 text-[11px] font-medium text-[var(--accent-emerald)] sm:inline-flex">
+            <button
+              type="button"
+              onClick={() => setSecurityModalOpen(true)}
+              className="btn-tactile hidden items-center gap-1.5 rounded-full border border-[var(--accent-emerald)]/25 bg-[var(--accent-emerald)]/[0.08] px-2.5 py-1 text-[11px] font-medium text-[var(--accent-emerald)] transition-colors hover:bg-[var(--accent-emerald)]/15 sm:inline-flex"
+            >
               <ShieldCheck className="h-3.5 w-3.5" />
               Bảo mật SSL 256-bit
-            </span>
+            </button>
             <ThemeToggle />
           </div>
         </div>
@@ -422,127 +463,234 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                       </div>
                     </div>
 
-                    {/* ===== COLUMN B — EDITORIAL SHOWCASE (INDEPENDENT SCROLL) ===== */}
-                    <div
-                      className="relative hidden flex-col border-l border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-8 py-10 xl:px-14 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar"
-                      style={{
-                        backgroundImage:
-                          "radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-navy) 15%, transparent), transparent 70%)",
-                      }}
-                    >
-                      <div className="relative z-10 mx-auto my-auto w-full max-w-lg">
-                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)] backdrop-blur-sm">
-                        <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
-                        NỀN TẢNG KIẾN TẠO NỘI DUNG CHUYỂN ĐỔI CAO
-                      </div>
+                          {/* ===== COLUMN B — EDITORIAL SHOWCASE (INDEPENDENT SCROLL) ===== */}
+                          <div
+                            className="relative hidden flex-col border-l border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-8 py-10 xl:px-14 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar justify-start"
+                            style={{
+                              backgroundImage:
+                                "radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-navy) 15%, transparent), transparent 70%)",
+                            }}
+                          >
+                            <div className="my-0 mx-auto w-full max-w-lg pb-12 pt-2">
+                              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                                <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                                NỀN TẢNG KIẾN TẠO NỘI DUNG CHUYỂN ĐỔI CAO
+                              </div>
 
-                    <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
-                      Chinh phục 125 ký tự vàng.{" "}
-                      <span className="text-[var(--accent-navy)]">Nhân 3 tỷ lệ nhấp chuột</span> Facebook Ads.
-                    </h2>
+                              <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
+                                Chinh phục 125 ký tự vàng.{" "}
+                                <span className="text-[var(--accent-navy)]">Nhân 3 tỷ lệ nhấp chuột</span> Facebook Ads.
+                              </h2>
 
-                    <p className="mt-3 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
-                      Không còn văn mẫu AI sáo rỗng. Content Studio khai phóng sức mạnh ngôn từ với 3 góc tiếp cận tâm lý khách hàng độc bản.
-                    </p>
+                              <p className="mt-3 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
+                                Không còn văn mẫu AI sáo rỗng. Content Studio khai phóng sức mạnh ngôn từ với 3 góc tiếp cận tâm lý khách hàng độc bản.
+                              </p>
 
-                    <div className="mt-7 space-y-2.5">
-                      {[
-                        {
-                          title: "Góc 1: Vấn đề & Giải pháp (PAS)",
-                          desc: "Đào sâu insight, gỡ bỏ phiền toái.",
-                        },
-                        {
-                          title: "Góc 2: Cảm xúc & Phong cách sống",
-                          desc: "Bán hình tượng khách hàng khao khát trở thành.",
-                        },
-                        {
-                          title: "Góc 3: Trực diện tính năng & Giá trị (FAB)",
-                          desc: "Tôn vinh chất liệu và thông số vượt trội.",
-                        },
-                      ].map((feature) => (
-                        <div
-                          key={feature.title}
-                          className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm"
-                        >
-                          <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                            {feature.title}
-                          </p>
-                          <p className="mt-0.5 text-[12px] text-[var(--ink-secondary)]">{feature.desc}</p>
-                        </div>
-                      ))}
-                    </div>
+                              {/* KPI Social Proof */}
+                              <div className="mt-5 grid grid-cols-3 gap-2">
+                                {[
+                                  { icon: "⚡", label: "0s Cooldown" },
+                                  { icon: "🎯", label: "125 Ký Tự Vàng" },
+                                  { icon: "📈", label: "+300% CTR" },
+                                ].map((kpi) => (
+                                  <div
+                                    key={kpi.label}
+                                    className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-2 text-center"
+                                  >
+                                    <div className="text-[16px] leading-none">{kpi.icon}</div>
+                                    <div className="mt-1 text-[10.5px] font-semibold text-[var(--ink-primary)]">
+                                      {kpi.label}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
 
-                    <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-white text-[#050505] shadow-2xl dark:bg-[#242526] dark:text-[#E4E6EB]">
-                      <div className="flex items-center gap-2.5 p-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[12px] font-bold text-white">
-                          CS
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-[13px] font-semibold">Thương Hiệu Của Bạn</p>
-                          <p className="text-[11px] text-[#65676B] dark:text-[#B0B3B8]">Được tài trợ · 🌐</p>
-                        </div>
-                      </div>
-                      <div className="px-3 pb-2.5 text-[13px] leading-[1.5]">
-                        <p className="whitespace-pre-wrap break-words">
-                          {showcaseExpanded ? (
-                            <>
-                              Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác khi bạn hoàn toàn có thể sở hữu làn da căng bóng, rạng rỡ chỉ sau 14 ngày với Serum Vitamin C nguyên chất thế hệ mới. Công thức thẩm thấu sâu, mờ thâm nám và phục hồi hàng rào ẩm tự nhiên.
-                              <button
-                                type="button"
-                                onClick={() => setShowcaseExpanded(false)}
-                                className="ml-1.5 font-semibold text-[#65676B] hover:underline dark:text-[#B0B3B8]"
-                              >
-                                Ẩn bớt
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác...{" "}
-                              <button
-                                type="button"
-                                onClick={() => setShowcaseExpanded(true)}
-                                className="font-semibold text-[#0866FF] hover:underline"
-                              >
-                                Xem thêm
-                              </button>
-                            </>
-                          )}
-                        </p>
-                        {showcaseExpanded && (
-                          <div className="mt-2 flex flex-wrap gap-1.5 pt-0.5">
-                            {[
-                              "#SerumVitaminC",
-                              "#TrangDaMoTham",
-                              "#ChamSocDa",
-                              "#LamDepTuNhien",
-                              "#ContentStudio",
-                            ].map((tag) => (
-                              <span
-                                key={tag}
-                                className="cursor-pointer text-[12.5px] font-normal text-[#1877F2] transition-colors hover:underline dark:text-[#4599FF]"
-                              >
-                                {tag}
-                              </span>
-                            ))}
+                              {/* Interactive 3-Angle Tabs */}
+                              <div className="mt-6">
+                                <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--ink-tertiary)]">
+                                  Bấm thử 3 góc tiếp cận
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {SHOWCASE_ANGLES.map((angle, index) => (
+                                    <button
+                                      key={angle.tag}
+                                      type="button"
+                                      onClick={() => {
+                                        setShowcaseAngle(index);
+                                        setShowcaseExpanded(false);
+                                      }}
+                                      className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11.5px] font-medium transition-all ${
+                                        showcaseAngle === index
+                                          ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-sm"
+                                          : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                                      }`}
+                                    >
+                                      <span
+                                        className={`rounded px-1 py-0.5 text-[9px] font-bold uppercase ${
+                                          showcaseAngle === index
+                                            ? "bg-white/20 text-white"
+                                            : "bg-[var(--surface-raised)] text-[var(--ink-tertiary)]"
+                                        }`}
+                                      >
+                                        {angle.tag}
+                                      </span>
+                                      <span>{angle.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Dynamic Facebook Mockup */}
+                              <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-white text-[#050505] shadow-2xl dark:bg-[#242526] dark:text-[#E4E6EB]">
+                                <div className="flex items-center gap-2.5 p-3">
+                                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[12px] font-bold text-white">
+                                    CS
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="truncate text-[13px] font-semibold">Thương Hiệu Của Bạn</p>
+                                    <p className="text-[11px] text-[#65676B] dark:text-[#B0B3B8]">Được tài trợ · 🌐</p>
+                                  </div>
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-semibold text-red-500">
+                                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
+                                    Live
+                                  </span>
+                                </div>
+                                <div className="px-3 pb-2.5 text-[13px] leading-[1.5]">
+                                  <p className="whitespace-pre-wrap break-words">
+                                    {showcaseExpanded ? (
+                                      <>
+                                        {SHOWCASE_ANGLES[showcaseAngle].full}
+                                        <button
+                                          type="button"
+                                          onClick={() => setShowcaseExpanded(false)}
+                                          className="ml-1.5 font-semibold text-[#65676B] hover:underline dark:text-[#B0B3B8]"
+                                        >
+                                          Ẩn bớt
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        {SHOWCASE_ANGLES[showcaseAngle].short}{" "}
+                                        <button
+                                          type="button"
+                                          onClick={() => setShowcaseExpanded(true)}
+                                          className="font-semibold text-[#0866FF] hover:underline"
+                                        >
+                                          Xem thêm
+                                        </button>
+                                      </>
+                                    )}
+                                  </p>
+                                  {showcaseExpanded && (
+                                    <div className="mt-2 flex flex-wrap gap-1.5 pt-0.5">
+                                      {SHOWCASE_ANGLES[showcaseAngle].hashtags.map((tag) => (
+                                        <span
+                                          key={tag}
+                                          className="cursor-pointer text-[12.5px] font-normal text-[#1877F2] transition-colors hover:underline dark:text-[#4599FF]"
+                                        >
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)]">
+                                  <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+                                    <Sparkles className="mb-1.5 h-5 w-5 opacity-80" />
+                                    <p className="text-[13px] font-bold">{SHOWCASE_ANGLES[showcaseAngle].headline}</p>
+                                    <p className="mt-0.5 text-[10.5px] text-white/80">
+                                      {SHOWCASE_ANGLES[showcaseAngle].sub}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between px-3 py-2 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
+                                  <span>👍❤️ 1.4k lượt thích</span>
+                                  <span>280 bình luận · 96 lượt chia sẻ</span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)]">
-                        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
-                          <Sparkles className="mb-1.5 h-5 w-5 opacity-80" />
-                          <p className="text-[13px] font-bold">Serum Vitamin C Thế Hệ Mới</p>
-                          <p className="mt-0.5 text-[10.5px] text-white/80">
-                            #1 Bán chạy — Da sáng mịn sau 14 ngày
-                          </p>
+
+                          {securityModalOpen && (
+                            <div
+                              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm animate-fade-in"
+                              onClick={() => setSecurityModalOpen(false)}
+                            >
+                              <div
+                                className="w-full max-w-md rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 shadow-2xl"
+                                onClick={(event) => event.stopPropagation()}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="flex items-center gap-2.5">
+                                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent-emerald)]/10 text-[var(--accent-emerald)]">
+                                      <ShieldCheck className="h-5 w-5" />
+                                    </span>
+                                    <div>
+                                      <h3 className="text-[15px] font-semibold text-[var(--ink-primary)]">
+                                        Bảo chứng bảo mật 4 lớp
+                                      </h3>
+                                      <p className="text-[11.5px] text-[var(--ink-tertiary)]">
+                                        Tiêu chuẩn an toàn dữ liệu doanh nghiệp
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSecurityModalOpen(false)}
+                                    aria-label="Đóng"
+                                    className="rounded-lg p-1 text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
+                                </div>
+                                <ul className="mt-5 space-y-3">
+                                  {[
+                                    {
+                                      icon: Lock,
+                                      title: "Mã hóa SSL 256-bit",
+                                      desc: "Toàn bộ dữ liệu truyền tải được mã hóa chuẩn ngân hàng, chống nghe lén.",
+                                    },
+                                    {
+                                      icon: KeyRound,
+                                      title: "Session HMAC SHA-256",
+                                      desc: "Cookie phiên đăng nhập được ký số chống giả mạo và can thiệp.",
+                                    },
+                                    {
+                                      icon: Calculator,
+                                      title: "Math Captcha chống brute-force",
+                                      desc: "Chặn đứng tấn công dò mật khẩu tự động bằng phép tính xác thực.",
+                                    },
+                                    {
+                                      icon: Database,
+                                      title: "Supabase Row-Level Security",
+                                      desc: "Mỗi người dùng chỉ truy cập được dữ liệu của chính mình.",
+                                    },
+                                  ].map((layer) => (
+                                    <li key={layer.title} className="flex items-start gap-3">
+                                      <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-navy)]/10 text-[var(--accent-navy)]">
+                                        <layer.icon className="h-3.5 w-3.5" />
+                                      </span>
+                                      <div>
+                                        <p className="text-[12.5px] font-semibold text-[var(--ink-primary)]">
+                                          {layer.title}
+                                        </p>
+                                        <p className="mt-0.5 text-[11.5px] leading-relaxed text-[var(--ink-secondary)]">
+                                          {layer.desc}
+                                        </p>
+                                      </div>
+                                    </li>
+                                  ))}
+                                </ul>
+                                <button
+                                  type="button"
+                                  onClick={() => setSecurityModalOpen(false)}
+                                  className="btn-tactile mt-5 w-full rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
+                                >
+                                  Đã hiểu
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between px-3 py-2 text-[11px] text-[#65676B] dark:text-[#B0B3B8]">
-                        <span>👍❤️ 1.4k lượt thích</span>
-                        <span>280 bình luận · 96 lượt chia sẻ</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          }
+                      );
+                    }

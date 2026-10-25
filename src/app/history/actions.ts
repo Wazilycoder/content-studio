@@ -2,6 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserProfile } from "@/app/auth/actions";
+import {
+  deleteDevHistoryItem,
+  fetchDevHistory,
+  type DevHistoryRecord,
+} from "@/lib/devHistory";
 import type {
   CaptionAngle,
   CaptionItem,
@@ -98,9 +104,34 @@ function mapGenerationRow(row: GenerationRow): GenerationRecord {
       string,
       string,
     ],
-    createdAt: row.created_at,
-  };
-}
+        createdAt: row.created_at,
+      };
+    }
+
+    function mapDevHistoryRow(record: DevHistoryRecord): GenerationRecord {
+      const tone = TONE_OPTIONS.includes(record.tone as ToneOption)
+        ? (record.tone as ToneOption)
+        : "trang-trong";
+
+      return {
+        id: record.id,
+        userId: record.userId,
+        productName: record.productName,
+        productDescription: record.productDescription,
+        targetAudience: record.targetAudience,
+        tone,
+        captions: normalizeCaptions(record.captions),
+        headlines: pickStrings(record.headlines, 3) as [string, string, string],
+        hashtags: pickStrings(record.hashtags, 5) as [
+          string,
+          string,
+          string,
+          string,
+          string,
+        ],
+        createdAt: record.createdAt,
+      };
+    }
 
 export async function fetchUserHistory(): Promise<{
   data?: GenerationRecord[];
@@ -111,21 +142,39 @@ export async function fetchUserHistory(): Promise<{
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { data: [] };
+  if (user) {
+    const { data, error } = await supabase
+      .from("generations")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
 
-  const { data, error } = await supabase
-    .from("generations")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(50);
+    if (error) {
+      return {
+        data: [],
+        error: "Không thể tải lịch sử bài viết. Vui lòng thử lại.",
+      };
+    }
 
-  if (error) {
-    return { data: [], error: "Không thể tải lịch sử bài viết. Vui lòng thử lại." };
+    const rows = (data ?? []) as unknown as GenerationRow[];
+    return { data: rows.map(mapGenerationRow) };
   }
 
-  const rows = (data ?? []) as unknown as GenerationRow[];
-  return { data: rows.map(mapGenerationRow) };
+  // Fallback: Dev Session (Local Dev) — đọc từ .data/dev_history.json
+  try {
+    const profile = await getUserProfile();
+    if (profile) {
+      const devUserId =
+        (profile as unknown as { id?: string }).id ?? "local-dev-user";
+      const devRecords = await fetchDevHistory(devUserId);
+      return { data: devRecords.map(mapDevHistoryRow) };
+    }
+  } catch {
+    // Dev session không khả dụng — trả về mảng rỗng thay vì lỗi
+  }
+
+  return { data: [] };
 }
 
 export async function deleteHistoryItem(
@@ -140,20 +189,43 @@ export async function deleteHistoryItem(
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return { success: false, error: "Bạn cần đăng nhập để xóa bài viết." };
+  if (user) {
+    const { error } = await supabase
+      .from("generations")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) {
+      return {
+        success: false,
+        error: "Không thể xóa bài viết. Vui lòng thử lại.",
+      };
+    }
+
+    revalidatePath("/");
+    return { success: true };
   }
 
-  const { error } = await supabase
-    .from("generations")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { success: false, error: "Không thể xóa bài viết. Vui lòng thử lại." };
+  // Fallback: Dev Session (Local Dev) — xóa khỏi .data/dev_history.json
+  try {
+    const profile = await getUserProfile();
+    if (profile) {
+      const devUserId =
+        (profile as unknown as { id?: string }).id ?? "local-dev-user";
+      const deleted = await deleteDevHistoryItem(id, devUserId);
+      if (!deleted) {
+        return { success: false, error: "Không tìm thấy bài viết cần xóa." };
+      }
+      revalidatePath("/");
+      return { success: true };
+    }
+  } catch {
+    return {
+      success: false,
+      error: "Không thể xóa bài viết. Vui lòng thử lại.",
+    };
   }
 
-  revalidatePath("/");
-  return { success: true };
+  return { success: false, error: "Bạn cần đăng nhập để xóa bài viết." };
 }
