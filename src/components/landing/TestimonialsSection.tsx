@@ -38,8 +38,7 @@ const TESTIMONIALS: Testimonial[] = [
     metric: "CTR 4.2% Facebook Ads",
     quote:
       "Mình bỏ hẳn kiểu content AI chung chung. Content Studio trả về 3 góc bài PAS khác nhau trong 15 giây, đọc là thấy đúng giọng shop. CTR quảng cáo tăng từ 1.8% lên 4.2%.",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&h=160&q=80",
+    avatar: "/images/avatars/avatar-1.jpg",
     initials: "TH",
   },
   {
@@ -50,8 +49,7 @@ const TESTIMONIALS: Testimonial[] = [
     metric: "+320% Doanh thu TikTok",
     quote:
       "Tính năng xem trước TikTok 9:16 và Shopee Feed cực thực dụng. Một người viết, xuất 1-click là team đăng đa kênh ngay — tiết kiệm 2 nhân sự content, doanh thu tăng 320%.",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&h=160&q=80",
+    avatar: "/images/avatars/avatar-2.jpg",
     initials: "HN",
   },
   {
@@ -62,8 +60,7 @@ const TESTIMONIALS: Testimonial[] = [
     metric: "100K+ Followers TikTok Shop",
     quote:
       "Gói Free không giới hạn bài viết rất hào phóng. Mình dùng 3 góc bài mỗi ngày cho kênh gia dụng, giọng văn tự nhiên không sáo rỗng, giờ đã chạm 100K followers.",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=160&h=160&q=80",
+    avatar: "/images/avatars/avatar-3.jpg",
     initials: "MT",
   },
   {
@@ -74,8 +71,7 @@ const TESTIMONIALS: Testimonial[] = [
     metric: "Đơn ShopeeFood x2.5",
     quote:
       "Content PAS do Content Studio tạo ra không bị kiểu “văn máy”. Đơn ShopeeFood của cả 7 chi nhánh tăng 2.5 lần chỉ sau 6 tuần đăng bài đều đặn.",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&h=160&q=80",
+    avatar: "/images/avatars/avatar-4.jpg",
     initials: "QB",
   },
   {
@@ -86,8 +82,7 @@ const TESTIMONIALS: Testimonial[] = [
     metric: "Tiết kiệm 15h mỗi tuần",
     quote:
       "Trước đây mỗi tuần mình mất 15 tiếng viết bài cho 4 sàn. Giờ chỉ cần duyệt lại và tinh chỉnh, thời gian còn lại dồn hết cho việc nhập hàng và chốt đơn.",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&h=160&q=80",
+    avatar: "/images/avatars/avatar-5.jpg",
     initials: "TT",
   },
 ];
@@ -103,43 +98,48 @@ function getOffset(index: number, activeIndex: number, total: number): number {
 }
 
 function getCardStyle(offset: number): CSSProperties {
+  // scale(1) tuyệt đối cho thẻ trung tâm để chữ sắc nét 100%, không bị nhòe pixel (anti-subpixel-blur)
   if (offset === 0) {
     return {
       transform:
-        "translate(-50%, -50%) translateX(0) translateZ(0) rotateY(0deg) scale(1.04)",
+        "translate(-50%, -50%) translateX(0px) translateZ(0px) rotateY(0deg) scale(1)",
       opacity: 1,
       zIndex: 20,
+      pointerEvents: "auto",
     };
   }
   if (offset === -1) {
     return {
       transform:
-        "translate(-50%, -50%) translateX(-65%) rotateY(18deg) scale(0.92)",
-      opacity: 0.55,
+        "translate(-50%, -50%) translateX(-68%) translateZ(-40px) rotateY(20deg) scale(0.88)",
+      opacity: 0.5,
       zIndex: 10,
+      pointerEvents: "auto",
     };
   }
   if (offset === 1) {
     return {
       transform:
-        "translate(-50%, -50%) translateX(65%) rotateY(-18deg) scale(0.92)",
-      opacity: 0.55,
+        "translate(-50%, -50%) translateX(68%) translateZ(-40px) rotateY(-20deg) scale(0.88)",
+      opacity: 0.5,
       zIndex: 10,
+      pointerEvents: "auto",
     };
   }
   return {
-    transform: `translate(-50%, -50%) translateX(${offset * 70}%) rotateY(${
-      offset > 0 ? -28 : 28
-    }deg) scale(0.82)`,
+    transform: `translate(-50%, -50%) translateX(${offset * 75}%) translateZ(-100px) rotateY(${
+      offset > 0 ? -30 : 30
+    }deg) scale(0.78)`,
     opacity: 0,
     zIndex: 0,
+    pointerEvents: "none",
   };
 }
 
 export default function TestimonialsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHoveringCard, setIsHoveringCard] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef<number | null>(null);
   const total = TESTIMONIALS.length;
@@ -151,13 +151,16 @@ export default function TestimonialsSection() {
     [total],
   );
 
+  // Auto-play ticking: chạy đều đặn ngay cả khi chuột ở trạng thái idle
   useEffect(() => {
-    if (!isAutoPlaying || isHovering || isDragging) return;
-    const timer = window.setInterval(() => {
-      setActiveIndex((activeIndex + 1) % total);
+    if (!isAutoPlaying || isDragging || isHoveringCard) return;
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % total);
     }, AUTO_PLAY_MS);
-    return () => window.clearInterval(timer);
-  }, [activeIndex, isAutoPlaying, isDragging, isHovering, total]);
+
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, isDragging, isHoveringCard, total]);
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     dragStartX.current = event.clientX;
@@ -211,20 +214,22 @@ export default function TestimonialsSection() {
           </div>
         </ScrollReveal>
 
+        {/* 3D Perspective Carousel Container */}
         <div
           role="region"
           aria-roledescription="carousel"
           aria-label="Đánh giá từ nhà bán hàng"
           tabIndex={0}
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
           onPointerLeave={handlePointerCancel}
           onKeyDown={handleKeyDown}
-          className="relative mx-auto mt-12 h-[420px] w-full max-w-4xl rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-navy)]/40 sm:h-[400px]"
-          style={{ perspective: "1200px", touchAction: "pan-y" }}
+          className="relative mx-auto mt-12 h-[450px] w-full max-w-4xl select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent-navy)]/40 sm:h-[420px]"
+          style={{
+            perspective: "1200px",
+            touchAction: "pan-y",
+          }}
         >
           <div
             className="relative h-full w-full"
@@ -236,95 +241,133 @@ export default function TestimonialsSection() {
               const isAdjacent = Math.abs(offset) === 1;
 
               return (
-                <article
+                <div
                   key={item.name}
                   aria-hidden={!isActive}
                   onClick={() => {
                     if (isAdjacent) setActiveIndex(index);
                   }}
+                  onMouseEnter={() => {
+                    if (isActive) setIsHoveringCard(true);
+                  }}
+                  onMouseLeave={() => {
+                    if (isActive) setIsHoveringCard(false);
+                  }}
                   style={{
                     ...getCardStyle(offset),
-                    transition: "all 500ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    transition: "all 600ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    backfaceVisibility: "hidden",
+                    WebkitFontSmoothing: "antialiased",
                   }}
                   className={[
-                    "absolute left-1/2 top-1/2 h-full w-[86%] max-w-[24rem] flex-col overflow-hidden rounded-3xl border bg-[var(--surface)] p-6 text-left",
-                    isActive ? "flex" : isAdjacent ? "hidden md:flex" : "hidden",
-                    isAdjacent ? "cursor-pointer" : "",
-                    isActive
-                      ? "border-[var(--accent-navy)]/25 ring-1 ring-[var(--accent-navy)]/10 shadow-[0_28px_60px_-28px_rgba(15,23,42,0.45)]"
-                      : "border-[var(--border-subtle)] shadow-[0_18px_40px_-30px_rgba(15,23,42,0.35)] dark:border-white/10",
+                    "absolute left-1/2 top-1/2 h-full w-[90%] max-w-[25.5rem] transition-all",
+                    isActive ? "block" : isAdjacent ? "hidden md:block" : "hidden",
+                    isAdjacent ? "cursor-pointer hover:opacity-75" : "",
                   ].join(" ")}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] p-[2px] ring-2 ring-[var(--accent-navy)]/10">
-                      <span className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-[var(--accent-navy)]/[0.1] text-[12px] font-semibold text-[var(--accent-navy)]">
-                        {item.initials}
-                        <img
-                          src={item.avatar}
-                          alt={item.name}
-                          loading="lazy"
-                          referrerPolicy="no-referrer"
-                          className="absolute inset-0 h-full w-full object-cover"
-                          onError={(event) => {
-                            event.currentTarget.style.display = "none";
-                          }}
-                        />
-                      </span>
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <p className="truncate text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                          {item.name}
-                        </p>
-                        <CheckCircle2
-                          className="h-3.5 w-3.5 shrink-0 text-emerald-500"
-                          aria-label="Đã xác thực doanh thu"
-                        />
-                      </div>
-                      <p className="truncate text-[11.5px] text-[var(--ink-tertiary)]">
-                        {item.role}
-                      </p>
-                      <p className="truncate text-[11.5px] font-medium text-[var(--ink-secondary)]">
-                        {item.shop} · {item.location}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                    <Layers3 className="h-3 w-3" aria-hidden="true" />
-                    {item.metric}
-                  </span>
-
+                  {/* Outer Bezel (Doppelrand luxury styling) */}
                   <div
-                    className="mt-3 flex items-center gap-0.5 text-amber-500"
-                    aria-label="Đánh giá 5 trên 5 sao"
+                    className={[
+                      "h-full w-full rounded-[2rem] p-1.5 sm:p-2 transition-all duration-300",
+                      isActive
+                        ? "bg-gradient-to-b from-indigo-500/30 via-indigo-500/10 to-transparent border border-indigo-500/40 shadow-[0_24px_60px_-15px_rgba(99,102,241,0.25)]"
+                        : "bg-black/5 dark:bg-white/5 border border-[var(--border-subtle)] dark:border-white/10 shadow-lg",
+                    ].join(" ")}
                   >
-                    {[0, 1, 2, 3, 4].map((star) => (
-                      <Star
-                        key={star}
-                        className="h-3.5 w-3.5 fill-amber-400 text-amber-500 drop-shadow-[0_0_3px_rgba(251,191,36,0.45)]"
-                        aria-hidden="true"
-                      />
-                    ))}
-                  </div>
+                    {/* Inner Core */}
+                    <article className="flex h-full w-full flex-col justify-between rounded-[calc(2rem-0.375rem)] border border-[var(--border-subtle)] bg-[var(--surface)] p-6 text-left shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] dark:border-white/10 sm:p-7">
+                      <div>
+                        {/* Header: Avatar, Name, Verified Badge */}
+                        <div className="flex items-center gap-3.5">
+                          <div className="relative inline-flex h-13 w-13 shrink-0 items-center justify-center rounded-full p-[2px] ring-2 ring-indigo-500/30">
+                            <div className="relative h-full w-full overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-sky-600">
+                              <img
+                                src={item.avatar}
+                                alt={item.name}
+                                className="h-full w-full object-cover"
+                                loading="eager"
+                                onError={(e) => {
+                                  // Fallback nếu ảnh không nạp được
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                              <span className="absolute inset-0 flex items-center justify-center text-[13px] font-bold text-white">
+                                {item.initials}
+                              </span>
+                            </div>
+                          </div>
 
-                  <blockquote className="mt-3 flex-1 overflow-hidden text-[13px] leading-relaxed text-[var(--ink-secondary)]">
-                    <Quote
-                      className="mb-1 h-4 w-4 text-[var(--accent-navy)]/30"
-                      aria-hidden="true"
-                    />
-                    <p>&ldquo;{item.quote}&rdquo;</p>
-                  </blockquote>
-                </article>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <h3 className="truncate text-[15px] font-bold tracking-tight text-[var(--ink-primary)]">
+                                {item.name}
+                              </h3>
+                              <CheckCircle2
+                                className="h-4 w-4 shrink-0 text-emerald-500 drop-shadow-[0_0_4px_rgba(16,185,129,0.4)]"
+                                aria-label="Đã xác thực doanh thu"
+                              />
+                            </div>
+                            <p className="truncate text-[12px] font-medium text-[var(--ink-secondary)]">
+                              {item.role}
+                            </p>
+                            <p className="truncate text-[11.5px] text-[var(--ink-tertiary)]">
+                              {item.shop} · {item.location}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Metric Badge */}
+                        <div className="mt-4 flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            {item.metric}
+                          </span>
+                        </div>
+
+                        {/* 5-Star Rating */}
+                        <div
+                          className="mt-3.5 flex items-center gap-1 text-amber-400"
+                          aria-label="Đánh giá 5 trên 5 sao"
+                        >
+                          {[0, 1, 2, 3, 4].map((star) => (
+                            <Star
+                              key={star}
+                              className="h-4 w-4 fill-amber-400 text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"
+                              aria-hidden="true"
+                            />
+                          ))}
+                          <span className="ml-1.5 text-[11px] font-semibold text-[var(--ink-tertiary)]">
+                            5.0
+                          </span>
+                        </div>
+
+                        {/* Quote Text */}
+                        <blockquote className="mt-3.5 text-[14px] leading-[1.7] text-[var(--ink-secondary)] sm:text-[14.5px]">
+                          <Quote
+                            className="mb-1.5 h-4 w-4 text-indigo-500/40"
+                            aria-hidden="true"
+                          />
+                          <p>&ldquo;{item.quote}&rdquo;</p>
+                        </blockquote>
+                      </div>
+
+                      {/* Footer verified status */}
+                      <div className="mt-4 border-t border-[var(--border-subtle)] pt-3 text-[11px] font-medium text-[var(--ink-tertiary)] dark:border-white/5">
+                        Xác nhận nhà bán hàng thực tế · Q2/2026
+                      </div>
+                    </article>
+                  </div>
+                </div>
               );
             })}
           </div>
 
+          {/* Floating Pill Nav Buttons (Desktop) */}
           <button
             type="button"
             onClick={() => goTo(-1)}
             aria-label="Đánh giá trước"
-            className="absolute left-0 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)]/90 text-[var(--ink-secondary)] shadow-lg backdrop-blur transition hover:text-[var(--ink-primary)] hover:shadow-xl md:flex"
+            className="absolute left-0 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] shadow-xl transition-all hover:scale-105 hover:border-indigo-500/40 hover:text-[var(--ink-primary)] md:flex"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -333,13 +376,14 @@ export default function TestimonialsSection() {
             type="button"
             onClick={() => goTo(1)}
             aria-label="Đánh giá tiếp theo"
-            className="absolute right-0 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)]/90 text-[var(--ink-secondary)] shadow-lg backdrop-blur transition hover:text-[var(--ink-primary)] hover:shadow-xl md:flex"
+            className="absolute right-0 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] shadow-xl transition-all hover:scale-105 hover:border-indigo-500/40 hover:text-[var(--ink-primary)] md:flex"
           >
             <ChevronRight className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-3">
+        {/* Controls: Dots, Prev/Next, Play/Pause Indicator */}
+        <div className="mt-8 flex items-center justify-center gap-3">
           <button
             type="button"
             onClick={() => goTo(-1)}
@@ -359,7 +403,7 @@ export default function TestimonialsSection() {
                 aria-current={index === activeIndex ? "true" : undefined}
                 className={`h-2 rounded-full transition-all duration-300 ${
                   index === activeIndex
-                    ? "w-7 bg-[var(--accent-navy)]"
+                    ? "w-8 bg-indigo-600 shadow-[0_0_8px_rgba(99,102,241,0.5)]"
                     : "w-2 bg-[var(--border-subtle)] hover:bg-[var(--ink-tertiary)]/60"
                 }`}
               />
@@ -382,12 +426,17 @@ export default function TestimonialsSection() {
               isAutoPlaying ? "Tạm dừng tự động chuyển" : "Bật tự động chuyển"
             }
             aria-pressed={isAutoPlaying}
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-tertiary)] transition hover:text-[var(--ink-primary)]"
+            title={isAutoPlaying ? "Tạm dừng tự xoay" : "Bật tự xoay"}
+            className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
+              isAutoPlaying
+                ? "border-indigo-500/30 bg-indigo-500/10 text-indigo-500"
+                : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-tertiary)] hover:text-[var(--ink-primary)]"
+            }`}
           >
             {isAutoPlaying ? (
-              <Pause className="h-3 w-3" aria-hidden="true" />
+              <Pause className="h-3.5 w-3.5" aria-hidden="true" />
             ) : (
-              <Play className="h-3 w-3" aria-hidden="true" />
+              <Play className="h-3.5 w-3.5 ml-0.5" aria-hidden="true" />
             )}
           </button>
         </div>
