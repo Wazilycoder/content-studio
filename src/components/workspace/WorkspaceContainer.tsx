@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
   Copy,
+  Download,
   Globe,
   History,
   Loader2,
@@ -25,6 +26,7 @@ import { deleteHistoryItem, fetchUserHistory } from "@/app/history/actions";
 import { SAMPLE_SCENARIOS, findSampleResult } from "./sampleScenarios";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
+import { toSafeFileName } from "@/lib/utils/filename";
 import type {
   ContentFormInput,
   GeneratedContent,
@@ -52,6 +54,12 @@ const ANGLE_META: Array<{ tag: string; label: string }> = [
   { tag: "PAS", label: "Vấn đề & Giải pháp" },
   { tag: "Cảm xúc", label: "Cảm xúc & Phong cách" },
   { tag: "FAB", label: "Tính năng & Lợi ích" },
+];
+
+const ANGLE_SECTION_TITLES: string[] = [
+  "VẤN ĐỀ & GIẢI PHÁP (PAS)",
+  "CẢM XÚC & PHONG CÁCH SỐNG",
+  "TRỰC DIỆN TÍNH NĂNG & GIÁ TRỊ (FAB)",
 ];
 
 export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceContainerProps) {
@@ -160,10 +168,66 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       setCopiedKey(key);
       showToast(message);
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      copyTimerRef.current = setTimeout(() => setCopiedKey(null), 1500);
-    },
-    [showToast],
-  );
+          copyTimerRef.current = setTimeout(() => setCopiedKey(null), 1500);
+        },
+        [showToast],
+      );
+
+      const handleExportFullPackageTxt = useCallback(() => {
+        if (!result) {
+          showToast("Chưa có nội dung để xuất. Hãy tạo 3 góc bài viết trước.");
+          return;
+        }
+
+        const divider = "=".repeat(80);
+        const headlineLines = result.headlines
+          .map((item, index) => `  ${index + 1}. ${item}`)
+          .join("\n");
+        const angleSections = result.captions
+          .map((caption, index) => {
+            const title = ANGLE_SECTION_TITLES[index] ?? caption.angle.toUpperCase();
+            const body = (editedCaptions[index] ?? caption.text).trim();
+            return `--- GÓC ${index + 1}: ${title} ---\n${body}`;
+          })
+          .join("\n\n");
+
+        const content = [
+          divider,
+          "CONTENT STUDIO — BỘ NỘI DUNG QUẢNG CÁO ĐA KÊNH CHUYỂN ĐỔI CAO",
+          `Sản phẩm: ${formInputs.productName.trim() || "(chưa đặt tên)"}`,
+          `Thời gian tạo: ${new Date().toLocaleString("vi-VN")}`,
+          `Tông giọng: ${formInputs.tone}`,
+          divider,
+          "",
+          "[PHẦN 1: 3 TIÊU ĐỀ QUẢNG CÁO HẤP DẪN (HEADLINES)]",
+          headlineLines,
+          "",
+          "[PHẦN 2: 3 GÓC TIẾP CẬN BÀI VIẾT ĐỘC BẢN]",
+          angleSections,
+          "",
+          "[PHẦN 3: 5 HASHTAGS ĐỀ XUẤT]",
+          result.hashtags.join(" "),
+          "",
+          divider,
+          "Tạo bởi Content Studio — Nền tảng kiến tạo nội dung quảng cáo chuẩn AIDA & PAS",
+          divider,
+          "",
+        ].join("\n");
+
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `noi_dung_${toSafeFileName(
+          formInputs.productName,
+          "content_studio",
+        )}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast("Đã xuất toàn bộ gói nội dung (.txt) thành công!");
+      }, [result, editedCaptions, formInputs, showToast]);
 
   const [credits, setCredits] = useState<number | null>(user?.credits ?? null);
 
@@ -558,10 +622,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
                       )}
-                      {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
-                    </button>
+                        {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
+                      </button>
 
-                    {isModified && (
+                      <button
+                        type="button"
+                        onClick={handleExportFullPackageTxt}
+                        className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-navy)] hover:text-[var(--accent-navy)]"
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        Xuất gói nội dung (.txt)
+                      </button>
+
+                      {isModified && (
                       <button
                         type="button"
                         onClick={() => {
@@ -711,7 +784,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     <Globe className="h-3.5 w-3.5" />
                   </span>
                   <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                    Vùng 3 · Xem trước Facebook
+                    Vùng 3 · Xem trước đa kênh
                   </h2>
                 </div>
                 <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
@@ -726,6 +799,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     activeAngle={activeCaption.angle}
                     pageName={formInputs.productName}
                     headline={result.headlines[0]}
+                    hashtags={result.hashtags}
+                    onNotify={showToast}
                   />
                 ) : (
                   <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
@@ -736,7 +811,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       Bản xem trước trực tiếp
                     </p>
                     <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
-                      Bài viết bạn tinh chỉnh ở Vùng 2 sẽ đồng bộ thời gian thực tại đây, mô phỏng đúng bảng tin Facebook.
+                      Bài viết bạn tinh chỉnh ở Vùng 2 sẽ đồng bộ thời gian thực tại đây, mô phỏng đúng bảng tin Facebook, TikTok và Shopee.
                     </p>
                   </div>
                 )}

@@ -111,7 +111,7 @@ export default function ResultsSection({
             }`}
           >
             <Smartphone className="h-3.5 w-3.5" />
-            Xem trước Facebook Post
+            Xem trước đa kênh
           </button>
         </div>
       ) : null}
@@ -145,6 +145,9 @@ export default function ResultsSection({
             <FacebookMockup
               activeText={previewCaption.text}
               activeAngle={previewCaption.angle}
+              headline={result.headlines[0]}
+              hashtags={result.hashtags}
+              onNotify={onNotify}
             />
           ) : null}
         </div>

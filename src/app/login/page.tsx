@@ -29,6 +29,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaLoading, setCaptchaLoading] = useState(false);
   const [toast, setToast] = useState<{ type: "error" | "success"; message: string } | null>(null);
+  const [showcaseExpanded, setShowcaseExpanded] = useState(false);
   const emailInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshCaptcha = useCallback(async () => {
@@ -126,7 +127,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-5 pb-10 pt-2 sm:px-6">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-start px-5 pb-10 pt-8 sm:pt-14 lg:pt-16 sm:px-6">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold tracking-tight text-[var(--ink-primary)]">
               {forgotMode ? "Khôi phục mật khẩu" : isLogin ? "Chào mừng trở lại" : "Bắt đầu sáng tạo"}
@@ -456,11 +457,50 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                           <p className="text-[11px] text-[#65676B] dark:text-[#B0B3B8]">Được tài trợ · 🌐</p>
                         </div>
                       </div>
-                      <div className="px-3 pb-2 text-[13px] leading-[1.5]">
-                        <p>
-                          Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác...{" "}
-                          <span className="font-semibold text-[#0866FF]">Xem thêm</span>
+                      <div className="px-3 pb-2.5 text-[13px] leading-[1.5]">
+                        <p className="whitespace-pre-wrap break-words">
+                          {showcaseExpanded ? (
+                            <>
+                              Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác khi bạn hoàn toàn có thể sở hữu làn da căng bóng, rạng rỡ chỉ sau 14 ngày với Serum Vitamin C nguyên chất thế hệ mới. Công thức thẩm thấu sâu, mờ thâm nám và phục hồi hàng rào ẩm tự nhiên.
+                              <button
+                                type="button"
+                                onClick={() => setShowcaseExpanded(false)}
+                                className="ml-1.5 font-semibold text-[#65676B] hover:underline dark:text-[#B0B3B8]"
+                              >
+                                Ẩn bớt
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              Da bạn đang xỉn màu vì thức khuya? Đừng để làn da “tố cáo” tuổi tác...{" "}
+                              <button
+                                type="button"
+                                onClick={() => setShowcaseExpanded(true)}
+                                className="font-semibold text-[#0866FF] hover:underline"
+                              >
+                                Xem thêm
+                              </button>
+                            </>
+                          )}
                         </p>
+                        {showcaseExpanded && (
+                          <div className="mt-2 flex flex-wrap gap-1.5 pt-0.5">
+                            {[
+                              "#SerumVitaminC",
+                              "#TrangDaMoTham",
+                              "#ChamSocDa",
+                              "#LamDepTuNhien",
+                              "#ContentStudio",
+                            ].map((tag) => (
+                              <span
+                                key={tag}
+                                className="cursor-pointer text-[12.5px] font-normal text-[#1877F2] transition-colors hover:underline dark:text-[#4599FF]"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-[var(--accent-navy)] via-[#1e293b] to-[var(--accent-emerald)]">
                         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
