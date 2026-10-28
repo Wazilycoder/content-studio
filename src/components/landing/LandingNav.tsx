@@ -44,15 +44,14 @@ export default function LandingNav({ user }: LandingNavProps) {
       <div className="flex h-14 items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 shadow-[0_6px_20px_rgba(0,0,0,0.06)] dark:bg-[#0F0F12]/95 dark:shadow-[0_6px_20px_rgba(0,0,0,0.35)] sm:h-16 sm:px-6">
         {/* Brand */}
         <Link href="/" className="btn-tactile flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-600 text-white shadow-xs">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--ink-primary)] text-[var(--canvas)]">
             <Layers3 className="h-4 w-4" />
           </div>
           <span className="text-sm font-bold tracking-tight text-[var(--ink-primary)]">
             Content Studio
           </span>
-          <span className="hidden items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 sm:inline-flex">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-            v3.2 Cloud Online
+          <span className="hidden rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-[var(--ink-tertiary)] sm:inline-block">
+            v2.0
           </span>
         </Link>
 

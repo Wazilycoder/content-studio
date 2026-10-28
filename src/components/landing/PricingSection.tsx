@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Layers3 } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { PRICING_PLANS, type PricingPlan } from "@/lib/config/pricing";
 
@@ -50,8 +50,8 @@ export default function PricingSection() {
               Bảng giá minh bạch. Không phí duy trì ẩn.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-              Gói Miễn Phí: Không giới hạn số bài tạo vĩnh viễn (Cooldown 45s sạc năng
-              lượng). Nâng cấp Pro Turbo: 0s Cooldown tạo tức thì, ưu tiên GPU.
+              Gói Free Starter tặng sẵn 10 lượt tạo khi đăng ký. Nâng cấp Pro Creator
+              hoặc Business để mở khóa toàn bộ quyền lợi bên dưới.
             </p>
           </div>
         </ScrollReveal>
@@ -59,14 +59,14 @@ export default function PricingSection() {
         {/* Billing cycle interactive toggle */}
         <ScrollReveal direction="up" duration={600} delay={120}>
           <div className="mt-8 flex justify-center">
-            <div className="inline-flex items-center gap-1 rounded-full border border-zinc-200/90 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-white/5">
+            <div className="inline-flex items-center gap-1 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] p-1">
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
-                className={`rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-200 sm:text-[13px] ${
+                className={`rounded-full px-3.5 py-2 text-xs font-semibold transition-colors duration-150 sm:text-[13px] ${
                   billingCycle === "monthly"
-                    ? "bg-zinc-900 text-white shadow-sm dark:bg-white dark:text-zinc-900"
-                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                    ? "bg-[var(--ink-primary)] text-[var(--canvas)]"
+                    : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
                 }`}
               >
                 Thanh toán theo tháng
@@ -74,16 +74,14 @@ export default function PricingSection() {
               <button
                 type="button"
                 onClick={() => setBillingCycle("yearly")}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-all duration-200 sm:text-[13px] ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors duration-150 sm:text-[13px] ${
                   billingCycle === "yearly"
-                    ? "bg-zinc-900 text-white shadow-sm dark:bg-white dark:text-zinc-900"
-                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                    ? "bg-[var(--ink-primary)] text-[var(--canvas)]"
+                    : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
                 }`}
               >
                 Thanh toán theo năm
-                <span className="inline-flex items-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                  -35%<span className="hidden sm:inline">&nbsp;Tiết kiệm</span>
-                </span>
+                <span className="text-[11px] font-medium opacity-70">-35%</span>
               </button>
             </div>
           </div>
@@ -103,114 +101,77 @@ export default function PricingSection() {
                 className="h-full"
               >
                 <div
-                  className={`relative h-full rounded-[2rem] border p-2 transition-all duration-300 ${
+                  className={`relative flex h-full flex-col rounded-2xl border bg-[var(--surface)] p-6 ${
                     plan.highlight
-                      ? "border-transparent bg-gradient-to-b from-indigo-500 via-sky-500 to-emerald-500/80 shadow-[0_24px_60px_-24px_rgba(79,70,229,0.5)] hover:shadow-[0_30px_70px_-24px_rgba(79,70,229,0.6)]"
-                      : "border-zinc-200/90 bg-gradient-to-b from-zinc-100 to-zinc-50 dark:border-white/10 dark:from-white/[0.08] dark:to-white/[0.02]"
+                      ? "border-[var(--ink-primary)]"
+                      : "border-[var(--border-subtle)]"
                   }`}
                 >
-                  <div className="relative flex h-full flex-col rounded-[calc(2rem-0.5rem)] bg-white/95 p-6 backdrop-blur-md dark:bg-[#18181B]/95">
-                    {plan.highlight ? (
-                      <span className="absolute -top-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg shadow-indigo-600/30">
-                        <Layers3 className="h-3 w-3" />
-                        KHUYÊN DÙNG · 85% CHỦ SHOP LỰA CHỌN
-                      </span>
-                    ) : plan.badge ? (
-                      <span className="absolute -top-3 left-6 inline-flex items-center rounded-full border border-zinc-200/90 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-700 shadow-sm dark:border-white/10 dark:bg-[#18181B] dark:text-zinc-200">
-                        {plan.badge}
-                      </span>
-                    ) : null}
+                  {plan.highlight ? (
+                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-[var(--ink-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--canvas)]">
+                      Phổ biến nhất
+                    </span>
+                  ) : plan.badge ? (
+                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
+                      {plan.badge}
+                    </span>
+                  ) : null}
 
-                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
-                      {plan.name}
-                    </h3>
+                  <h3 className="text-sm font-semibold text-[var(--ink-primary)]">
+                    {plan.name}
+                  </h3>
 
-                    <div className="mt-3 flex items-baseline gap-1">
-                      <span className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                        {display.main}
-                      </span>
-                      <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                        {display.period}
-                      </span>
-                    </div>
-
-                    <p
-                      className={`mt-1 text-xs font-medium ${
-                        plan.highlight
-                          ? "text-indigo-600 dark:text-indigo-400"
-                          : "text-zinc-500 dark:text-zinc-400"
-                      }`}
-                    >
-                      {display.note}
-                    </p>
-
-                    <p className="mt-3 text-[13px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-                      {plan.description}
-                    </p>
-
-                    <ul className="mt-5 flex-1 space-y-2.5">
-                      {plan.features.map((feature) => (
-                        <li
-                          key={feature}
-                          className="flex items-start gap-2 text-[13px] text-zinc-600 dark:text-zinc-300"
-                        >
-                          <Check
-                            className={`mt-0.5 h-4 w-4 shrink-0 ${
-                              plan.highlight
-                                ? "text-indigo-600 dark:text-indigo-400"
-                                : "text-emerald-600 dark:text-emerald-400"
-                            }`}
-                          />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Link
-                      href="/register"
-                      className={`group mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
-                        plan.highlight
-                          ? "bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 text-white shadow-lg shadow-indigo-600/25 hover:shadow-xl hover:shadow-indigo-600/40"
-                          : "border border-zinc-200/90 bg-white text-zinc-900 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-white/20"
-                      }`}
-                    >
-                      {plan.highlight
-                        ? `Nâng cấp ${plan.tierBadge}`
-                        : `Chọn gói ${plan.tierBadge}`}
-                      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </Link>
+                  <div className="mt-3 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold tracking-tight text-[var(--ink-primary)]">
+                      {display.main}
+                    </span>
+                    <span className="text-sm font-medium text-[var(--ink-tertiary)]">
+                      {display.period}
+                    </span>
                   </div>
+
+                  <p className="mt-1 text-xs font-medium text-[var(--ink-tertiary)]">
+                    {display.note}
+                  </p>
+
+                  <p className="mt-3 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                    {plan.description}
+                  </p>
+
+                  <ul className="mt-5 flex-1 space-y-2.5">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-start gap-2 text-[13px] text-[var(--ink-secondary)]"
+                      >
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    href="/workspace"
+                    className={`group mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 ${
+                      plan.highlight
+                        ? "bg-[var(--accent-navy)] text-white hover:bg-[var(--accent-navy-hover)]"
+                        : "border border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-primary)] hover:border-[var(--ink-tertiary)]"
+                    }`}
+                  >
+                    <span>Trải nghiệm trong Workspace</span>
+                    <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
               </ScrollReveal>
             );
           })}
         </div>
 
-        {/* Live GPU Cluster Runtime Status Bar */}
-        <div className="mt-8 overflow-hidden rounded-2xl border border-zinc-200/90 bg-[var(--surface-raised)]/70 p-5 backdrop-blur dark:border-white/10">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10B981]" />
-              <span className="text-center text-[12.5px] font-semibold text-[var(--ink-primary)] sm:text-left">
-                Hệ thống GPU:{" "}
-                <span className="text-emerald-600 dark:text-emerald-400">
-                  12x NVIDIA H100 SXM5
-                </span>{" "}
-                · 0s Hàng đợi (Active Cluster)
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {["0s Cooldown", "100% Anti-AI-Slop", "SLA 99.98%"].map((metric) => (
-                <span
-                  key={metric}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)]"
-                >
-                  <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  {metric}
-                </span>
-              ))}
-            </div>
-          </div>
+        {/* Payment transparency note */}
+        <div className="mt-8 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-5 py-4">
+          <p className="text-center text-[12.5px] leading-relaxed text-[var(--ink-secondary)]">
+            Hệ thống thanh toán tự động VietQR đang ở chế độ thử nghiệm đánh giá.
+          </p>
         </div>
       </div>
     </section>

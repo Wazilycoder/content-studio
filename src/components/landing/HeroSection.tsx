@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -39,7 +39,7 @@ interface CommentItem {
 
 const TRUST_ITEMS = [
   "0đ chi phí bắt đầu",
-  "Không giới hạn bài viết",
+  "10 lượt tạo miễn phí",
   "Chuẩn 125 ký tự 'Xem thêm'",
   "7 tông giọng thương hiệu",
 ];
@@ -181,26 +181,6 @@ export default function HeroSection({ user }: HeroSectionProps) {
     (INITIAL_COMMENTS[activePost.tag]?.length || 0);
   const currentSharesCount = shareCounts[activePost.tag] || activePost.initialShares;
 
-  // 3D Card Locked Position (Zero jitter, solid click targets)
-  const cardRef = useRef<HTMLDivElement>(null);
-  const glareRef = useRef<HTMLDivElement>(null);
-
-  // Surface light glare on cursor move (Card is 100% locked in place, only surface reflection responds)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect || !glareRef.current) return;
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    glareRef.current.style.background = `radial-gradient(circle 380px at ${x.toFixed(1)}% ${y.toFixed(1)}%, rgba(255,255,255,0.22), transparent 70%)`;
-    glareRef.current.style.opacity = "1";
-  };
-
-  const handleMouseLeave = () => {
-    if (!glareRef.current) return;
-    glareRef.current.style.background = `radial-gradient(circle 380px at 50% 30%, rgba(255,255,255,0.08), transparent 70%)`;
-    glareRef.current.style.opacity = "0.4";
-  };
-
   // Toggle Like Action
   const handleToggleLike = () => {
     setUserLikes((prev) => ({ ...prev, [activePost.tag]: !prev[activePost.tag] }));
@@ -282,9 +262,6 @@ export default function HeroSection({ user }: HeroSectionProps) {
   };
 
   const primaryHref = user ? "/workspace" : "/register";
-  const primaryLabel = user
-    ? "Vào Workspace làm việc"
-    : "Bắt đầu miễn phí (Không giới hạn)";
 
   return (
     <section className="relative overflow-x-clip py-4 sm:py-8 lg:py-0 lg:min-h-[calc(100dvh-5rem)] lg:flex lg:items-center">
@@ -296,46 +273,35 @@ export default function HeroSection({ user }: HeroSectionProps) {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
-      {/* 2. Focused Subtle Ambient Glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-32 -z-10 flex justify-center overflow-hidden"
-      >
-        <div className="h-[420px] w-[800px] rounded-full bg-[var(--accent-navy)]/10 blur-[130px] dark:bg-[var(--accent-navy)]/20" />
-      </div>
-
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10 xl:gap-12">
           {/* ================= LEFT COLUMN: HERO CONTENT ================= */}
           <div className="flex flex-col items-start text-left lg:col-span-7">
             {/* Top Eyebrow Badge */}
             <ScrollReveal direction="down" duration={550}>
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/25 bg-indigo-50/90 px-3 py-1 shadow-xs transition-[transform,border-color,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-indigo-500/40 dark:border-indigo-500/30 dark:bg-indigo-500/10 sm:gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse sm:h-2 sm:w-2 dark:bg-emerald-400" />
-                <span className="text-[10px] font-semibold tracking-wide text-indigo-700 sm:text-xs dark:text-indigo-300">
-                  AI Copywriting đầu tiên tại VN chuẩn Anti-AI-Slop
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1">
+                <Layers3 className="h-3 w-3 text-[var(--ink-tertiary)]" />
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--ink-secondary)] sm:text-[11px]">
+                  Chuẩn Anti-AI-Slop cho người bán hàng Việt
                 </span>
-                <Layers3 className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
               </div>
             </ScrollReveal>
 
             {/* Hero Title & Subtitle */}
             <ScrollReveal direction="up" delay={120} duration={700}>
-              <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem]">
-                <span className="bg-gradient-to-b from-slate-900 via-slate-800 to-zinc-700 bg-clip-text text-transparent dark:from-white dark:via-white/95 dark:to-slate-300">
-                  Tạo 3 góc bài viết bán hàng độc bản.
-                </span>
+              <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight text-[var(--ink-primary)] sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem]">
+                Tạo 3 góc bài viết bán hàng độc bản.
                 <br />
-                <span className="mt-1 inline-block bg-gradient-to-r from-indigo-600 via-sky-600 to-emerald-600 bg-clip-text text-transparent drop-shadow-[0_4px_24px_rgba(99,102,241,0.2)] dark:from-indigo-400 dark:via-sky-300 dark:to-emerald-300 dark:drop-shadow-[0_4px_24px_rgba(99,102,241,0.3)]">
+                <span className="text-[var(--ink-secondary)]">
                   Không văn mẫu sáo rỗng.
                 </span>
               </h1>
 
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300">
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
                 Biến thông tin sản phẩm thô sơ thành 3 bài viết Facebook &amp; Instagram
-                đa chiều: <span className="font-semibold text-zinc-900 dark:text-white">Vấn đề &amp; Giải pháp</span>,{" "}
-                <span className="font-semibold text-zinc-900 dark:text-white">Cảm xúc phong cách sống</span>, và{" "}
-                <span className="font-semibold text-zinc-900 dark:text-white">Trực diện tính năng</span>. Đăng ngay lập tức, không mất công chỉnh sửa.
+                đa chiều: <span className="font-semibold text-[var(--ink-primary)]">Vấn đề &amp; Giải pháp</span>,{" "}
+                <span className="font-semibold text-[var(--ink-primary)]">Cảm xúc phong cách sống</span>, và{" "}
+                <span className="font-semibold text-[var(--ink-primary)]">Trực diện tính năng</span>. Đăng ngay lập tức, không mất công chỉnh sửa.
               </p>
             </ScrollReveal>
 
@@ -344,19 +310,17 @@ export default function HeroSection({ user }: HeroSectionProps) {
               <div className="mt-4.5 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
                 <Link
                   href={primaryHref}
-                  className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 sm:w-auto"
+                  className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--accent-navy)] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-[var(--accent-navy-hover)] sm:w-auto"
                 >
-                  <span>{primaryLabel}</span>
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 transition-transform duration-150 ease-out group-hover:translate-x-0.5">
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
+                  <span>Bắt đầu sáng tạo ngay</span>
+                  <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
                 </Link>
 
                 <a
                   href="#demo"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-zinc-200/90 bg-white/95 px-5 py-3 text-sm font-semibold text-zinc-700 shadow-xs transition-[transform,background-color,border-color,color] duration-150 ease-out hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 active:translate-y-0 sm:w-auto dark:border-white/20 dark:bg-white/[0.06] dark:text-zinc-100 dark:hover:border-white/40 dark:hover:bg-white/[0.12] dark:hover:text-white"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-[var(--ink-secondary)] transition-colors duration-150 ease-out hover:text-[var(--ink-primary)] sm:w-auto"
                 >
-                  <PlayCircle className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
+                  <PlayCircle className="h-4 w-4" />
                   <span>Xem bài viết mẫu</span>
                 </a>
               </div>
@@ -368,9 +332,9 @@ export default function HeroSection({ user }: HeroSectionProps) {
                 {TRUST_ITEMS.map((item) => (
                   <div
                     key={item}
-                    className="flex items-center gap-1.5 rounded-full border border-zinc-200/80 bg-white/85 px-2.5 py-1 text-xs text-zinc-700 shadow-xs transition-[transform,border-color,background-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-indigo-500/30 hover:bg-white dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:border-indigo-500/40 dark:hover:bg-white/[0.08]"
+                    className="flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--ink-secondary)]"
                   >
-                    <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
                       ✓
                     </span>
                     <span>{item}</span>
@@ -392,7 +356,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
                 </div>
                 <div className="h-7 w-px bg-[var(--border-subtle)]" />
                 <div>
-                  <div className="text-xl font-extrabold tracking-tight text-[var(--accent-navy)] sm:text-2xl">
+                  <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
                     100%
                   </div>
                   <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
@@ -401,7 +365,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
                 </div>
                 <div className="h-7 w-px bg-[var(--border-subtle)]" />
                 <div>
-                  <div className="text-xl font-extrabold tracking-tight text-emerald-600 sm:text-2xl dark:text-emerald-400">
+                  <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
                     0s
                   </div>
                   <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
@@ -414,47 +378,11 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
           {/* ================= RIGHT COLUMN: INTERACTIVE 3D FACEBOOK POST SHOWCASE ================= */}
           <div className="hero-visual-container relative flex w-full items-center justify-center lg:col-span-5">
-            {/* KeyForge Floating Chip 1 (Top Floating - Continuous CSS Float) */}
-            <div className="animate-kc-chip-1 pointer-events-none absolute -top-4 -right-1 z-30 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-white/95 px-3 py-1.5 shadow-lg backdrop-blur-md sm:-top-5 sm:-right-2 sm:px-3.5 dark:border-emerald-500/40 dark:bg-[#18181B]/95">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10B981]" />
-              <span className="text-[10.5px] sm:text-[11.5px] font-semibold text-zinc-800 dark:text-zinc-200">
-                ✨ Tạo 3 góc trong 2.8s
-              </span>
-            </div>
-
-            {/* KeyForge Floating Chip 2 (Bottom Floating - Continuous CSS Float) */}
-            <div className="animate-kc-chip-2 pointer-events-none absolute -bottom-5 -left-1 z-30 hidden sm:flex items-center gap-2 rounded-full border border-indigo-500/30 bg-white/95 px-3.5 py-1.5 shadow-lg backdrop-blur-md sm:-bottom-5 sm:-left-3 dark:border-indigo-500/40 dark:bg-[#18181B]/95">
-              <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_8px_#6366F1]" />
-              <span className="text-[11.5px] font-semibold text-zinc-800 dark:text-zinc-200">
-                📈 Tương tác tăng +320%
-              </span>
-            </div>
-
-            {/* 3D KeyCard Locked In Place (100% stable, zero tilt jitter, rock-solid click targets) */}
-            <div
-              ref={cardRef}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              className="keycard-3d-wrap w-full max-w-[430px] select-none"
-              style={{
-                transform: "perspective(1200px) rotateX(2.5deg) rotateY(-5deg) translateY(0px)",
-                transformStyle: "preserve-3d",
-              }}
-            >
-              {/* Double-Bezel Card Outer Shell with Metallic Reflection */}
-              <div className="relative overflow-hidden rounded-[2rem] border border-indigo-500/25 bg-gradient-to-b from-indigo-500/15 via-white/50 to-blue-500/15 p-2 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.22)] backdrop-blur-sm dark:border-white/15 dark:from-indigo-500/20 dark:via-transparent dark:to-blue-500/20 dark:shadow-[0_35px_80px_-20px_rgba(0,0,0,0.75)]">
-                {/* 100% KeyForge Metallic Silver Sheen Sweep (Hiệu ứng bạc lướt ngang) */}
-                <div className="keycard-sheen" />
-
-                {/* Interactive Flash Glare Follows Cursor on Card Surface */}
-                <div
-                  ref={glareRef}
-                  className="pointer-events-none absolute inset-0 z-20 rounded-[calc(2rem-0.5rem)] transition-opacity duration-300"
-                  style={{ opacity: 0.4 }}
-                />
-
+            {/* Clean Editorial Preview Card */}
+            <div className="w-full max-w-[430px] select-none">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-2 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.25)]">
                 {/* Card Inner Face — Fixed Exact Height h-[516px] to lock layout position 100% */}
-                <div className="relative z-10 flex h-[516px] flex-col overflow-hidden rounded-[calc(2rem-0.5rem)] border border-zinc-200/90 bg-white/95 p-3.5 sm:p-4 shadow-xs backdrop-blur-md dark:border-white/10 dark:bg-[#18181B]/95">
+                <div className="relative z-10 flex h-[516px] flex-col overflow-hidden rounded-[calc(1.75rem-0.5rem)] border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5 sm:p-4">
                   {/* 3 Interactive Angle Selector Tabs — Locked Top Position (Zero scale jitter) */}
                   <div className="mb-2.5 flex h-8.5 shrink-0 items-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 p-1">
                     {DEMO_POSTS.map((demo, idx) => (
@@ -476,12 +404,8 @@ export default function HeroSection({ user }: HeroSectionProps) {
                   {/* Facebook Post Header with Micro KeyForge Tech Hologram */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 via-indigo-500 to-blue-600 text-white text-xs font-bold shadow-xs">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ink-primary)] text-xs font-bold text-[var(--canvas)]">
                         CS
-                        {/* Micro KeyForge Hologram Indicator */}
-                        <span className="animate-spin-holo absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-gradient-to-tr from-amber-400 via-emerald-400 to-indigo-500 p-0.5">
-                          <span className="block h-full w-full rounded-full bg-white dark:bg-[#18181B]" />
-                        </span>
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
@@ -522,7 +446,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
                   </div>
 
                   {/* Visual Media Showcase Mockup */}
-                  <div className="relative mt-2.5 overflow-hidden rounded-xl border border-zinc-200/80 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-3 text-white dark:border-white/10">
+                  <div className="relative mt-2.5 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 p-3 text-white dark:border-white/10 dark:bg-zinc-950">
                     <div className="flex items-center justify-between text-[10.5px] text-zinc-300">
                       <span className="font-mono tracking-wider">MOCKUP PREVIEW</span>
                       <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 font-semibold text-emerald-400">
