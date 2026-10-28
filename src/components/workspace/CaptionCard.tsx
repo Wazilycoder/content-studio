@@ -117,20 +117,20 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
   };
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs transition-all duration-200 hover:border-[var(--border-strong)] hover:shadow-md">
-      {/* 1. Header: Phân loại góc nhìn & Nhóm nút thao tác */}
-      <header className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-md bg-[var(--surface-raised)] px-2.5 py-1 text-[12px] font-semibold text-[var(--ink-secondary)]">
-            <span className="truncate">{caption.angle}</span>
+    <article className="group overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] transition-colors duration-200 hover:border-[var(--border-strong)]">
+      {/* 1. Header: phân loại góc nhìn & nhóm thao tác */}
+      <header className="flex flex-wrap items-center justify-between gap-2.5 px-4 pb-2 pt-4 sm:px-5">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="min-w-0 truncate text-[13px] font-semibold tracking-tight text-[var(--ink-primary)]">
+            {caption.angle}
           </span>
           {isStreaming ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10.5px] font-medium text-indigo-600 dark:text-indigo-400 animate-pulse">
-              <Zap className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
+              <Zap className="h-3 w-3 shrink-0" />
               Đang viết...
             </span>
           ) : isModified ? (
-            <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+            <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[12px] font-medium text-amber-700 dark:text-amber-300">
               Đã chỉnh sửa
             </span>
           ) : null}
@@ -143,9 +143,9 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
               type="button"
               onClick={handleResetOriginal}
               title="Khôi phục nội dung AI ban đầu"
-              className="btn-tactile inline-flex h-8 items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2 text-[11px] font-medium text-[var(--ink-tertiary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+              className="btn-tactile inline-flex h-9 items-center gap-1.5 rounded-lg px-2 text-[12.5px] font-medium text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
             >
-              <RotateCcw className="h-3 w-3" />
+              <RotateCcw className="h-3.5 w-3.5 shrink-0" />
               <span className="hidden sm:inline">Khôi phục AI</span>
             </button>
           )}
@@ -157,7 +157,8 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
               finishStreaming();
               setIsEditing(!isEditing);
             }}
-            className={`btn-tactile inline-flex h-8 items-center gap-1 rounded-lg border px-2.5 text-[12px] font-medium transition-colors ${
+            aria-pressed={isEditing}
+            className={`btn-tactile inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-[12.5px] font-medium transition-colors ${
               isEditing
                 ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.08] text-[var(--accent-navy)]"
                 : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
@@ -165,40 +166,40 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
           >
             {isEditing ? (
               <>
-                <Check className="h-3.5 w-3.5" />
+                <Check className="h-3.5 w-3.5 shrink-0" />
                 <span>Xong</span>
               </>
             ) : (
               <>
-                <Pencil className="h-3.5 w-3.5" />
+                <Pencil className="h-3.5 w-3.5 shrink-0" />
                 <span>Chỉnh sửa</span>
               </>
             )}
           </button>
 
-          {/* Nút Sao chép */}
+          {/* Nút Sao chép — điểm nhấn tactile, phản hồi tức thì */}
           <button
             type="button"
             onClick={handleCopy}
             aria-label="Sao chép bài viết"
-            className={`btn-tactile inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg border px-3 text-[12px] font-medium transition-colors ${
+            className={`btn-tactile inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3.5 text-[12.5px] font-semibold text-white transition-colors ${
               copied
-                ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
-                : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                ? "bg-[var(--accent-emerald)]"
+                : "bg-[var(--accent-navy)] hover:bg-[var(--accent-navy-hover)]"
             }`}
           >
             {copied ? (
-              <Check className="check-pop h-3.5 w-3.5" />
+              <Check className="check-pop h-4 w-4 shrink-0" />
             ) : (
-              <Copy className="h-3.5 w-3.5" />
+              <Copy className="h-4 w-4 shrink-0" />
             )}
-            <span>{copied ? "Đã chép" : "Chép"}</span>
+            <span>{copied ? "Đã sao chép" : "Sao chép"}</span>
           </button>
         </div>
       </header>
 
-      {/* 2. Body: Hiển thị hoặc Trình soạn thảo trực tiếp */}
-      <div className="p-4 sm:p-5">
+      {/* 2. Body: trình soạn thảo tài liệu — không viền lồng nhau */}
+      <div className="px-4 pb-3 sm:px-5">
         {isEditing ? (
           <div className="space-y-2">
             <textarea
@@ -211,15 +212,17 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
                 e.target.style.height = `${e.target.scrollHeight}px`;
               }}
               rows={4}
-              className="w-full resize-none rounded-xl border border-[var(--accent-navy)]/40 bg-[var(--canvas)] p-3 text-[15px] leading-[1.7] text-[var(--ink-primary)] outline-hidden focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
+              className="w-full resize-none rounded-lg border border-[var(--border-subtle)] bg-[var(--canvas)] px-3 py-2.5 text-[15px] leading-[1.75] text-[var(--ink-primary)] outline-none transition-shadow duration-150 focus:border-[var(--accent-navy)]/50 focus:ring-2 focus:ring-[var(--accent-navy)]/15"
               placeholder="Nhập nội dung chỉnh sửa..."
             />
-            <p className="text-[11px] text-[var(--ink-tertiary)]">
-              Mẹo: Các chỉ số ký tự và thước đo Facebook sẽ tự động cập nhật theo từng từ bạn gõ.
+            <p className="text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+              Mẹo: chỉ số ký tự và thước đo Facebook tự động cập nhật theo từng từ bạn gõ.
             </p>
           </div>
         ) : (
           <div
+            role="button"
+            tabIndex={0}
             onClick={() => {
               if (isStreaming) {
                 finishStreaming();
@@ -227,39 +230,49 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
                 setIsEditing(true);
               }
             }}
-            className="cursor-pointer rounded-xl p-1 transition-colors hover:bg-[var(--surface-raised)]/50"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                if (isStreaming) {
+                  finishStreaming();
+                } else {
+                  setIsEditing(true);
+                }
+              }
+            }}
+            className="cursor-text rounded-lg px-1 py-0.5 transition-colors hover:bg-[var(--surface-raised)]/60"
             title={isStreaming ? "Bấm để xem toàn bộ ngay" : "Bấm để chỉnh sửa trực tiếp"}
           >
             <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.75] text-[var(--ink-primary)]">
               {isEditing ? text : displayedText}
               {isStreaming && (
-                <span className="ml-1 inline-block h-[15px] w-[2px] animate-pulse rounded-xs bg-indigo-500 align-middle" />
+                <span className="ml-1 inline-block h-[15px] w-[2px] animate-pulse rounded-sm bg-[var(--accent-navy)] align-middle" />
               )}
             </p>
           </div>
         )}
       </div>
 
-      {/* 3. Footer: Thước đo thông minh 125 ký tự trước nút "Xem thêm" */}
-      <footer className="space-y-2 border-t border-[var(--border-subtle)] bg-[var(--surface-raised)]/20 px-4 py-3 sm:px-5">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
+      {/* 3. Footer: thước đo thông minh 125 ký tự trước nút "Xem thêm" */}
+      <footer className="space-y-2 border-t border-[var(--border-subtle)] px-4 py-3 sm:px-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[13px] font-medium tabular-nums text-[var(--ink-tertiary)]">
             Tổng cộng: <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
           </span>
 
           <span
-            className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11.5px] font-medium ${
+            className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[12px] font-medium ${
               exceeded
-                ? "bg-[var(--accent-navy)]/[0.08] text-[var(--accent-navy)]"
-                : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
+                ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
             }`}
           >
             {exceeded ? (
-              <Eye className="h-3 w-3 shrink-0" />
+              <Eye className="h-3.5 w-3.5 shrink-0" />
             ) : (
-              <Check className="h-3 w-3 shrink-0" />
+              <Check className="h-3.5 w-3.5 shrink-0" />
             )}
-            {exceeded ? "Có nút 'Xem thêm' (> 125 ký tự)" : "Hiển thị trọn vẹn (≤ 125 ký tự)"}
+            {exceeded ? "Có nút “Xem thêm” (> 125 ký tự)" : "Hiển thị trọn vẹn (≤ 125 ký tự)"}
           </span>
         </div>
 
@@ -273,14 +286,14 @@ export default function CaptionCard({ caption, onNotify }: CaptionCardProps) {
           />
         </div>
 
-        <p className="text-[11.5px] leading-relaxed text-[var(--ink-tertiary)]">
+        <p className="text-[12.5px] leading-relaxed text-[var(--ink-tertiary)]">
           {exceeded
-            ? "Mẹo Facebook: 125 ký tự đầu đóng vai trò là 'Hook' giật tò mò trước nút 'Xem thêm'. Bấm tab 'Xem trước Facebook Post' bên trên để xem giao diện thật."
+            ? "125 ký tự đầu đóng vai trò “Hook” giật tò mò trước nút “Xem thêm”. Mở tab “Xem trước đa kênh” để xem giao diện thật."
             : "Bài viết ngắn gọn, hiển thị trực diện 100% trên bảng tin người xem mà không bị ngắt quãng."}
         </p>
 
         {instagram.status === "limit_exceeded" ? (
-          <p className="text-[11.5px] leading-relaxed text-rose-600 dark:text-rose-400">
+          <p className="text-[12.5px] leading-relaxed text-rose-600 dark:text-rose-400">
             {instagram.message}
           </p>
         ) : null}

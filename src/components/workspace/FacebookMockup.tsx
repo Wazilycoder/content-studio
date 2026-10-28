@@ -44,7 +44,7 @@ const FB_PREVIEW_LIMIT = 125;
 type Platform = "facebook" | "instagram";
 
 const PLATFORM_TABS: Array<{ id: Platform; label: string; icon: React.ComponentType<{ className?: string }> }> = [
-  { id: "facebook", label: "Facebook Post", icon: Globe },
+  { id: "facebook", label: "Facebook Mobile", icon: Globe },
   { id: "instagram", label: "Instagram Feed", icon: InstagramIcon },
 ];
 
@@ -420,9 +420,17 @@ function FacebookMockup({
 
   return (
     <div className="animate-fade-in">
-      {/* Thanh chọn nền tảng + tải banner PNG */}
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex min-w-0 flex-wrap rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1">
+      {/* Thanh chọn nền tảng (sliding pill) + tải banner PNG */}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="relative inline-flex min-w-0 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-1 left-1 rounded-full bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              width: "calc(50% - 4px)",
+              transform: `translateX(${activePlatform === "facebook" ? 0 : 100}%)`,
+            }}
+          />
           {PLATFORM_TABS.map((tab) => {
             const Icon = tab.icon;
             const active = activePlatform === tab.id;
@@ -432,13 +440,13 @@ function FacebookMockup({
                 type="button"
                 onClick={() => setActivePlatform(tab.id)}
                 aria-pressed={active}
-                className={`btn-tactile inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11.5px] font-medium transition-all duration-200 ${
+                className={`btn-tactile relative z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                   active
-                    ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                    ? "text-[var(--accent-navy)]"
                     : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
                 }`}
               >
-                <Icon className="h-3.5 w-3.5" />
+                <Icon className="h-3.5 w-3.5 shrink-0" />
                 <span className="whitespace-nowrap">{tab.label}</span>
               </button>
             );
@@ -449,7 +457,7 @@ function FacebookMockup({
           type="button"
           onClick={handleDownloadAdBanner}
           disabled={exportingImage}
-          className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-tactile inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {exportingImage ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--accent-navy)]" />
@@ -461,19 +469,33 @@ function FacebookMockup({
       </div>
 
       {activeAngle ? (
-        <div className="mb-2 flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-navy)]/[0.08] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent-navy)]">
-            Đang hiển thị: {activeAngle}
+        <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
+            <span className="truncate">Đang hiển thị: {activeAngle}</span>
           </span>
-          <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[12px] font-medium text-emerald-700 dark:text-emerald-300">
             Đồng bộ trực tiếp
           </span>
         </div>
       ) : null}
 
-      {/* ── NỀN TẢNG 1: Facebook Ads post ── */}
-      {activePlatform === "facebook" ? (
-      <div className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:border-[#393A3B] dark:bg-[#242526] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]">
+      {/* ── KHUNG THIẾT BỊ DI ĐỘNG + NỀN TẢNG 1: Facebook Mobile ── */}
+      <div className="mx-auto w-full max-w-[392px]">
+        <div className="relative rounded-[2.4rem] border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-[7px] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.55)]">
+          <div className="relative overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-white dark:bg-[#242526]">
+            {/* Status bar */}
+            <div className="flex items-center justify-between px-5 pb-1 pt-2.5 text-[12px] font-semibold tracking-tight text-[#050505] dark:text-[#E4E6EB]">
+              <span className="tabular-nums">9:41</span>
+              <div className="flex items-center gap-1">
+                <span className="h-2 w-[3px] rounded-full bg-current opacity-70" />
+                <span className="h-2.5 w-[3px] rounded-full bg-current opacity-70" />
+                <span className="h-3 w-[3px] rounded-full bg-current opacity-70" />
+                <span className="ml-1 inline-block h-2.5 w-5 rounded-[3px] border border-current opacity-60" />
+              </div>
+            </div>
+
+            {activePlatform === "facebook" ? (
+              <div className="relative bg-white dark:bg-[#242526]">
         {/* Post Header */}
         <div className="flex items-center gap-2.5 px-3 pt-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--accent-navy)] to-[var(--accent-emerald)] text-[13px] font-semibold text-white">
@@ -489,10 +511,10 @@ function FacebookMockup({
           </div>
         </div>
 
-        {/* Post Text with smooth fade transition */}
+        {/* Post Text — hiển thị rõ điểm gấp khúc 125 ký tự */}
         <div className="px-3 py-2.5">
-          <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.4] text-[#050505] dark:text-[#E4E6EB]">
-            {expanded || !truncated ? activeText : `${preview}... `}
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-[1.45] text-[#050505] dark:text-[#E4E6EB]">
+            {expanded || !truncated ? activeText : `${preview}… `}
             {truncated && !expanded ? (
               <button
                 type="button"
@@ -512,6 +534,13 @@ function FacebookMockup({
               </button>
             ) : null}
           </p>
+
+          {truncated && !expanded ? (
+            <p className="mt-1.5 flex items-center gap-1.5 text-[12px] font-medium text-[#65676B] dark:text-[#B0B3B8]">
+              <span className="inline-block h-px w-4 bg-current opacity-60" />
+              Cắt tại ký tự 125 · Hook
+            </p>
+          ) : null}
 
           {/* Hashtags do AI đề xuất — bung ra cùng nội dung bài viết */}
           {(expanded || !truncated) && hashtags && hashtags.length > 0 && (
@@ -746,16 +775,15 @@ function FacebookMockup({
               }}
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[12.5px] font-medium text-zinc-800 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
             >
-              <Share2 className="h-4 w-4 text-blue-500" />
-              <span>Chia sẻ lên Bảng tin cá nhân</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      ) : (
-        /* ── NỀN TẢNG 2: Instagram Feed Post (1:1) ── */
-        <div className="mx-auto w-full max-w-[470px]">
-          <div className="overflow-hidden rounded-xl border border-[#DBDBDB] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)] dark:border-[#262626] dark:bg-black">
+                    <Share2 className="h-4 w-4 text-blue-500" />
+                    <span>Chia sẻ lên Bảng tin cá nhân</span>
+                  </button>
+                </div>
+              </div>
+                    </div>
+                  ) : (
+                    /* ── NỀN TẢNG 2: Instagram Feed Post (1:1) ── */
+                    <div className="relative bg-white dark:bg-[#242526]">
             {/* Header */}
             <div className="flex items-center gap-2.5 px-3 py-2.5">
               <div className="rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[2px]">
@@ -884,22 +912,26 @@ function FacebookMockup({
               )}
             </div>
 
-            {/* Comments Preview */}
-            <div className="px-3 pb-3 pt-1.5">
-              <p className="cursor-pointer text-[13px] text-[#8E8E8E]">
-                Xem tất cả 28 bình luận
-              </p>
-              <p className="mt-1 text-[10px] uppercase tracking-wide text-[#8E8E8E]">
-                2 giờ trước
-              </p>
-            </div>
-          </div>
+                        {/* Comments Preview */}
+                        <div className="px-3 pb-3 pt-1.5">
+                          <p className="cursor-pointer text-[13px] text-[#8E8E8E]">
+                            Xem tất cả 28 bình luận
+                          </p>
+                          <p className="mt-1 text-[11px] uppercase tracking-wide text-[#8E8E8E]">
+                            2 giờ trước
+                          </p>
+                        </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-          <p className="mt-2 text-center text-[11px] text-[var(--ink-tertiary)]">
-            Mô phỏng Instagram Feed 1:1 · Caption đồng bộ trực tiếp từ Vùng 2
-          </p>
-        </div>
-      )}
+                    <p className="mt-2.5 text-center text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                      {activePlatform === "facebook"
+                        ? "Mô phỏng Facebook Mobile · Đồng bộ trực tiếp từ vùng biên tập"
+                        : "Mô phỏng Instagram Feed · Đồng bộ trực tiếp từ vùng biên tập"}
+                    </p>
+                  </div>
                 </div>
               );
             }

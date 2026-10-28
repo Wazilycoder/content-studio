@@ -1,10 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { History, Search, X } from "lucide-react";
-import HistoryItem from "./HistoryItem";
+import { useEffect, useRef, useState } from "react";
+import { History, RotateCcw, Search, Star, Trash2, X } from "lucide-react";
 import HistoryEmptyState from "./HistoryEmptyState";
 import type { GenerationRecord } from "@/types/content";
+
+const TONE_LABELS: Record<string, string> = {
+  "trang-trong": "Trang trọng",
+  "than-thien": "Thân thiện",
+  "hai-huoc": "Hài hước",
+  "chuyen-nghiep": "Chuyên nghiệp",
+  "truyen-cam-hung": "Truyền cảm hứng",
+  "tre-trung": "Trẻ trung",
+};
+
+function formatTone(tone: string): string {
+  if (!tone) return "Chưa rõ tông";
+  return (
+    TONE_LABELS[tone] ??
+    tone
+      .split("-")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ")
+  );
+}
+
+function formatTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Không rõ thời gian";
+  return date.toLocaleString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 interface HistoryDrawerProps {
   open: boolean;
@@ -30,6 +62,8 @@ export default function HistoryDrawer({
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilterTab, setActiveFilterTab] = useState<"all" | "starred">("all");
   const [starredIds, setStarredIds] = useState<string[]>([]);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -45,17 +79,58 @@ export default function HistoryDrawer({
     }
 
     setActive(false);
-    const timer = setTimeout(() => setRendered(false), 220);
+    setPendingDeleteId(null);
+    const timer = setTimeout(() => setRendered(false), 300);
     return () => clearTimeout(timer);
   }, [open]);
 
   useEffect(() => {
     if (!open) return;
 
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+
+    const getFocusable = (): HTMLElement[] => {
+      const node = panelRef.current;
+      if (!node) return [];
+      return Array.from(
+        node.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const focusable = getFocusable();
+      if (focusable.length === 0) {
+        event.preventDefault();
+        panelRef.current?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+      const insidePanel = !!activeElement && !!panelRef.current?.contains(activeElement);
+
+      if (event.shiftKey) {
+        if (activeElement === first || !insidePanel) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (activeElement === last || !insidePanel) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
@@ -63,11 +138,18 @@ export default function HistoryDrawer({
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
 
-      return () => {
-        window.removeEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = previousOverflow;
-      };
-    }, [open, onClose]);
+    const focusTimer = window.setTimeout(() => {
+      const focusable = getFocusable();
+      (focusable[0] ?? panelRef.current)?.focus();
+    }, 80);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus();
+    };
+  }, [open, onClose]);
 
     useEffect(() => {
       try {
@@ -136,16 +218,18 @@ export default function HistoryDrawer({
       <div
         onClick={onClose}
         aria-hidden="true"
-        className={`absolute inset-0 bg-black/20 transition-opacity duration-200 ${
+        className={`absolute inset-0 bg-[var(--ink-primary)]/25 backdrop-blur-[2px] transition-opacity duration-300 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       />
 
       <aside
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Lịch sử tạo bài viết"
-        className={`absolute inset-y-0 right-0 flex w-full flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_0_30px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-out sm:w-[480px] ${
+        tabIndex={-1}
+        className={`absolute inset-y-0 right-0 flex w-full max-w-full flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-[-24px_0_60px_-30px_rgba(15,23,42,0.45)] outline-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-[480px] ${
           active ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -157,7 +241,7 @@ export default function HistoryDrawer({
                 Lịch sử tạo bài viết
               </h2>
             </div>
-            <p className="mt-1.5 inline-flex items-center rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+            <p className="mt-1.5 inline-flex items-center rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
               {loading ? "Đang tải..." : `${count} bài đã lưu`}
             </p>
           </div>
@@ -201,7 +285,7 @@ export default function HistoryDrawer({
                 type="button"
                 onClick={() => setActiveFilterTab("all")}
                 aria-pressed={activeFilterTab === "all"}
-                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
+                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[12.5px] font-medium transition-colors ${
                   activeFilterTab === "all"
                     ? "bg-[var(--accent-navy)] text-white"
                     : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
@@ -213,7 +297,7 @@ export default function HistoryDrawer({
                 type="button"
                 onClick={() => setActiveFilterTab("starred")}
                 aria-pressed={activeFilterTab === "starred"}
-                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
+                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[12.5px] font-medium transition-colors ${
                   activeFilterTab === "starred"
                     ? "bg-[var(--accent-navy)] text-white"
                     : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
@@ -254,16 +338,102 @@ export default function HistoryDrawer({
             </div>
           ) : (
             <ul className="space-y-3">
-              {sorted.map(({ record, starred }) => (
-                <HistoryItem
-                  key={record.id}
-                  record={record}
-                  starred={starred}
-                  onToggleStar={handleToggleStar}
-                  onRestore={onRestore}
-                  onDelete={onDelete}
-                />
-              ))}
+              {sorted.map(({ record, starred }) => {
+                const isPendingDelete = pendingDeleteId === record.id;
+                const previewText = record.captions[0]?.text ?? "";
+                return (
+                  <li
+                    key={record.id}
+                    className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5 transition-colors hover:border-[var(--border-strong)]"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="truncate text-[14px] font-semibold text-[var(--ink-primary)]">
+                          {record.productName?.trim() || "Bài viết chưa đặt tên"}
+                        </p>
+                        <p className="mt-1 text-[12px] text-[var(--ink-tertiary)]">
+                          {formatTimestamp(record.createdAt)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStar(record.id)}
+                        aria-pressed={starred}
+                        aria-label={starred ? "Bỏ ghim bài viết" : "Ghim bài viết"}
+                        className={`btn-tactile inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors ${
+                          starred
+                            ? "text-amber-500 hover:bg-amber-500/10"
+                            : "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                        }`}
+                      >
+                        <Star className={`h-4 w-4 ${starred ? "fill-amber-500" : ""}`} />
+                      </button>
+                    </div>
+
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
+                        {formatTone(record.tone)}
+                      </span>
+                      <span className="inline-flex items-center rounded-md border border-[var(--border-subtle)] px-2 py-0.5 text-[12px] text-[var(--ink-tertiary)]">
+                        {record.captions.length} góc · {record.hashtags.length} hashtag
+                      </span>
+                    </div>
+
+                    {previewText ? (
+                      <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                        {previewText}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-3 flex h-9 items-center gap-2">
+                      {isPendingDelete ? (
+                        <>
+                          <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-rose-600 dark:text-rose-400">
+                            Xóa bài viết này?
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setPendingDeleteId(null)}
+                            className="btn-tactile inline-flex h-8 items-center rounded-lg border border-[var(--border-subtle)] px-2.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const ok = await onDelete(record.id);
+                              if (ok) setPendingDeleteId(null);
+                            }}
+                            className="btn-tactile inline-flex h-8 items-center gap-1 rounded-lg bg-rose-600 px-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-rose-700"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                            Xóa
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => onRestore(record)}
+                            className="btn-tactile inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-3 text-[12.5px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5 shrink-0" />
+                            Khôi phục
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPendingDeleteId(record.id)}
+                            className="btn-tactile inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[var(--border-subtle)] px-3 text-[12.5px] font-semibold text-[var(--ink-secondary)] transition-colors hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
+                          >
+                            <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                            Xóa
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

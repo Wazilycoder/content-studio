@@ -609,8 +609,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
-              Không gian sáng tạo 3 vùng
+            <h1 className="text-[16px] font-semibold tracking-tight text-[var(--ink-primary)]">
+              Không gian sáng tạo nội dung
             </h1>
             {draftSaved && (
               <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
@@ -619,8 +619,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-[13px] text-[var(--ink-secondary)]">
-            Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin Facebook thời gian thực.
+          <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
+            Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin thời gian thực.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -720,61 +720,75 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         <div className="mx-auto flex h-full w-full max-w-[1680px] flex-col px-3 pb-28 pt-3 sm:px-6 sm:py-4 md:pb-6 lg:py-3 lg:pb-3">
           {toolbarRow}
 
-          {/* Mobile Segmented Zone Tabs */}
-          <div className="mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-1 shadow-xs lg:hidden">
+          {/* Mobile Segmented Control — thanh trượt mượt giữa 3 chế độ */}
+          <div className="relative mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1 lg:hidden">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+              style={{
+                width: "calc(33.3333% - 2.667px)",
+                transform: `translateX(${
+                  mobileTab === "input" ? 0 : mobileTab === "editor" ? 100 : 200
+                }%)`,
+              }}
+            />
             <button
               type="button"
               onClick={() => setMobileTab("input")}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+              aria-pressed={mobileTab === "input"}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
                 mobileTab === "input"
-                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  ? "text-[var(--accent-navy)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
-              <span>1. Thông tin</span>
+              <span className="truncate">Nhập liệu</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("editor")}
-              className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+              aria-pressed={mobileTab === "editor"}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
                 mobileTab === "editor"
-                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  ? "text-[var(--accent-navy)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
               <Wand2 className="h-3.5 w-3.5 shrink-0" />
-              <span>2. Biên tập</span>
+              <span className="truncate">Biên tập</span>
               {result && (
-                <span className="h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-white dark:ring-slate-900" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-emerald)]" />
               )}
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("preview")}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[12.5px] font-semibold transition-all ${
+              aria-pressed={mobileTab === "preview"}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
                 mobileTab === "preview"
-                  ? "bg-[var(--accent-navy)] text-white shadow-xs"
+                  ? "text-[var(--accent-navy)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
               <Globe className="h-3.5 w-3.5 shrink-0" />
-              <span>3. Xem trước</span>
+              <span className="truncate">Xem trước</span>
             </button>
           </div>
 
-          <div className="workspace-layout grid grid-cols-1 md:grid-cols-2 lg:flex lg:flex-row flex-1 gap-4 lg:h-full lg:min-h-0 lg:overflow-hidden">
-            {/* ===== ZONE 1 — INPUT SPECIFICATION COLUMN ===== */}
+          <div className="workspace-layout grid flex-1 grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-[45fr_55fr] lg:overflow-hidden">
+            {/* ===== CỘT TRÁI — NHẬP LIỆU & BIÊN TẬP ===== */}
+            <div className="flex min-w-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5 custom-scrollbar">
             <div
               className={`workspace-zone ${
                 collapsedZones.zone1 ? "zone-collapsed" : "zone-expanded-1"
-              } min-w-0 relative lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+              } relative min-w-0 ${
                 mobileTab === "input" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
               }`}
             >
               {/* Expanded View */}
               <aside
-                className={`h-full w-full min-w-[300px] flex-col gap-2.5 lg:min-h-0 lg:max-h-full lg:overflow-y-auto lg:pr-1.5 custom-scrollbar zone-panel-transition ${
+                className={`w-full min-w-0 flex-col gap-2.5 zone-panel-transition ${
                     collapsedZones.zone1
                       ? "zone-panel-hidden flex"
                       : "zone-panel-visible flex"
@@ -786,8 +800,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                       <FileText className="h-3.5 w-3.5" />
                     </span>
-                    <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                      Vùng 1 · Thông tin sản phẩm
+                    <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                      Thông tin sản phẩm
                     </h2>
                   </div>
                   <button
@@ -869,17 +883,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               </aside>
             </div>
 
-            {/* ===== ZONE 2 — ACTIVE ANGLE LIVE EDITOR COLUMN ===== */}
+            {/* ===== BIÊN TẬP — GÓC BÀI VIẾT ĐANG CHỌN ===== */}
             <div
               className={`workspace-zone ${
                 collapsedZones.zone2 ? "zone-collapsed" : "zone-expanded-2"
-              } min-w-0 relative lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+              } relative min-w-0 ${
                 mobileTab === "editor" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
               }`}
             >
               {/* Expanded View */}
               <section
-                className={`h-full w-full min-w-[320px] flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
+                className={`w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs zone-panel-transition ${
                     collapsedZones.zone2
                       ? "zone-panel-hidden flex"
                       : "zone-panel-visible flex"
@@ -891,8 +905,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                     <Wand2 className="h-3.5 w-3.5" />
                   </span>
-                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                    Vùng 2 · Biên tập góc bài viết
+                  <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                    Biên tập góc bài viết
                   </h2>
                 </div>
                   <div className="flex items-center gap-1.5">
@@ -924,99 +938,41 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
               {result && activeCaption ? (
                 <>
-                  {/* Angle tabs */}
-                  <div className="flex flex-wrap gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5">
-                    {result.captions.map((cap, index) => {
-                      const meta = ANGLE_META[index];
-                      const active = index === activeAngleIndex;
-                      return (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => setActiveAngleIndex(index)}
-                          className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-medium transition-colors ${
-                            active
-                              ? "bg-[var(--accent-navy)] text-white"
-                              : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
-                          }`}
-                        >
-                          <span
-                            className={`rounded px-1 py-0.5 text-[9.5px] font-bold uppercase ${
-                              active
-                                ? "bg-white/20 text-white"
-                                : "bg-[var(--surface)] text-[var(--ink-tertiary)]"
-                            }`}
-                          >
-                            {meta?.tag ?? `G${index + 1}`}
-                          </span>
-                          <span className="max-w-[150px] truncate">
-                            {meta?.label ?? cap.angle}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Bộ đếm ký tự & Cảnh báo Facebook / Instagram chuẩn Đề 2 (VIBE-CODING 2026) */}
-                  <div className="space-y-2.5 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/20 px-4 py-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-[12px] font-semibold text-[var(--ink-primary)]">
-                        Độ dài: <strong className="tabular-nums font-bold text-[var(--accent-navy)]">{charCount.toLocaleString("vi-VN")}</strong> ký tự
-                      </span>
-
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {/* Facebook Hook Status */}
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-medium border ${
-                            overLimit
-                              ? "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                          }`}
-                          title="125 ký tự đầu là phần hiển thị trọn vẹn trên Mobile trước nút Xem thêm"
-                        >
-                          <span className="font-semibold">FB Hook:</span>
-                          {overLimit ? (
-                            <span>{charCount}/125 (Cần bấm Xem thêm)</span>
-                          ) : (
-                            <span>{charCount}/125 (Hiển thị trọn vẹn)</span>
-                          )}
-                        </span>
-
-                        {/* Instagram Limit Status (2.200 ký tự) */}
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-medium border ${
-                            isOverInstagram
-                              ? "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold"
-                              : "border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400"
-                          }`}
-                        >
-                          <span className="font-semibold">Instagram:</span>
-                          {isOverInstagram ? (
-                            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400">
-                              <AlertTriangle className="h-3 w-3" />
-                              Vượt giới hạn ({charCount}/2.200)
-                            </span>
-                          ) : (
-                            <span>Hợp lệ ({charCount}/2.200)</span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Thanh trực quan: hiển thị tỷ lệ so với 2.200 ký tự Instagram và vạch mốc 125 ký tự FB Hook */}
-                    <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
-                      <div
-                        className={`h-full rounded-full transition-[width,background-color] duration-300 ${
-                          isOverInstagram
-                            ? "bg-rose-500"
-                            : overLimit
-                            ? "bg-amber-500"
-                            : "bg-[var(--accent-emerald)]"
-                        }`}
+                  {/* Angle tabs — fluid sliding pill */}
+                  <div className="border-b border-[var(--border-subtle)] px-3 py-2.5">
+                    <div className="relative grid grid-cols-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1">
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                         style={{
-                          width: `${Math.min((charCount / INSTAGRAM_MAX_LIMIT) * 100, 100)}%`,
+                          width: "calc(33.3333% - 2.667px)",
+                          transform: `translateX(${activeAngleIndex * 100}%)`,
                         }}
                       />
+                      {result.captions.map((cap, index) => {
+                        const meta = ANGLE_META[index];
+                        const active = index === activeAngleIndex;
+                        return (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => setActiveAngleIndex(index)}
+                            aria-pressed={active}
+                            className={`btn-tactile relative z-10 inline-flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1.5 py-1.5 transition-colors ${
+                              active
+                                ? "text-[var(--accent-navy)]"
+                                : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+                            }`}
+                          >
+                            <span className="w-full truncate text-center text-[12.5px] font-semibold">
+                              {meta?.tag ?? `G${index + 1}`}
+                            </span>
+                            <span className="w-full truncate text-center text-[12px] font-normal text-[var(--ink-tertiary)]">
+                              {meta?.label ?? cap.angle}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1093,10 +1049,67 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       className="w-full resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-3.5 text-[14.5px] leading-[1.75] text-[var(--ink-primary)] outline-hidden transition-colors focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
                       placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
                     />
-                    <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--ink-tertiary)]">
-                      125 ký tự đầu tiên là &quot;Hook&quot; — phần hiển thị trước nút &quot;Xem thêm&quot; trên bảng tin Facebook.
-                    </p>
-                  </div>
+                      <p className="mt-2 text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                        125 ký tự đầu tiên là &quot;Hook&quot; — phần hiển thị trước nút &quot;Xem thêm&quot; trên bảng tin Facebook.
+                      </p>
+
+                      {/* Bộ đếm kép đặt ngay dưới trình biên tập: Facebook Hook 125 & Instagram 2.200 */}
+                      <div className="mt-3 space-y-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-3.5 py-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-[13px] font-medium text-[var(--ink-secondary)]">
+                            Tổng cộng:{" "}
+                            <strong className="tabular-nums text-[14px] font-semibold text-[var(--ink-primary)]">
+                              {charCount.toLocaleString("vi-VN")}
+                            </strong>{" "}
+                            ký tự
+                          </span>
+
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[12px] font-medium ${
+                                overLimit
+                                  ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                              }`}
+                            >
+                              <span className="font-semibold">FB Hook</span>
+                              <span className="tabular-nums">{charCount}/125</span>
+                            </span>
+
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[12px] font-medium ${
+                                isOverInstagram
+                                  ? "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                                  : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)]"
+                              }`}
+                            >
+                              {isOverInstagram ? (
+                                <AlertTriangle className="h-3 w-3 shrink-0" />
+                              ) : null}
+                              <span className="font-semibold">Instagram</span>
+                              <span className="tabular-nums">
+                                {charCount.toLocaleString("vi-VN")}/2.200
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                          <div
+                            className={`h-full rounded-full transition-[width,background-color] duration-300 ${
+                              isOverInstagram
+                                ? "bg-rose-500"
+                                : overLimit
+                                ? "bg-amber-500"
+                                : "bg-[var(--accent-emerald)]"
+                            }`}
+                            style={{
+                              width: `${Math.min((charCount / INSTAGRAM_MAX_LIMIT) * 100, 100)}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
                   {/* Headlines */}
                   {result.headlines.length > 0 && (
@@ -1244,17 +1257,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               </aside>
             </div>
 
-            {/* ===== ZONE 3 — LIVE FACEBOOK POST SIMULATOR COLUMN ===== */}
+            </div>
+
+            {/* ===== CỘT PHẢI — LIVE MOBILE PREVIEW ===== */}
             <div
               className={`workspace-zone ${
                 collapsedZones.zone3 ? "zone-collapsed" : "zone-expanded-3"
-              } min-w-0 relative md:col-span-2 lg:col-span-1 lg:h-full lg:min-h-0 overflow-hidden [contain:paint] ${
+              } relative min-w-0 lg:h-full lg:min-h-0 ${
                 mobileTab === "preview" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
               }`}
             >
               {/* Expanded View */}
               <aside
-                className={`h-full w-full min-w-[320px] flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:max-h-full lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
+                className={`flex h-full w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
                     collapsedZones.zone3
                       ? "zone-panel-hidden flex"
                       : "zone-panel-visible flex"
@@ -1266,8 +1281,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                     <Globe className="h-3.5 w-3.5" />
                   </span>
-                  <h2 className="text-[13px] font-semibold text-[var(--ink-primary)]">
-                    Vùng 3 · Xem trước đa kênh
+                  <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                    Xem trước đa kênh
                   </h2>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -1279,7 +1294,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     <ArrowLeft className="h-3 w-3" />
                     <span>Sửa bài (Vùng 2)</span>
                   </button>
-                      <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium text-[var(--ink-tertiary)]">
+                      <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
                         Live
                       </span>
                       <button
