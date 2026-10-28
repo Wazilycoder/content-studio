@@ -130,14 +130,21 @@ function generateMathCaptcha(): { question: string; token: string } {
   };
 }
 
+// Bộ đệm token CAPTCHA đã sử dụng nhằm chống Replay Attack (SEC-06)
+const consumedCaptchaTokens = new Set<string>();
+
 function verifyMathCaptcha(userAnswer: string, token: string): boolean {
   if (!userAnswer || !token) return false;
   const [timestampRaw, signature] = token.split(".");
   const timestamp = Number(timestampRaw);
   if (!Number.isFinite(timestamp) || !signature) return false;
 
-  // Token hết hạn sau 5 phút
-  if (Date.now() - timestamp > 5 * 60 * 1000) return false;
+  const now = Date.now();
+  // Token hết hạn sau 5 phút hoặc timestamp ở tương lai (> 60s)
+  if (now - timestamp > 5 * 60 * 1000 || timestamp > now + 60 * 1000) return false;
+
+  // Nonce consumption: Chống Replay Attack
+  if (consumedCaptchaTokens.has(token)) return false;
 
   const expected = createHmac("sha256", CAPTCHA_SECRET)
     .update(`${userAnswer.trim()}:${timestamp}`)
@@ -146,7 +153,15 @@ function verifyMathCaptcha(userAnswer: string, token: string): boolean {
   const expectedBuf = Buffer.from(expected, "hex");
   const providedBuf = Buffer.from(signature, "hex");
   if (expectedBuf.length !== providedBuf.length) return false;
-  return timingSafeEqual(expectedBuf, providedBuf);
+
+  const isValid = timingSafeEqual(expectedBuf, providedBuf);
+  if (isValid) {
+    consumedCaptchaTokens.add(token);
+    if (consumedCaptchaTokens.size > 2000) {
+      consumedCaptchaTokens.clear();
+    }
+  }
+  return isValid;
 }
 
 export async function getMathCaptcha(): Promise<{ question: string; token: string }> {
@@ -303,25 +318,19 @@ export async function getUserProfile(): Promise<DevSession | null> {
       .eq("id", user.id)
       .single();
 
-    if (!profile || error) {
-      // Tự động khởi tạo profile với 10 credits (Self-healing nếu trigger DB chưa chạy)
-      const { data: newProfile } = await supabase
-        .from("profiles")
-        .upsert({ id: user.id, email: user.email, credits_remaining: 10 })
-        .select("credits_remaining")
-        .single();
-
+    if (error || !profile) {
+      console.warn("[Profile Read Warning]: Không tìm thấy profile hoặc lỗi truy vấn:", error?.message);
       return {
         id: user.id,
         email: user.email ?? "",
-        credits: newProfile?.credits_remaining ?? 10,
+        credits: 0,
       };
     }
 
     return {
       id: user.id,
-      email: user.email ?? "",
-      credits: profile.credits_remaining ?? 10,
+      email: user.email ?? profile.email ?? "",
+      credits: profile.credits_remaining ?? 0,
     };
   } catch {
     return null;

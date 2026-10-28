@@ -224,14 +224,19 @@ function extractAndParseAiJson(raw: string): unknown {
 }
 
 async function executeRefundWithVerification(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   requestId: string
 ): Promise<{ success: boolean; creditsRemaining?: number }> {
   try {
     const adminClient = createAdminClient();
-    const client = adminClient ?? supabase;
-    const { data, error } = await client.rpc("refund_credit_atomic", {
+    if (!adminClient) {
+      console.error(
+        "[Refund RPC Failure]: SUPABASE_SERVICE_ROLE_KEY is missing or invalid. Privileged refund cannot be performed."
+      );
+      return { success: false };
+    }
+    const { data, error } = await adminClient.rpc("refund_credit_atomic", {
       p_user_id: userId,
       p_request_id: requestId,
     });
@@ -587,12 +592,10 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       activeDevSession
     );
   } catch (error: unknown) {
-    console.error("[AI Generation Failed]:", error);
+    const errorRef = crypto.randomUUID().slice(0, 8);
+    console.error(`[AI Generation Failed - Ref: ${errorRef}]:`, error);
 
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Không thể kết nối đến máy chủ AI.";
+    const safeMessage = "Máy chủ AI đang bận hoặc gặp sự cố xử lý. Vui lòng thử lại sau ít phút.";
 
     // RULE 3: Hoàn credit an toàn cho cả Supabase Auth và Dev Session
     if (user) {
@@ -601,8 +604,8 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
       return NextResponse.json(
         {
           error: refund.success
-            ? `Quá trình tạo thất bại: ${message}. Lượt tạo của bạn đã được hoàn lại đầy đủ.`
-            : `Quá trình tạo thất bại: ${message}. Hệ thống đang đối soát hoàn lượt tạo cho bạn.`,
+            ? `Quá trình tạo thất bại (Mã lỗi: ${errorRef}). Lượt tạo của bạn đã được hoàn lại đầy đủ.`
+            : `Quá trình tạo thất bại (Mã lỗi: ${errorRef}). Hệ thống đang đối soát hoàn lượt tạo cho bạn.`,
           creditsRemaining: refund.creditsRemaining ?? creditsRemaining,
         },
         { status: 500 }
@@ -615,7 +618,7 @@ CẤU TRÚC JSON BẮT BUỘC TRẢ VỀ:
 
     return jsonWithDevSession(
       {
-        error: `Quá trình tạo thất bại: ${message}. Lượt tạo của bạn đã được hoàn lại đầy đủ.`,
+        error: `Quá trình tạo thất bại (Mã lỗi: ${errorRef}). Lượt tạo của bạn đã được hoàn lại đầy đủ.`,
         creditsRemaining: refundedSession?.credits ?? creditsRemaining,
       },
       500,
