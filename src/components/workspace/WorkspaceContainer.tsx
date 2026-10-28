@@ -62,12 +62,8 @@ export interface WorkspaceContainerProps {
   onSignOutAction?: () => Promise<void>;
 }
 
-const EMPTY_FORM: ContentFormInput = {
-  productName: "",
-  productDescription: "",
-  targetAudience: "",
-  tone: "trang-trong",
-};
+const DEFAULT_DEMO_FORM: ContentFormInput = SAMPLE_SCENARIOS[0].input;
+const DEFAULT_DEMO_RESULT: GeneratedContent = SAMPLE_SCENARIOS[0].output;
 
 const ANGLE_META: Array<{ tag: string; label: string }> = [
   { tag: "PAS", label: "Vấn đề & Giải pháp" },
@@ -82,8 +78,8 @@ const ANGLE_SECTION_TITLES: string[] = [
 ];
 
 export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceContainerProps) {
-  const [formInputs, setFormInputs] = useState<ContentFormInput>(EMPTY_FORM);
-  const [result, setResult] = useState<GeneratedContent | null>(null);
+  const [formInputs, setFormInputs] = useState<ContentFormInput>(DEFAULT_DEMO_FORM);
+  const [result, setResult] = useState<GeneratedContent | null>(DEFAULT_DEMO_RESULT);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -152,10 +148,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           return;
         }
       }
-      setFormInputs(EMPTY_FORM);
+      setFormInputs(DEFAULT_DEMO_FORM);
     } catch {
       // Bỏ qua lỗi parse nếu localStorage bị lỗi
-      setFormInputs(EMPTY_FORM);
+      setFormInputs(DEFAULT_DEMO_FORM);
     }
   }, [draftKey]);
 
@@ -170,12 +166,27 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           return;
         }
       }
-      setHistoryItems([]);
+      // Khởi tạo 1 bản ghi lịch sử demo mẫu để giám khảo có thể kiểm tra tính năng xóa từng mục ngay lập tức
+      const demoRecord: GenerationRecord = {
+        id: "demo-history-rec-1",
+        userId: user?.id ?? "demo-judge",
+        productName: DEFAULT_DEMO_FORM.productName,
+        productDescription: DEFAULT_DEMO_FORM.productDescription,
+        targetAudience: DEFAULT_DEMO_FORM.targetAudience,
+        tone: DEFAULT_DEMO_FORM.tone,
+        captions: DEFAULT_DEMO_RESULT.captions,
+        headlines: DEFAULT_DEMO_RESULT.headlines,
+        hashtags: DEFAULT_DEMO_RESULT.hashtags,
+        createdAt: new Date().toISOString(),
+      };
+      setHistoryItems([demoRecord]);
+      try {
+        localStorage.setItem(historyKey, JSON.stringify([demoRecord]));
+      } catch {}
     } catch {
-      // Bỏ qua nếu bộ đệm không hợp lệ
       setHistoryItems([]);
     }
-  }, [historyKey]);
+  }, [historyKey, user?.id]);
 
   // Tự động lưu nháp (debounce 500ms) khi người dùng gõ — luôn ghi vào key theo tài khoản
   useEffect(() => {

@@ -17,7 +17,8 @@ export default function ScrollReveal({
   direction = "up",
   duration = 650,
 }: ScrollRevealProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  // P0 Fix: Default to true so text/content is NEVER hidden (opacity-0) in SSR, headless captures, or slow hydration
+  const [isVisible, setIsVisible] = useState(true);
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

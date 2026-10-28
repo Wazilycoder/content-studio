@@ -12,7 +12,6 @@ import {
   Globe,
 } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
-import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type LandingUser = Awaited<ReturnType<typeof getUserProfile>>;
 
@@ -92,103 +91,93 @@ export default function HeroSection({ user }: HeroSectionProps) {
           {/* ================= LEFT COLUMN: HERO CONTENT ================= */}
           <div className="flex flex-col items-start text-left lg:col-span-7">
             {/* Top Eyebrow Badge */}
-            <ScrollReveal direction="down" duration={550}>
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1">
-                <Layers3 className="h-3 w-3 text-[var(--ink-tertiary)]" />
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--ink-secondary)] sm:text-[11px]">
-                  Chuẩn Anti-AI-Slop cho người bán hàng Việt
-                </span>
-              </div>
-            </ScrollReveal>
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1">
+              <Layers3 className="h-3 w-3 text-[var(--ink-tertiary)]" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--ink-secondary)] sm:text-[11px]">
+                Chuẩn Anti-AI-Slop cho người bán hàng Việt
+              </span>
+            </div>
 
             {/* Hero Title & Subtitle */}
-            <ScrollReveal direction="up" delay={120} duration={700}>
-              <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight text-[var(--ink-primary)] sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem]">
-                Tạo 3 góc bài viết bán hàng độc bản.
-                <br />
-                <span className="text-[var(--ink-secondary)]">
-                  Không văn mẫu sáo rỗng.
-                </span>
-              </h1>
+            <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight text-[var(--ink-primary)] sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem]">
+              Một sản phẩm.
+              <br />
+              <span className="text-[var(--ink-secondary)]">
+                Ba cách khiến khách muốn mua.
+              </span>
+            </h1>
 
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-                Biến thông tin sản phẩm thô sơ thành 3 bài viết Facebook &amp; Instagram
-                đa chiều: <span className="font-semibold text-[var(--ink-primary)]">Vấn đề &amp; Giải pháp</span>,{" "}
-                <span className="font-semibold text-[var(--ink-primary)]">Cảm xúc phong cách sống</span>, và{" "}
-                <span className="font-semibold text-[var(--ink-primary)]">Trực diện tính năng</span> — với 3 tông giọng bắt buộc{" "}
-                <span className="font-semibold text-[var(--ink-primary)]">Hài hước · Trang trọng · Trẻ trung</span>. Đăng ngay, không mất công chỉnh sửa.
-              </p>
-            </ScrollReveal>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
+              Biến thông tin sản phẩm thô sơ thành 3 bài viết Facebook &amp; Instagram đa chiều:{" "}
+              <span className="font-semibold text-[var(--ink-primary)]">Vấn đề &amp; Giải pháp (PAS)</span>,{" "}
+              <span className="font-semibold text-[var(--ink-primary)]">Cảm xúc &amp; Phong cách</span>, và{" "}
+              <span className="font-semibold text-[var(--ink-primary)]">Trực diện tính năng (FAB)</span> — chuẩn xác 3 tông giọng{" "}
+              <span className="font-semibold text-[var(--ink-primary)]">Hài hước · Trang trọng · Trẻ trung</span>. Đăng ngay, không mất công chỉnh sửa.
+            </p>
 
             {/* Interactive High-End CTAs */}
-            <ScrollReveal direction="up" delay={240} duration={700}>
-              <div className="mt-4.5 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-                <Link
-                  href={primaryHref}
-                  className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--accent-navy)] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-[var(--accent-navy-hover)] sm:w-auto"
-                >
-                  <span>Bắt đầu sáng tạo ngay</span>
-                  <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
-                </Link>
+            <div className="mt-4.5 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+              <Link
+                href={primaryHref}
+                className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--accent-navy)] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-[var(--accent-navy-hover)] sm:w-auto"
+              >
+                <span>Bắt đầu sáng tạo ngay</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
+              </Link>
 
-                <a
-                  href="#demo"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-[var(--ink-secondary)] transition-colors duration-150 ease-out hover:text-[var(--ink-primary)] sm:w-auto"
-                >
-                  <PlayCircle className="h-4 w-4" />
-                  <span>Trải nghiệm bài mẫu</span>
-                </a>
-              </div>
-            </ScrollReveal>
+              <a
+                href="#demo"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-[var(--ink-secondary)] transition-colors duration-150 ease-out hover:text-[var(--ink-primary)] sm:w-auto"
+              >
+                <PlayCircle className="h-4 w-4" />
+                <span>Trải nghiệm bài mẫu</span>
+              </a>
+            </div>
 
             {/* Trust Badges */}
-            <ScrollReveal direction="up" delay={340} duration={700}>
-              <div className="mt-4 flex flex-wrap items-center justify-start gap-2">
-                {TRUST_ITEMS.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--ink-secondary)]"
-                  >
-                    <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
-                      ✓
-                    </span>
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </ScrollReveal>
+            <div className="mt-4 flex flex-wrap items-center justify-start gap-2">
+              {TRUST_ITEMS.map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--ink-secondary)]"
+                >
+                  <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                    ✓
+                  </span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
 
-            {/* KeyForge-Style Metric Stats Bar */}
-            <ScrollReveal direction="up" delay={420} duration={700}>
-              <div className="mt-4.5 flex items-center gap-5 border-t border-[var(--border-subtle)] pt-3.5 sm:gap-8">
-                <div>
-                  <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
-                    3.800+
-                  </div>
-                  <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
-                    Bài viết độc bản
-                  </div>
+            {/* Value Props Bar (Genuine Contest Metrics) */}
+            <div className="mt-4.5 flex items-center gap-5 border-t border-[var(--border-subtle)] pt-3.5 sm:gap-8">
+              <div>
+                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+                  3 Góc viết
                 </div>
-                <div className="h-7 w-px bg-[var(--border-subtle)]" />
-                <div>
-                  <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
-                    100%
-                  </div>
-                  <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
-                    Chuẩn Anti-AI-Slop
-                  </div>
-                </div>
-                <div className="h-7 w-px bg-[var(--border-subtle)]" />
-                <div>
-                  <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
-                    0s
-                  </div>
-                  <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
-                    Chờ tạo bài (Pro)
-                  </div>
+                <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
+                  PAS · Cảm xúc · FAB
                 </div>
               </div>
-            </ScrollReveal>
+              <div className="h-7 w-px bg-[var(--border-subtle)]" />
+              <div>
+                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+                  3 Tông giọng
+                </div>
+                <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
+                  Hài hước · Trang trọng · Trẻ trung
+                </div>
+              </div>
+              <div className="h-7 w-px bg-[var(--border-subtle)]" />
+              <div>
+                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+                  125 Ký tự
+                </div>
+                <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
+                  Chuẩn Hook &quot;Xem thêm&quot; FB
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* ================= RIGHT COLUMN: INTERACTIVE PRODUCT THEATRE ================= */}

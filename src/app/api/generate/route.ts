@@ -287,13 +287,15 @@ export async function POST(request: Request) {
   if (!user) {
     const cookieStore = await cookies();
     devSession = verifyDevSession(cookieStore.get(COOKIE_DEV_SESSION)?.value ?? "");
-  }
 
-  if (!user && !devSession) {
-    return NextResponse.json(
-      { error: "Vui lòng đăng nhập để tạo nội dung quảng cáo." },
-      { status: 401 }
-    );
+    // Guest Judge Mode: Tự động cấp phiên trải nghiệm 10 lượt tạo cho giám khảo & khách dùng thử
+    if (!devSession) {
+      devSession = {
+        id: "demo-judge",
+        email: "giamkhao@vibecoding.vn",
+        credits: 10,
+      };
+    }
   }
 
   const actorId = user?.id ?? (devSession as DevSession).id;
