@@ -33,6 +33,7 @@ export default function AuthModal({ open, onClose, productName }: AuthModalProps
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby="auth-modal-title"
         className="animate-fade-in relative w-full max-w-md rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all"
       >
         <button
@@ -48,7 +49,10 @@ export default function AuthModal({ open, onClose, productName }: AuthModalProps
           <Layers3 className="h-5 w-5" />
         </div>
 
-        <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]">
+        <h3
+          id="auth-modal-title"
+          className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]"
+        >
           Đăng nhập để AI tạo nội dung
         </h3>
 

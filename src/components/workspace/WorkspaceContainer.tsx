@@ -92,13 +92,20 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const [topUpModalOpen, setTopUpModalOpen] = useState(false);
 
   const [userPlanId, setUserPlanId] = useState<string>(() => {
+    // SEC-09: Server plan là nguồn chân lý; chỉ đọc cache localStorage khi là khách (guest mode)
+    if (user?.planId) return user.planId;
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("cs_user_plan");
       if (saved) return saved;
     }
-    return user?.planId || "monthly";
+    return "monthly";
   });
   const activePlan = useMemo(() => getPlanById(userPlanId), [userPlanId]);
+
+  // SEC-09: Đồng bộ lại khi server trả về plan mới (đăng nhập / đổi gói)
+  useEffect(() => {
+    if (user?.planId) setUserPlanId(user.planId);
+  }, [user?.planId]);
 
   const [draftSaved, setDraftSaved] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -126,54 +133,60 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Khôi phục bản nháp tự động từ localStorage khi tải lại trang
+  // SEC-08: Khóa lưu trữ tách biệt theo từng tài khoản — tránh rò rỉ dữ liệu giữa các user
+  const draftKey = user?.id ? `cs_draft_${user.id}` : "cs_draft_guest";
+  const historyKey = user?.id ? `cs_history_${user.id}` : "cs_history_guest";
+
+  // Khôi phục bản nháp tự động theo đúng tài khoản đang đăng nhập
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("content_studio_form_draft");
+      const saved = localStorage.getItem(draftKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.productName || parsed.productDescription) {
           setFormInputs(parsed);
+          return;
         }
       }
+      setFormInputs(EMPTY_FORM);
     } catch {
       // Bỏ qua lỗi parse nếu localStorage bị lỗi
+      setFormInputs(EMPTY_FORM);
     }
-  }, []);
+  }, [draftKey]);
 
-  // Khôi phục bộ đệm lịch sử ngoại tuyến (tầng 3) từ localStorage
+  // Khôi phục bộ đệm lịch sử ngoại tuyến (tầng 3) theo đúng tài khoản đang đăng nhập
   useEffect(() => {
     try {
-      const cached = localStorage.getItem("content_studio_history");
+      const cached = localStorage.getItem(historyKey);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setHistoryItems(parsed as GenerationRecord[]);
+          return;
         }
       }
+      setHistoryItems([]);
     } catch {
       // Bỏ qua nếu bộ đệm không hợp lệ
+      setHistoryItems([]);
     }
-  }, []);
+  }, [historyKey]);
 
-  // Tự động lưu nháp (debounce 500ms) khi người dùng gõ
+  // Tự động lưu nháp (debounce 500ms) khi người dùng gõ — luôn ghi vào key theo tài khoản
   useEffect(() => {
-    if (formInputs.productName.trim() || formInputs.productDescription.trim()) {
-      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-      autoSaveTimerRef.current = setTimeout(() => {
-        try {
-          localStorage.setItem(
-            "content_studio_form_draft",
-            JSON.stringify(formInputs)
-          );
-          setDraftSaved(true);
-          setTimeout(() => setDraftSaved(false), 2000);
-        } catch {
-          // localStorage full or unavailable
-        }
-      }, 500);
-    }
-  }, [formInputs]);
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    if (!formInputs.productName.trim() && !formInputs.productDescription.trim()) return;
+    autoSaveTimerRef.current = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(formInputs));
+        setDraftSaved(true);
+        setTimeout(() => setDraftSaved(false), 2000);
+      } catch {
+        // localStorage full or unavailable
+      }
+    }, 500);
+  }, [formInputs, draftKey]);
 
   // Đồng hồ sạc AI (Cooldown 45s) cho tài khoản Free sau mỗi lần tạo thành công
   useEffect(() => {
@@ -206,10 +219,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-          if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-          if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
-        };
-      }, []);
+              if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+              if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+            };
+          }, []);
 
   // Reset trạng thái biên tập mỗi khi có kết quả AI mới (tạo mới / khôi phục lịch sử / nạp mẫu)
   useEffect(() => {
@@ -321,17 +334,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           for (const item of prev) {
             if (!map.has(item.id)) map.set(item.id, item);
           }
-          const merged = Array.from(map.values()).slice(0, 50);
-          try {
-            localStorage.setItem("content_studio_history", JSON.stringify(merged));
-          } catch {}
-          return merged;
-        });
-      }
-    } catch {
-      // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
-    }
-  }, []);
+                  const merged = Array.from(map.values()).slice(0, 50);
+                  try {
+                    localStorage.setItem(historyKey, JSON.stringify(merged));
+                  } catch {}
+                  return merged;
+                });
+              }
+            } catch {
+              // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
+            }
+          }, [historyKey]);
 
   useEffect(() => {
     void refreshHistorySilently();
@@ -345,7 +358,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       if (res.error) {
         // Fallback sang localStorage nếu mạng lỗi
         try {
-          const cached = localStorage.getItem("content_studio_history");
+          const cached = localStorage.getItem(historyKey);
           if (cached) {
             const parsed = JSON.parse(cached);
             if (Array.isArray(parsed) && parsed.length > 0) {
@@ -364,17 +377,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             for (const item of prev) {
               if (!map.has(item.id)) map.set(item.id, item);
             }
-            const merged = Array.from(map.values()).slice(0, 50);
-            try {
-              localStorage.setItem("content_studio_history", JSON.stringify(merged));
-            } catch {}
-            return merged;
-          });
-        }
-      }
-    } catch {
-      try {
-        const cached = localStorage.getItem("content_studio_history");
+                    const merged = Array.from(map.values()).slice(0, 50);
+                    try {
+                      localStorage.setItem(historyKey, JSON.stringify(merged));
+                    } catch {}
+                    return merged;
+                  });
+                }
+              }
+            } catch {
+              try {
+                const cached = localStorage.getItem(historyKey);
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -383,11 +396,11 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           }
         }
       } catch {}
-      setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
-    } finally {
-      setHistoryLoading(false);
-    }
-  }, []);
+          setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
+        } finally {
+          setHistoryLoading(false);
+        }
+      }, [historyKey]);
 
   const handleOpenHistory = useCallback(() => {
     setHistoryOpen(true);
@@ -515,7 +528,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           setHistoryItems((prev) => {
             const updated = [newHistoryRec, ...prev.filter((p) => p.id !== newHistoryRec.id)].slice(0, 50);
             try {
-              localStorage.setItem("content_studio_history", JSON.stringify(updated));
+              localStorage.setItem(historyKey, JSON.stringify(updated));
             } catch {}
             return updated;
           });
@@ -536,8 +549,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         setLoading(false);
       }
     },
-      [user, showToast, refreshHistorySilently, isPro],
-    );
+        [user, showToast, refreshHistorySilently, isPro, historyKey],
+      );
 
   const handleOpenTopUp = useCallback(() => {
     setTopUpModalOpen(true);

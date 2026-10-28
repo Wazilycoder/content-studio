@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, CheckCircle2, Copy, Crown, Layers3, Loader2, ShieldCheck, X, Zap, ZoomIn } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Copy, Crown, Layers3, Loader2, ShieldCheck, X, Zap, ZoomIn } from "lucide-react";
 import { topUpCredits } from "@/app/auth/actions";
 import { copyToClipboard } from "@/lib/utils/clipboard";
 import { PRICING_PLANS as PACKAGES, BANK_INFO } from "@/lib/config/pricing";
+
+// Số lượt nạp thử nghiệm ở chế độ Sandbox (khớp tham số truyền vào topUpCredits)
+const DEMO_TOPUP_CREDITS = 50;
 
 export interface TopUpModalProps {
   open: boolean;
@@ -73,7 +76,7 @@ export default function TopUpModal({
     setPending(true);
     setError(null);
     try {
-      const result = await topUpCredits(50, selected.id);
+      const result = await topUpCredits(DEMO_TOPUP_CREDITS, selected.id);
       if (!result.success) {
         setError(result.message);
         return;
@@ -104,7 +107,7 @@ export default function TopUpModal({
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="topup-title"
+        aria-labelledby="topup-modal-title"
         className="animate-fade-in relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-5 shadow-[0_24px_64px_rgba(0,0,0,0.5)] sm:p-6"
       >
         <div className="pointer-events-none absolute -right-20 -top-24 h-48 w-48 rounded-full bg-[var(--accent-navy)]/15 blur-3xl" />
@@ -140,13 +143,26 @@ export default function TopUpModal({
           </div>
           <div>
             <h3
-              id="topup-title"
+              id="topup-modal-title"
               className="text-[17px] font-bold tracking-tight text-[var(--ink-primary)]"
             >
               Nâng Cấp Gói Dịch Vụ
             </h3>
             <p className="text-[12px] text-[var(--ink-secondary)]">
               Mở khóa 0s Cooldown tức thì · Không giới hạn bài viết · Đa dạng gói theo nhu cầu
+            </p>
+          </div>
+        </div>
+
+        {/* Sandbox Notice — minh bạch với giám khảo & người đánh giá */}
+        <div className="relative mt-4 flex items-start gap-2.5 rounded-xl border border-amber-500/40 bg-amber-500/[0.08] p-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+          <div className="min-w-0">
+            <p className="text-[12.5px] font-semibold text-[var(--ink-primary)]">
+              Chế độ Thử nghiệm / Sandbox (Dành cho Giám khảo &amp; Đánh giá)
+            </p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--ink-secondary)]">
+              Hệ thống thanh toán tự động (VietQR / Webhook) sẽ được kích hoạt ở bản Production thương mại. Tại phiên bản đánh giá này, bạn có thể bấm nút nạp thử nghiệm bên dưới để nhận thêm lượt tạo ngay lập tức.
             </p>
           </div>
         </div>
@@ -261,7 +277,7 @@ export default function TopUpModal({
                 ) : (
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                 )}
-                <span>Xác nhận đã chuyển khoản ({selected.tierBadge})</span>
+                <span>[Demo Sandbox] Kích hoạt nạp thử nghiệm (+{DEMO_TOPUP_CREDITS} lượt)</span>
               </button>
             </div>
           </div>

@@ -37,6 +37,7 @@ export default function OutOfCreditsModal({
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby="out-of-credits-modal-title"
         className="animate-fade-in relative w-full max-w-md rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.25)] transition-all"
       >
         <button
@@ -52,12 +53,15 @@ export default function OutOfCreditsModal({
           <Coins className="h-6 w-6" />
         </div>
 
-        <h3 className="mt-4 text-lg font-semibold tracking-tight text-[var(--ink-primary)]">
+        <h3
+          id="out-of-credits-modal-title"
+          className="mt-4 text-lg font-semibold tracking-tight text-[var(--ink-primary)]"
+        >
           Bạn đã dùng hết lượt tạo miễn phí
         </h3>
 
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-          Mỗi tài khoản trải nghiệm được tặng sẵn 10 lượt tạo bài viết AI đa chiều. Để tiếp tục sáng tạo nội dung không giới hạn với Gemini 3.5, vui lòng tham khảo các gói tài nguyên của Content Studio.
+          Mỗi tài khoản trải nghiệm được tặng sẵn 10 lượt tạo bài viết AI đa chiều và bạn đã dùng hết. Ở bản đánh giá này, hệ thống thanh toán tự động (VietQR / Webhook) chưa được kích hoạt — bạn có thể mở bảng nạp thử nghiệm Sandbox để nhận thêm lượt tạo ngay lập tức.
         </p>
 
         <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3.5 text-xs text-[var(--ink-secondary)] space-y-1.5">
@@ -80,9 +84,9 @@ export default function OutOfCreditsModal({
               }}
               className="group inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[var(--accent-navy-hover)] hover:shadow-md"
             >
-              <span>Nâng cấp ngay</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </button>
+                <span>Nạp thử nghiệm (Sandbox)</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+              </button>
           ) : (
             <Link
               href="/#pricing"
