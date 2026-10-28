@@ -37,7 +37,11 @@ import HistoryDrawer from "@/components/history/HistoryDrawer";
 import { deleteHistoryItem, fetchUserHistory } from "@/app/history/actions";
 import { SAMPLE_SCENARIOS, findSampleResult } from "./sampleScenarios";
 import { copyToClipboard } from "@/lib/utils/clipboard";
-import { countUnicodeChars } from "@/lib/utils/charCounter";
+import {
+  countUnicodeChars,
+  INSTAGRAM_MAX_LIMIT,
+  FACEBOOK_RECOMMENDED_LIMIT,
+} from "@/lib/utils/charCounter";
 import { toSafeFileName } from "@/lib/utils/filename";
 import { getPlanById } from "@/lib/config/pricing";
 import type {
@@ -437,12 +441,21 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const handleDeleteHistoryItem = useCallback(
     async (id: string): Promise<boolean> => {
       const snapshot = historyItems;
-      setHistoryItems((prev) => prev.filter((item) => item.id !== id));
+      const updated = historyItems.filter((item) => item.id !== id);
+      setHistoryItems(updated);
+      try {
+        localStorage.setItem(historyKey, JSON.stringify(updated));
+      } catch {
+        // bỏ qua lỗi nếu localStorage bị chặn
+      }
 
       try {
         const res = await deleteHistoryItem(id);
         if (!res.success) {
           setHistoryItems(snapshot);
+          try {
+            localStorage.setItem(historyKey, JSON.stringify(snapshot));
+          } catch {}
           showToast(res.error ?? "Không thể xóa bài viết. Vui lòng thử lại.");
           return false;
         }
@@ -450,11 +463,14 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         return true;
       } catch {
         setHistoryItems(snapshot);
+        try {
+          localStorage.setItem(historyKey, JSON.stringify(snapshot));
+        } catch {}
         showToast("Mất kết nối khi xóa. Bài viết đã được khôi phục.");
         return false;
       }
     },
-    [historyItems, showToast],
+    [historyItems, historyKey, showToast],
   );
 
   const generate = useCallback(
@@ -687,7 +703,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const currentText = editedCaptions[activeAngleIndex] ?? originalText;
   const charCount = countUnicodeChars(currentText);
   const isModified = currentText !== originalText;
-  const overLimit = charCount > 125;
+  const overLimit = charCount > FACEBOOK_RECOMMENDED_LIMIT;
+  const isOverInstagram = charCount > INSTAGRAM_MAX_LIMIT;
 
   return (
     <div className="flex min-h-screen flex-col lg:h-full lg:min-h-0 lg:overflow-hidden">
@@ -940,38 +957,65 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     })}
                   </div>
 
-                  {/* Hook metric — thước đo 125 ký tự vàng */}
-                  <div className="space-y-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
+                  {/* Bộ đếm ký tự & Cảnh báo Facebook / Instagram chuẩn Đề 2 (VIBE-CODING 2026) */}
+                  <div className="space-y-2.5 border-b border-[var(--border-subtle)] bg-[var(--surface-raised)]/20 px-4 py-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-[12px] font-medium tabular-nums text-[var(--ink-tertiary)]">
-                        <strong className="text-[var(--ink-primary)]">{charCount}</strong> ký tự
+                      <span className="text-[12px] font-semibold text-[var(--ink-primary)]">
+                        Độ dài: <strong className="tabular-nums font-bold text-[var(--accent-navy)]">{charCount.toLocaleString("vi-VN")}</strong> ký tự
                       </span>
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium ${
-                          overLimit
-                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                            : "bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
-                        }`}
-                      >
-                        {overLimit ? (
-                          <>
-                            <AlertTriangle className="h-3 w-3" />
-                            Vượt 125 ký tự — người xem cần bấm &quot;Xem thêm&quot;
-                          </>
-                        ) : (
-                          <>
-                            <Check className="h-3 w-3" />
-                            Hook vàng — hiển thị trọn vẹn trước &quot;Xem thêm&quot;
-                          </>
-                        )}
-                      </span>
+
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {/* Facebook Hook Status */}
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-medium border ${
+                            overLimit
+                              ? "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          }`}
+                          title="125 ký tự đầu là phần hiển thị trọn vẹn trên Mobile trước nút Xem thêm"
+                        >
+                          <span className="font-semibold">FB Hook:</span>
+                          {overLimit ? (
+                            <span>{charCount}/125 (Cần bấm Xem thêm)</span>
+                          ) : (
+                            <span>{charCount}/125 (Hiển thị trọn vẹn)</span>
+                          )}
+                        </span>
+
+                        {/* Instagram Limit Status (2.200 ký tự) */}
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-medium border ${
+                            isOverInstagram
+                              ? "border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold"
+                              : "border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400"
+                          }`}
+                        >
+                          <span className="font-semibold">Instagram:</span>
+                          {isOverInstagram ? (
+                            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400">
+                              <AlertTriangle className="h-3 w-3" />
+                              Vượt giới hạn ({charCount}/2.200)
+                            </span>
+                          ) : (
+                            <span>Hợp lệ ({charCount}/2.200)</span>
+                          )}
+                        </span>
+                      </div>
                     </div>
+
+                    {/* Thanh trực quan: hiển thị tỷ lệ so với 2.200 ký tự Instagram và vạch mốc 125 ký tự FB Hook */}
                     <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
                       <div
-                        className={`h-full rounded-full transition-[width] duration-300 ${
-                          overLimit ? "bg-amber-500" : "bg-[var(--accent-emerald)]"
+                        className={`h-full rounded-full transition-[width,background-color] duration-300 ${
+                          isOverInstagram
+                            ? "bg-rose-500"
+                            : overLimit
+                            ? "bg-amber-500"
+                            : "bg-[var(--accent-emerald)]"
                         }`}
-                        style={{ width: `${Math.min((charCount / 125) * 100, 100)}%` }}
+                        style={{
+                          width: `${Math.min((charCount / INSTAGRAM_MAX_LIMIT) * 100, 100)}%`,
+                        }}
                       />
                     </div>
                   </div>

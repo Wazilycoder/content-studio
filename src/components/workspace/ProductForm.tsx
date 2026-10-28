@@ -18,27 +18,27 @@ interface ToneMeta {
 
 const PRIMARY_TONES: ToneMeta[] = [
   {
-    value: "trang-trong",
-    label: "Sang trọng & Cao cấp",
-    hint: "Thanh lịch, chuẩn mực, tôn vinh giá trị",
-  },
-  {
     value: "hai-huoc",
-    label: "Hài hước & Đời thường",
-    hint: "Dí dỏm, viral, gần gũi",
+    label: "Hài hước",
+    hint: "Dí dỏm, viral, gần gũi và tự nhiên",
   },
   {
-    value: "chuyen-gia",
-    label: "Trực diện & Chuyên gia",
-    hint: "Lập luận logic, số liệu và nguyên lý",
+    value: "trang-trong",
+    label: "Trang trọng",
+    hint: "Chuẩn mực, lịch thiệp, tôn vinh giá trị",
+  },
+  {
+    value: "tre-trung",
+    label: "Trẻ trung",
+    hint: "Năng động, hiện đại, bắt trend",
   },
 ];
 
 const EXTENDED_TONES: ToneMeta[] = [
   {
-    value: "tre-trung",
-    label: "Trẻ trung & Bắt trend",
-    hint: "Năng động, hiện đại, phóng khoáng",
+    value: "chuyen-gia",
+    label: "Trực diện & Chuyên gia",
+    hint: "Lập luận logic, số liệu và nguyên lý",
   },
   {
     value: "dong-cam",
