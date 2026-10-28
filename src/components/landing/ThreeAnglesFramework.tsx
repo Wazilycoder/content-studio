@@ -7,6 +7,7 @@ interface AngleItem {
   tag: string;
   title: string;
   description: string;
+  valueProp: string;
   Icon: LucideIcon;
 }
 
@@ -17,6 +18,7 @@ const ANGLES: AngleItem[] = [
     title: "Vấn đề & Giải pháp",
     description:
       "Đánh trúng phiền toái, sai lầm hay thói quen cũ mà khách hàng đang chịu đựng, đưa sản phẩm vào như lời giải tối ưu.",
+    valueProp: "→ Hợp shop mới, sản phẩm cần giải thích rõ vấn đề để chốt đơn nhanh.",
     Icon: Target,
   },
   {
@@ -25,6 +27,7 @@ const ANGLES: AngleItem[] = [
     title: "Cảm xúc & Phong cách sống",
     description:
       "Bán hình ảnh người mua muốn thấy ở chính mình: sự tự tin, thư thái và chuẩn mực sống cao cấp.",
+    valueProp: "→ Hợp thương hiệu lifestyle, mỹ phẩm, thời trang xây dựng hình ảnh.",
     Icon: Heart,
   },
   {
@@ -33,6 +36,7 @@ const ANGLES: AngleItem[] = [
     title: "Trực diện tính năng & Giá trị",
     description:
       "Phân tích chất liệu, độ bền, thông số và nguồn gốc; chứng minh sản phẩm xứng đáng từng đồng chi ra.",
+    valueProp: "→ Hợp sản phẩm công nghệ, gia dụng cần chứng minh bằng thông số.",
     Icon: BadgeCheck,
   },
 ];
@@ -61,7 +65,7 @@ export default function ThreeAnglesFramework() {
         </ScrollReveal>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {ANGLES.map(({ index, tag, title, description, Icon }, cardIdx) => (
+          {ANGLES.map(({ index, tag, title, description, valueProp, Icon }, cardIdx) => (
             <ScrollReveal
               key={index}
               direction="up"
@@ -88,6 +92,9 @@ export default function ThreeAnglesFramework() {
                 <p className="mt-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
                   {description}
                 </p>
+                <div className="mt-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]">
+                  {valueProp}
+                </div>
               </div>
             </ScrollReveal>
           ))}

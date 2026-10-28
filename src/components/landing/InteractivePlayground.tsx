@@ -242,6 +242,8 @@ export default function InteractivePlayground() {
           <div className="space-y-4">
             {active.captions.map((caption, index) => {
               const copyKey = `cap-${index}`;
+              const total = countChars(caption.text);
+              const hook = Math.min(total, 125);
               return (
                 <div
                   key={caption.angle}
@@ -251,27 +253,40 @@ export default function InteractivePlayground() {
                     <span className="inline-flex items-center rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-semibold text-[var(--accent-navy)]">
                       {caption.angle}
                     </span>
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-[11px] text-[var(--ink-tertiary)]">
-                        {countChars(caption.text)} ký tự
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(copyKey, caption.text)}
-                        aria-label="Sao chép caption"
-                        className="btn-tactile text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
-                      >
-                        {copied === copyKey ? (
-                          <Check className="check-pop h-3.5 w-3.5 text-[var(--accent-emerald)]" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(copyKey, caption.text)}
+                      aria-label="Sao chép caption"
+                      className="btn-tactile text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
+                    >
+                      {copied === copyKey ? (
+                        <Check className="check-pop h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
                   </div>
                   <p className="mt-3 whitespace-pre-line text-[13px] leading-relaxed text-[var(--ink-primary)]">
                     {caption.text}
                   </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--border-subtle)] pt-2.5">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                      <span className="font-semibold text-[var(--ink-primary)]">Facebook Hook</span>
+                      <span className="text-[var(--accent-emerald)]">{hook}/125</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                      <span className="font-semibold text-[var(--ink-primary)]">Instagram</span>
+                      <span
+                        className={
+                          total > 2200
+                            ? "text-rose-600 dark:text-rose-400"
+                            : "text-[var(--accent-emerald)]"
+                        }
+                      >
+                        {total.toLocaleString("vi-VN")}/2.200
+                      </span>
+                    </span>
+                  </div>
                 </div>
               );
             })}
