@@ -31,7 +31,7 @@ const PRODUCTS: DemoProduct[] = [
       "Sơ mi nữ chất liệu 100% tơ tằm tự nhiên dệt tay tại làng nghề Bảo Lộc, form suông thanh lịch, phù hợp môi trường công sở cao cấp.",
     audience:
       "Phụ nữ công sở 28–45 tuổi, thu nhập khá, ưu tiên chất liệu tự nhiên và phong cách tinh tế.",
-    toneLabel: "Sang trọng & Cao cấp",
+    toneLabel: "Trang trọng",
     captions: [
       {
         angle: "Góc 1: Vấn đề & Giải pháp",
@@ -67,7 +67,7 @@ const PRODUCTS: DemoProduct[] = [
       "Cà phê Robusta hạt trồng tại Cầu Đất (Đà Lạt), rang mộc 100%, không hương liệu, vị đậm đà đặc trưng.",
     audience:
       "Gen Z và dân văn phòng 20–35 tuổi, thích cà phê nguyên chất, sống nhanh nhưng chất.",
-    toneLabel: "Trẻ trung & Bắt trend",
+    toneLabel: "Trẻ trung",
     captions: [
       {
         angle: "Góc 1: Vấn đề & Giải pháp",
@@ -103,7 +103,7 @@ const PRODUCTS: DemoProduct[] = [
       "Dầu gội nấu thủ công từ bồ kết, vỏ bưởi, sả chanh và cỏ mần trầu, cô đặc gấp 3 lần, không sulfate.",
     audience:
       "Phụ nữ 25–45 tuổi quan tâm chăm sóc tóc tự nhiên, ngại hóa chất, thích sản phẩm nội địa.",
-    toneLabel: "Hài hước & Viral",
+    toneLabel: "Hài hước",
     captions: [
       {
         angle: "Góc 1: Vấn đề & Giải pháp",

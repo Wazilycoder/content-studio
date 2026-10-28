@@ -13,17 +13,15 @@ interface FeatureItem {
 const FEATURES: FeatureItem[] = [
   {
     Icon: MessagesSquare,
-    title: "7 tông giọng tiếp thị chuyên sâu",
+    title: "3 tông giọng tiếp thị chuẩn đề bài",
     description:
-      "Chọn đúng giọng điệu cho từng sản phẩm: từ hài hước giải trí đến sang trọng đẳng cấp, mỗi tông là một cách chạm cảm xúc khác nhau.",
+      "Chọn đúng giọng điệu phù hợp nhất với sản phẩm: Hài hước (viral dí dỏm), Trang trọng (chuẩn mực đẳng cấp) hoặc Trẻ trung (năng động bắt trend).",
     pills: [
       "Hài hước",
-      "Sang trọng",
+      "Trang trọng",
       "Trẻ trung",
-      "Đồng cảm",
-      "Chuyên gia",
-      "Storytelling",
-      "FOMO",
+      "PAS & AIDA",
+      "Chuẩn Đề 2 Bảng B",
     ],
   },
   {

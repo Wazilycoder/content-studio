@@ -41,7 +41,7 @@ const TRUST_ITEMS = [
   "0đ chi phí bắt đầu",
   "10 lượt tạo miễn phí",
   "Chuẩn 125 ký tự 'Xem thêm'",
-  "7 tông giọng thương hiệu",
+  "3 tông giọng chuẩn cuộc thi (Hài hước · Trang trọng · Trẻ trung)",
 ];
 
 const DEMO_POSTS = [
