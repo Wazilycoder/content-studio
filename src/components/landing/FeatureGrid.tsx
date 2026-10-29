@@ -81,11 +81,11 @@ export default function FeatureGrid() {
               duration={600}
               className={span}
             >
-              <div className="card-interactive group flex h-full flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-6 hover:border-[var(--accent-navy)]/40">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface)] text-[var(--accent-navy)] shadow-xs transition-transform duration-200 group-hover:scale-110">
+              <div className="group relative flex h-full flex-col rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 p-6 sm:p-7 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-[0_15px_35px_-10px_rgba(99,102,241,0.12)]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm transition-transform duration-200 group-hover:scale-110">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-base font-semibold tracking-tight text-[var(--ink-primary)]">
+                <h3 className="mt-4 text-base font-bold tracking-tight text-[var(--ink-primary)]">
                   {title}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
@@ -96,7 +96,7 @@ export default function FeatureGrid() {
                     {pills.map((pill) => (
                       <span
                         key={pill}
-                        className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)] transition-colors group-hover:border-[var(--border-strong)]"
+                        className="rounded-full border border-indigo-500/20 bg-indigo-500/5 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400"
                       >
                         {pill}
                       </span>

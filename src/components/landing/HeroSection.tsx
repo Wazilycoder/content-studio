@@ -77,13 +77,17 @@ export default function HeroSection({ user }: HeroSectionProps) {
   };
 
   return (
-    <section className="relative overflow-x-clip py-4 sm:py-8 lg:py-0 lg:min-h-[calc(100dvh-5rem)] lg:flex lg:items-center">
-      {/* 1. Background Grid Mesh Texture */}
+    <section className="relative overflow-x-clip py-6 sm:py-10 lg:py-0 lg:min-h-[calc(100dvh-5rem)] lg:flex lg:items-center">
+      {/* 1. Atmospheric Ambient Spotlight & Grid */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_70%,transparent_100%)]"
+        className="hero-spotlight pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_80%_60%_at_50%_20%,#000_70%,transparent_100%)] opacity-80 dark:opacity-100"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_20%,#000_60%,transparent_100%)] opacity-30 dark:opacity-20"
       >
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:40px_40px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080801a_1px,transparent_1px),linear-gradient(to_bottom,#8080801a_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -91,51 +95,58 @@ export default function HeroSection({ user }: HeroSectionProps) {
           {/* ================= LEFT COLUMN: HERO CONTENT ================= */}
           <div className="flex flex-col items-start text-left lg:col-span-7">
             {/* Top Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1">
-              <Layers3 className="h-3 w-3 text-[var(--ink-tertiary)]" />
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--ink-secondary)] sm:text-[11px]">
-                Chuẩn Anti-AI-Slop cho người bán hàng Việt
+            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1.5 backdrop-blur-md shadow-[0_0_20px_-3px_rgba(99,102,241,0.25)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
+                Anti-AI-Slop · Chuẩn người bán hàng Việt
               </span>
             </div>
 
             {/* Hero Title & Subtitle */}
-            <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.12] tracking-tight text-[var(--ink-primary)] sm:text-4xl lg:text-[2.85rem] xl:text-[3.25rem]">
-              Một sản phẩm.
+            <h1 className="mt-4 text-balance text-3xl font-extrabold leading-[1.14] tracking-tight sm:text-5xl lg:text-[3.15rem] xl:text-[3.5rem]">
+              <span className="text-[var(--ink-primary)]">
+                Một sản phẩm.
+              </span>
               <br />
-              <span className="text-[var(--ink-secondary)]">
+              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-400 dark:via-purple-300 dark:to-emerald-400 bg-clip-text text-transparent">
                 Ba cách khiến khách muốn mua.
               </span>
             </h1>
 
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-              Biến thông tin sản phẩm thô sơ thành 3 bài viết Facebook &amp; Instagram đa chiều:{" "}
-              <span className="font-semibold text-[var(--ink-primary)]">Vấn đề &amp; Giải pháp (PAS)</span>,{" "}
-              <span className="font-semibold text-[var(--ink-primary)]">Cảm xúc &amp; Phong cách</span>, và{" "}
-              <span className="font-semibold text-[var(--ink-primary)]">Trực diện tính năng (FAB)</span> — chuẩn xác 3 tông giọng{" "}
-              <span className="font-semibold text-[var(--ink-primary)]">Hài hước · Trang trọng · Trẻ trung</span>. Đăng ngay, không mất công chỉnh sửa.
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
+              Chấm dứt văn mẫu sáo rỗng. Tự động kiến tạo 3 góc bài viết Facebook &amp; Instagram đa chiều:{" "}
+              <strong className="text-[var(--ink-primary)] font-semibold">Vấn đề &amp; Giải pháp (PAS)</strong>,{" "}
+              <strong className="text-[var(--ink-primary)] font-semibold">Cảm xúc &amp; Phong cách</strong>, và{" "}
+              <strong className="text-[var(--ink-primary)] font-semibold">Trực diện tính năng (FAB)</strong> — với 3 tông giọng chuẩn cuộc thi{" "}
+              <span className="inline-block rounded-md bg-indigo-500/10 px-1.5 py-0.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400">Hài hước · Trang trọng · Trẻ trung</span>.
             </p>
 
             {/* Interactive High-End CTAs */}
-            <div className="mt-4.5 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <div className="mt-6 flex w-full flex-col items-stretch gap-3.5 sm:w-auto sm:flex-row sm:items-center">
               <Link
                 href={primaryHref}
-                className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--accent-navy)] px-6 py-3 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-[var(--accent-navy-hover)] sm:w-auto"
+                className="btn-shimmer group inline-flex w-full items-center justify-center gap-3 rounded-full px-6 py-3.5 text-sm font-semibold shadow-[0_0_30px_-5px_rgba(99,102,241,0.5)] transition-all sm:w-auto"
               >
                 <span>Bắt đầu sáng tạo ngay</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-150 ease-out group-hover:translate-x-0.5" />
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
               </Link>
 
               <a
                 href="#demo"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-[var(--ink-secondary)] transition-colors duration-150 ease-out hover:text-[var(--ink-primary)] sm:w-auto"
+                className="btn-tactile inline-flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)]/80 px-5 py-3.5 text-sm font-medium text-[var(--ink-secondary)] backdrop-blur-md transition-all hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] sm:w-auto"
               >
-                <PlayCircle className="h-4 w-4" />
+                <PlayCircle className="h-4 w-4 text-indigo-500" />
                 <span>Trải nghiệm bài mẫu</span>
               </a>
             </div>
 
             {/* Trust Badges */}
-            <div className="mt-4 flex flex-wrap items-center justify-start gap-2">
+            <div className="mt-5 flex flex-wrap items-center justify-start gap-2">
               {TRUST_ITEMS.map((item) => (
                 <div
                   key={item}
@@ -150,27 +161,25 @@ export default function HeroSection({ user }: HeroSectionProps) {
             </div>
 
             {/* Value Props Bar (Genuine Contest Metrics) */}
-            <div className="mt-4.5 flex items-center gap-5 border-t border-[var(--border-subtle)] pt-3.5 sm:gap-8">
-              <div>
-                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+            <div className="mt-6 grid w-full grid-cols-3 gap-2.5 sm:gap-3 border-t border-[var(--border-subtle)] pt-5">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3 backdrop-blur-sm">
+                <div className="text-lg font-bold tracking-tight text-[var(--ink-primary)] sm:text-xl">
                   3 Góc viết
                 </div>
                 <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
                   PAS · Cảm xúc · FAB
                 </div>
               </div>
-              <div className="h-7 w-px bg-[var(--border-subtle)]" />
-              <div>
-                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3 backdrop-blur-sm">
+                <div className="text-lg font-bold tracking-tight text-indigo-500 dark:text-indigo-400 sm:text-xl">
                   3 Tông giọng
                 </div>
                 <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
                   Hài hước · Trang trọng · Trẻ trung
                 </div>
               </div>
-              <div className="h-7 w-px bg-[var(--border-subtle)]" />
-              <div>
-                <div className="text-xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-2xl">
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3 backdrop-blur-sm">
+                <div className="text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400 sm:text-xl">
                   125 Ký tự
                 </div>
                 <div className="mt-0.5 text-[11px] font-medium text-[var(--ink-tertiary)]">
@@ -182,87 +191,87 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
           {/* ================= RIGHT COLUMN: INTERACTIVE PRODUCT THEATRE ================= */}
           <div className="hero-visual-container relative flex w-full items-center justify-center lg:col-span-5">
-            <div className="w-full max-w-[430px]">
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-2 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.25)]">
-                <div className="relative z-10 flex flex-col overflow-hidden rounded-[calc(1.75rem-0.5rem)] border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5 sm:p-4">
-                  {/* 3-Tab Pill Switcher for the 3 Angles */}
-                  <div className="mb-3 flex shrink-0 items-center gap-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 p-1">
-                    {DEMO_POSTS.map((demo, idx) => (
-                      <button
-                        key={demo.tag}
-                        type="button"
-                        onClick={() => setActiveAngleIndex(idx)}
-                        className={`flex-1 rounded-lg py-1.5 text-center text-[11px] font-semibold transition-colors duration-150 touch-manipulation cursor-pointer ${
-                          activeAngleIndex === idx
-                            ? "bg-[var(--surface)] text-[var(--ink-primary)] shadow-xs"
-                            : "text-[var(--ink-tertiary)] hover:text-[var(--ink-primary)]"
-                        }`}
-                      >
-                        {demo.tag}
-                      </button>
-                    ))}
-                  </div>
+            {/* Ambient Glow Aura */}
+            <div className="pointer-events-none absolute -inset-2 rounded-[2.5rem] bg-gradient-to-tr from-indigo-500/20 via-purple-500/15 to-emerald-500/15 blur-2xl opacity-75" />
+            <div className="double-bezel-outer relative w-full max-w-[450px]">
+              <div className="double-bezel-inner relative z-10 flex flex-col overflow-hidden p-4 sm:p-5">
+                {/* 3-Tab Pill Switcher for the 3 Angles */}
+                <div className="mb-3.5 flex shrink-0 items-center gap-1 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1">
+                  {DEMO_POSTS.map((demo, idx) => (
+                    <button
+                      key={demo.tag}
+                      type="button"
+                      onClick={() => setActiveAngleIndex(idx)}
+                      className={`flex-1 rounded-lg py-1.5 text-center text-[11.5px] font-semibold transition-all duration-150 touch-manipulation cursor-pointer ${
+                        activeAngleIndex === idx
+                          ? "bg-[var(--surface)] text-indigo-600 dark:text-indigo-400 shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                          : "text-[var(--ink-tertiary)] hover:text-[var(--ink-primary)]"
+                      }`}
+                    >
+                      {demo.tag}
+                    </button>
+                  ))}
+                </div>
 
-                  {/* Post Header */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--ink-primary)] text-xs font-bold text-[var(--canvas)]">
-                        CS
+                {/* Post Header */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-xs font-bold text-white shadow-sm">
+                      CS
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[13px] font-bold text-[var(--ink-primary)]">
+                          Content Studio
+                        </span>
+                        <CheckCircle2 className="h-3.5 w-3.5 fill-blue-500 text-white" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[13px] font-bold text-[var(--ink-primary)]">
-                            Content Studio
-                          </span>
-                          <CheckCircle2 className="h-3.5 w-3.5 fill-blue-500 text-white" />
-                        </div>
-                        <div className="flex items-center gap-1 text-[11px] text-[var(--ink-tertiary)]">
-                          <span>Vừa xong</span>
-                          <span>·</span>
-                          <Globe className="h-3 w-3" />
-                        </div>
+                      <div className="flex items-center gap-1 text-[11px] text-[var(--ink-tertiary)]">
+                        <span>Vừa xong</span>
+                        <span>·</span>
+                        <Globe className="h-3 w-3" />
                       </div>
                     </div>
-                    <span
-                      className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${activePost.badgeBg}`}
-                    >
-                      {activePost.tag}
-                    </span>
                   </div>
+                  <span
+                    className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${activePost.badgeBg}`}
+                  >
+                    {activePost.tag}
+                  </span>
+                </div>
 
-                  {/* Post Body: Hook (125-char cutoff) + Expanded Pitch + Hashtags */}
-                  <div className="mt-3 min-h-[150px] space-y-2 text-[12.5px] leading-relaxed">
-                    <p className="font-semibold text-[var(--ink-primary)]">
-                      {activePost.hook}
-                      <span className="ml-0.5 font-normal text-[var(--ink-tertiary)]">
-                        … Xem thêm
-                      </span>
-                    </p>
-                    <p className="text-[var(--ink-secondary)]">{activePost.body}</p>
-                    <p className="text-[11.5px] font-medium text-blue-600 dark:text-blue-400">
-                      {activePost.hashtags}
-                    </p>
-                  </div>
-
-                  {/* Card Bottom: Copy + Platform Readiness */}
-                  <div className="mt-3 flex flex-col gap-2.5 border-t border-[var(--border-subtle)] pt-3 sm:flex-row sm:items-center sm:justify-between">
-                    <button
-                      type="button"
-                      onClick={handleCopyPost}
-                      className="btn-tactile inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] px-3.5 py-2 text-[12.5px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] active:scale-95"
-                    >
-                      {copiedPost ? (
-                        <Check className="check-pop h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                      <span>{copiedPost ? "Đã sao chép!" : "Sao chép góc bài"}</span>
-                    </button>
-                    <span className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
-                      <Globe className="h-3 w-3" />
-                      Chuẩn Facebook &amp; Instagram Newsfeed
+                {/* Post Body: Hook (125-char cutoff) + Expanded Pitch + Hashtags */}
+                <div className="mt-3.5 min-h-[150px] space-y-2 text-[13px] leading-relaxed">
+                  <p className="font-semibold text-[var(--ink-primary)]">
+                    {activePost.hook}
+                    <span className="ml-0.5 font-normal text-indigo-500 dark:text-indigo-400 cursor-pointer hover:underline">
+                      … Xem thêm
                     </span>
-                  </div>
+                  </p>
+                  <p className="text-[var(--ink-secondary)]">{activePost.body}</p>
+                  <p className="text-[12px] font-medium text-indigo-600 dark:text-indigo-400">
+                    {activePost.hashtags}
+                  </p>
+                </div>
+
+                {/* Card Bottom: Copy + Platform Readiness */}
+                <div className="mt-3.5 flex flex-col gap-2.5 border-t border-[var(--border-subtle)] pt-3.5 sm:flex-row sm:items-center sm:justify-between">
+                  <button
+                    type="button"
+                    onClick={handleCopyPost}
+                    className="btn-shimmer inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-[12.5px] font-semibold"
+                  >
+                    {copiedPost ? (
+                      <Check className="check-pop h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    <span>{copiedPost ? "Đã sao chép!" : "Sao chép góc bài"}</span>
+                  </button>
+                  <span className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
+                    <Globe className="h-3 w-3 text-indigo-500" />
+                    Chuẩn Facebook Newsfeed
+                  </span>
                 </div>
               </div>
             </div>

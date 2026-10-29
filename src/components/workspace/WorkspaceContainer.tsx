@@ -1065,39 +1065,42 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                       </p>
 
                       {/* Bộ đếm kép đặt ngay dưới trình biên tập: Facebook Hook 125 & Instagram 2.200 */}
-                      <div className="mt-3 space-y-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-3.5 py-3">
+                      <div className="mt-3.5 space-y-2.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-4 backdrop-blur-sm">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="text-[13px] font-medium text-[var(--ink-secondary)]">
-                            Tổng cộng:{" "}
-                            <strong className="tabular-nums text-[14px] font-semibold text-[var(--ink-primary)]">
+                            Tổng độ dài:{" "}
+                            <strong className="tabular-nums text-[14px] font-bold text-[var(--ink-primary)]">
                               {charCount.toLocaleString("vi-VN")}
                             </strong>{" "}
                             ký tự
                           </span>
 
-                          <div className="flex flex-wrap items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span
-                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[12px] font-medium ${
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors ${
                                 overLimit
-                                  ? "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300"
-                                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                  ? "border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300"
+                                  : "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
                               }`}
                             >
-                              <span className="font-semibold">FB Hook</span>
+                              <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                              <span>FB Hook:</span>
                               <span className="tabular-nums">{charCount}/125</span>
                             </span>
 
                             <span
-                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[12px] font-medium ${
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors ${
                                 isOverInstagram
-                                  ? "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300"
+                                  ? "border-rose-500/40 bg-rose-500/15 text-rose-600 dark:text-rose-300"
                                   : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)]"
                               }`}
                             >
                               {isOverInstagram ? (
                                 <AlertTriangle className="h-3 w-3 shrink-0" />
-                              ) : null}
-                              <span className="font-semibold">Instagram</span>
+                              ) : (
+                                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
+                              )}
+                              <span>IG:</span>
                               <span className="tabular-nums">
                                 {charCount.toLocaleString("vi-VN")}/2.200
                               </span>
@@ -1105,17 +1108,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                           </div>
                         </div>
 
-                        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                        <div className="relative h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
                           <div
                             className={`h-full rounded-full transition-[width,background-color] duration-300 ${
                               isOverInstagram
                                 ? "bg-rose-500"
                                 : overLimit
                                 ? "bg-amber-500"
-                                : "bg-[var(--accent-emerald)]"
+                                : "bg-gradient-to-r from-indigo-500 to-emerald-500"
                             }`}
                             style={{
-                              width: `${Math.min((charCount / INSTAGRAM_MAX_LIMIT) * 100, 100)}%`,
+                              width: `${Math.min((charCount / 125) * 100, 100)}%`,
                             }}
                           />
                         </div>

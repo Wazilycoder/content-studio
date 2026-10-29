@@ -96,11 +96,11 @@ function validate(values: ContentFormInput): FieldErrors {
 }
 
 const inputBaseClass =
-  "w-full rounded-lg border bg-[var(--surface)] px-3 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-colors focus:outline-none focus:ring-2";
+  "w-full rounded-xl border bg-[var(--canvas)] px-3.5 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-all duration-150 focus:outline-none focus:ring-2";
 const inputNormalClass =
-  "border-[var(--border-subtle)] focus:border-[var(--border-strong)] focus:ring-[var(--accent-navy)]/15";
+  "border-[var(--border-subtle)] focus:border-indigo-500 focus:ring-indigo-500/20";
 const inputErrorClass =
-  "border-[#DC2626] focus:border-[#DC2626] focus:ring-[#DC2626]/15";
+  "border-red-500 focus:border-red-500 focus:ring-red-500/20";
 
 function MicroBar({ value, max }: { value: number; max: number }) {
   const ratio = Math.min(value / max, 1);
@@ -342,9 +342,36 @@ function ProductForm({
             Tông giọng
           </span>
 
-          <div role="group" aria-label="Chọn tông giọng" className="space-y-1.5">
+          <div role="group" aria-label="Chọn tông giọng" className="space-y-2">
             {PRIMARY_TONES.map((option) => {
               const active = value.tone === option.value;
+              const toneColors: Record<string, { activeBorder: string; activeBg: string; text: string; dot: string }> = {
+                "hai-huoc": {
+                  activeBorder: "border-amber-500/50 dark:border-amber-400/50",
+                  activeBg: "bg-amber-500/10",
+                  text: "text-amber-700 dark:text-amber-400",
+                  dot: "bg-amber-500",
+                },
+                "trang-trong": {
+                  activeBorder: "border-indigo-500/50 dark:border-indigo-400/50",
+                  activeBg: "bg-indigo-500/10",
+                  text: "text-indigo-700 dark:text-indigo-400",
+                  dot: "bg-indigo-500",
+                },
+                "tre-trung": {
+                  activeBorder: "border-pink-500/50 dark:border-pink-400/50",
+                  activeBg: "bg-pink-500/10",
+                  text: "text-pink-700 dark:text-pink-400",
+                  dot: "bg-pink-500",
+                },
+              };
+              const colors = toneColors[option.value] || {
+                activeBorder: "border-indigo-500",
+                activeBg: "bg-indigo-500/10",
+                text: "text-indigo-600",
+                dot: "bg-indigo-500",
+              };
+
               return (
                 <button
                   key={option.value}
@@ -352,28 +379,29 @@ function ProductForm({
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
                   title={option.hint}
-                  className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-all duration-200 ${
+                  className={`btn-tactile flex w-full items-center justify-between gap-2.5 rounded-xl border px-3.5 py-2.5 text-left transition-all duration-150 ${
                     active
-                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.06] ring-2 ring-[var(--accent-navy)]/25 shadow-[0_4px_14px_rgba(37,52,199,0.12)]"
+                      ? `${colors.activeBorder} ${colors.activeBg} ring-2 ring-indigo-500/20 shadow-sm`
                       : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
                   }`}
                 >
-                  <span className="min-w-0">
-                    <span
-                      className={`block text-[13px] font-semibold ${
-                        active
-                          ? "text-[var(--accent-navy)]"
-                          : "text-[var(--ink-primary)]"
-                      }`}
-                    >
-                      {option.label}
-                    </span>
-                    <span className="mt-0.5 block truncate text-[12px] text-[var(--ink-tertiary)]">
-                      {option.hint}
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <span className={`h-2 w-2 rounded-full shrink-0 ${active ? colors.dot : "bg-zinc-400 dark:bg-zinc-600"}`} />
+                    <span className="min-w-0">
+                      <span
+                        className={`block text-[13px] font-semibold ${
+                          active ? colors.text : "text-[var(--ink-primary)]"
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                      <span className="mt-0.5 block truncate text-[11.5px] text-[var(--ink-tertiary)]">
+                        {option.hint}
+                      </span>
                     </span>
                   </span>
                   {active ? (
-                    <Check className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
+                    <Check className={`h-4 w-4 shrink-0 ${colors.text}`} />
                   ) : null}
                 </button>
               );
@@ -445,8 +473,8 @@ function ProductForm({
           disabled={loading}
           className={
             cooldownActive
-              ? "inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
-              : "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--accent-navy-hover)] hover:shadow-[0_6px_16px_rgba(37,52,199,0.18)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/30 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              ? "inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3.5 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
+              : "btn-shimmer inline-flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[14px] font-semibold text-white shadow-[0_0_20px_-3px_rgba(99,102,241,0.4)] transition-all disabled:cursor-not-allowed disabled:opacity-70"
           }
         >
           {loading ? (

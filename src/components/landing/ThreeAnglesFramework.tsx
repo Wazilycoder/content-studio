@@ -73,26 +73,26 @@ export default function ThreeAnglesFramework() {
               duration={650}
             >
               <div
-                className="card-interactive group flex h-full flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 hover:border-[var(--accent-navy)]/40"
+                className="group relative flex h-full flex-col rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.15)]"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-transform duration-200 group-hover:scale-110">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 transition-transform duration-200 group-hover:scale-110 shadow-inner">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <span className="rounded-md bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--ink-secondary)] transition-colors group-hover:text-[var(--accent-navy)]">
+                  <span className="rounded-full border border-indigo-500/20 bg-indigo-500/5 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                     {tag}
                   </span>
                 </div>
-                <span className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-[var(--accent-navy)]">
+                <span className="mt-5 text-[11px] font-bold uppercase tracking-wider text-indigo-500">
                   {index}
                 </span>
-                <h3 className="mt-1 text-lg font-semibold tracking-tight text-[var(--ink-primary)]">
+                <h3 className="mt-1 text-lg font-bold tracking-tight text-[var(--ink-primary)]">
                   {title}
                 </h3>
-                <p className="mt-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
                   {description}
                 </p>
-                <div className="mt-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]">
+                <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-3.5 py-2.5 text-[12px] font-medium text-[var(--ink-secondary)]">
                   {valueProp}
                 </div>
               </div>

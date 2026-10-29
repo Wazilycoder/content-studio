@@ -101,28 +101,28 @@ export default function PricingSection() {
                 className="h-full"
               >
                 <div
-                  className={`relative flex h-full flex-col rounded-2xl border bg-[var(--surface)] p-6 ${
+                  className={`relative flex h-full flex-col rounded-3xl border p-6 sm:p-7 transition-all duration-300 ${
                     plan.highlight
-                      ? "border-[var(--ink-primary)]"
-                      : "border-[var(--border-subtle)]"
+                      ? "border-indigo-500 bg-[var(--surface)] shadow-[0_20px_50px_-15px_rgba(99,102,241,0.25)] ring-2 ring-indigo-500/20 md:-translate-y-2"
+                      : "border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs hover:border-[var(--border-strong)]"
                   }`}
                 >
                   {plan.highlight ? (
-                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-[var(--ink-primary)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--canvas)]">
-                      Phổ biến nhất
+                    <span className="btn-shimmer absolute -top-3.5 left-6 inline-flex items-center rounded-full px-3 py-1 text-[10.5px] font-bold uppercase tracking-wider shadow-sm">
+                      ✨ Khuyên dùng nhiều nhất
                     </span>
                   ) : plan.badge ? (
-                    <span className="absolute -top-3 left-6 inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
+                    <span className="absolute -top-3.5 left-6 inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
                       {plan.badge}
                     </span>
                   ) : null}
 
-                  <h3 className="text-sm font-semibold text-[var(--ink-primary)]">
+                  <h3 className="text-sm font-bold text-[var(--ink-primary)]">
                     {plan.name}
                   </h3>
 
                   <div className="mt-3 flex items-baseline gap-1">
-                    <span className="text-4xl font-bold tracking-tight text-[var(--ink-primary)]">
+                    <span className="text-4xl font-extrabold tracking-tight text-[var(--ink-primary)]">
                       {display.main}
                     </span>
                     <span className="text-sm font-medium text-[var(--ink-tertiary)]">
@@ -144,7 +144,7 @@ export default function PricingSection() {
                         key={feature}
                         className="flex items-start gap-2 text-[13px] text-[var(--ink-secondary)]"
                       >
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -152,13 +152,13 @@ export default function PricingSection() {
 
                   <Link
                     href="/workspace"
-                    className={`group mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-150 ${
+                    className={`group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                       plan.highlight
-                        ? "bg-[var(--accent-navy)] text-white hover:bg-[var(--accent-navy-hover)]"
-                        : "border border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-primary)] hover:border-[var(--ink-tertiary)]"
+                        ? "btn-shimmer text-white shadow-md hover:scale-[1.01]"
+                        : "border border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                     }`}
                   >
-                    <span>Trải nghiệm trong Workspace</span>
+                    <span>Trải nghiệm trong Studio</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" />
                   </Link>
                 </div>
