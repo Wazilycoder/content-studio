@@ -6,34 +6,44 @@
   --canvas: #FAFAFD;
   --surface: #FFFFFF;
   --surface-raised: #F4F6FC;
+  --canvas-base: #F8F8F6;
+  --surface-stage: #FFFFFF;
   --border-subtle: #E5E8F0;
   --border-strong: #CBD2E2;
-  --ink-primary: #0F172A;
-  --ink-secondary: #475569;
-  --ink-tertiary: #64748B;
-  --accent-navy: #4F46E5;
-  --accent-navy-hover: #4338CA;
+  --border-hairline: #E4E4E8;
+  --border-focus: rgba(68, 82, 232, 0.4);
+  --ink-primary: #18181B;
+  --ink-secondary: #52525B;
+  --ink-tertiary: #71717A;
+  --accent-navy: #4452E8;
+  --accent-navy-hover: #3642C4;
   --accent-purple: #7C3AED;
   --accent-emerald: #059669;
-  --glow-accent: rgba(79, 70, 229, 0.12);
+  --accent-indigo: #4452E8;
+  --glow-accent: rgba(68, 82, 232, 0.08);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark {
-  --canvas: #060709;
-  --surface: #0E1015;
-  --surface-raised: #151821;
+  --canvas: #090A0F;
+  --surface: #11131C;
+  --surface-raised: #181B27;
+  --canvas-base: #090A0F;
+  --surface-stage: #11131C;
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(68, 82, 232, 0.5);
   --ink-primary: #F8FAFC;
   --ink-secondary: #94A3B8;
   --ink-tertiary: #64748B;
-  --accent-navy: #6366F1;
-  --accent-navy-hover: #4F46E5;
+  --accent-navy: #6370FF;
+  --accent-navy-hover: #4F5DFF;
   --accent-purple: #8B5CF6;
   --accent-emerald: #10B981;
-  --glow-accent: rgba(99, 102, 241, 0.18);
+  --accent-indigo: #6370FF;
+  --glow-accent: rgba(68, 82, 232, 0.15);
 }
 
 body {
@@ -622,24 +632,54 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-/* Floating Emoji Burst for Interactive Facebook Card */
-@keyframes floatEmojiBurst {
-  0% {
-    transform: translateY(0) scale(0.7) rotate(0deg);
-    opacity: 1;
+/* ============================================================
+   Product Theatre Z-Axis Staged Cascade (Hardware Accelerated)
+   ============================================================ */
+.stage-perspective {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.stage-layer-active {
+  transform: translate3d(0, 0, 0) scale(1);
+  z-index: 30;
+  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stage-layer-stacked-1 {
+  transform: translate3d(18px, -14px, -35px) scale(0.97) rotateZ(-1.2deg);
+  z-index: 20;
+  opacity: 0.65;
+  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stage-layer-stacked-2 {
+  transform: translate3d(36px, -28px, -70px) scale(0.93) rotateZ(-2.5deg);
+  z-index: 10;
+  opacity: 0.4;
+  transition: all 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile Fallback: Reset to clean flat stack below 768px */
+@media (max-width: 768px) {
+  .stage-perspective {
+    perspective: none !important;
   }
-  50% {
-    transform: translateY(-24px) scale(1.25) rotate(-8deg);
-    opacity: 0.95;
-  }
-  100% {
-    transform: translateY(-48px) scale(0.9) rotate(12deg);
-    opacity: 0;
+  .stage-layer-stacked-1,
+  .stage-layer-stacked-2 {
+    display: none !important;
   }
 }
 
-.animate-emoji-burst {
-  animation: floatEmojiBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Island Button Trailing Circle Pattern */
+.island-btn {
+  transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.island-btn:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+.island-btn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* Reverse Spin for Counter-Rotated Border Beams */
