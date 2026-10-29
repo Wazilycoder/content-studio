@@ -622,6 +622,40 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
+/* Floating Emoji Burst for Interactive Facebook Card */
+@keyframes floatEmojiBurst {
+  0% {
+    transform: translateY(0) scale(0.7) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-24px) scale(1.25) rotate(-8deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(-48px) scale(0.9) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+.animate-emoji-burst {
+  animation: floatEmojiBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Reverse Spin for Counter-Rotated Border Beams */
+@keyframes spinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-\[spin_6s_linear_infinite_reverse\] {
+  animation: spinReverse 6s linear infinite;
+}
+
 /* Battery-Saver & Accessibility Guard — đóng băng toàn bộ animation vô hạn */
 @media (prefers-reduced-motion: reduce) {
   .animate-float,

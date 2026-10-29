@@ -480,11 +480,20 @@ function FacebookMockup({
       ) : null}
 
       {/* ── KHUNG THIẾT BỊ DI ĐỘNG + NỀN TẢNG 1: Facebook Mobile ── */}
-      <div className="mx-auto w-full max-w-[392px]">
-        <div className="relative rounded-[2.4rem] border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-[7px] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.55)]">
+      <div className="relative mx-auto w-full max-w-[392px]">
+        {/* Ambient Halo Behind Mobile Phone */}
+        <div aria-hidden="true" className="pointer-events-none absolute -inset-3 rounded-[3rem] bg-gradient-to-b from-indigo-500/15 via-purple-500/10 to-transparent blur-2xl -z-10 opacity-70 dark:opacity-90" />
+
+        <div className="relative rounded-[2.4rem] border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-[7px] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.55),0_0_20px_-5px_rgba(99,102,241,0.12)]">
+          {/* Speaker / Dynamic Island on Phone Bezel */}
+          <div aria-hidden="true" className="mx-auto mb-1 h-3.5 w-20 rounded-full bg-black/40 dark:bg-black/80 flex items-center justify-center">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#1e293b]/70 mr-1.5" />
+            <span className="h-1 w-8 rounded-full bg-[#334155]/60" />
+          </div>
+
           <div className="relative overflow-hidden rounded-[2rem] border border-[var(--border-subtle)] bg-white dark:bg-[#242526]">
             {/* Status bar */}
-            <div className="flex items-center justify-between px-5 pb-1 pt-2.5 text-[12px] font-semibold tracking-tight text-[#050505] dark:text-[#E4E6EB]">
+            <div className="flex items-center justify-between px-5 pb-1 pt-1.5 text-[12px] font-semibold tracking-tight text-[#050505] dark:text-[#E4E6EB]">
               <span className="tabular-nums">9:41</span>
               <div className="flex items-center gap-1">
                 <span className="h-2 w-[3px] rounded-full bg-current opacity-70" />
