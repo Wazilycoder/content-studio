@@ -45,7 +45,7 @@ export const BentoCard = ({
   <div
     key={name}
     className={cn(
-      "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--border-hairline)] bg-[var(--surface)] p-6 transition-all duration-300 hover:border-[var(--border-strong)] hover:shadow-md",
+      "group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 dark:border-white/10 bg-[var(--surface)] p-6 transition-all duration-300 hover:border-teal-500/40 hover:shadow-[0_10px_30px_-10px_rgba(0,212,146,0.15)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]",
       className
     )}
     {...props}

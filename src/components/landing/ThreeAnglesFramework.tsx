@@ -11,6 +11,7 @@ interface AngleData {
   title: string;
   badgeBg: string;
   tagColor: string;
+  activeRing: string;
   formula: string;
   bestFor: string;
   aiSlopExample: string;
@@ -25,8 +26,11 @@ const ANGLES_DATA: AngleData[] = [
     num: "01",
     tag: "PAS",
     title: "Vấn đề & Giải pháp (Problem - Agitate - Solve)",
-    badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    tagColor: "text-blue-500",
+    badgeBg:
+      "border-rose-500/30 bg-rose-500/10 text-[#E11D48] dark:text-[#F43F5E]",
+    tagColor: "text-[#E11D48] dark:text-[#F43F5E]",
+    activeRing:
+      "border-rose-500/50 ring-rose-500/30 shadow-[0_10px_30px_-10px_rgba(225,29,72,0.25)]",
     formula: "Xoáy trúng nỗi đau thực tế → Chỉ ra hậu quả nếu lờ đi → Đưa sản phẩm vào như lối thoát duy nhất",
     bestFor: "Sản phẩm giải quyết nỗi đau trực tiếp, đồ gia dụng, chăm sóc sức khỏe, hoặc shop mới cần phá vỡ rào cản hoài nghi.",
     aiSlopExample:
@@ -42,8 +46,11 @@ const ANGLES_DATA: AngleData[] = [
     num: "02",
     tag: "AIDA",
     title: "Cảm xúc & Phong cách sống (Dream & Identity)",
-    badgeBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-    tagColor: "text-pink-500",
+    badgeBg:
+      "border-sky-500/30 bg-sky-500/10 text-[#0284C7] dark:text-[#38BDF8]",
+    tagColor: "text-[#0284C7] dark:text-[#38BDF8]",
+    activeRing:
+      "border-sky-500/50 ring-sky-500/30 shadow-[0_10px_30px_-10px_rgba(2,132,199,0.25)]",
     formula: "Kích hoạt khát khao bản ngã → Vẽ ra viễn cảnh hạnh phúc/tự tin → Biến sản phẩm thành biểu tượng sống",
     bestFor: "Thời trang, mỹ phẩm, trang sức, đồ trang trí nội thất, quán cafe, các thương hiệu xây dựng tệp khách trung thành.",
     aiSlopExample:
@@ -59,8 +66,11 @@ const ANGLES_DATA: AngleData[] = [
     num: "03",
     tag: "FAB",
     title: "Trực diện Tính năng & Giá trị (Feature - Advantage - Benefit)",
-    badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-    tagColor: "text-emerald-500",
+    badgeBg:
+      "border-emerald-500/30 bg-emerald-500/10 text-[#059669] dark:text-[#00D492]",
+    tagColor: "text-[#059669] dark:text-[#00D492]",
+    activeRing:
+      "border-emerald-500/50 ring-emerald-500/30 shadow-[0_10px_30px_-10px_rgba(5,150,105,0.25)]",
     formula: "Thông số vật liệu thật → Ưu thế vượt trội so với thị trường → Giá trị thực tế khách nhận được trên từng đồng bỏ ra",
     bestFor: "Đồ công nghệ, đồ thủ công làng nghề, thực phẩm sạch có chứng nhận, các sản phẩm cạnh tranh sòng phẳng bằng chất lượng.",
     aiSlopExample:
@@ -79,7 +89,7 @@ export default function ThreeAnglesFramework() {
   const currentAngle = ANGLES_DATA.find((a) => a.id === selectedAngleId) ?? ANGLES_DATA[0]!;
 
   return (
-    <section id="framework" className="scroll-mt-20 bg-[var(--canvas)] py-16 sm:py-24 border-t border-[var(--border-subtle)]">
+    <section id="framework" className="scroll-mt-20 bg-[var(--canvas)] py-12 sm:py-14 border-t border-[var(--border-hairline)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal direction="up" duration={600}>
           <div className="mx-auto max-w-3xl text-center">
@@ -142,14 +152,14 @@ export default function ThreeAnglesFramework() {
 
                 {/* ✅ Content Studio Custom Craft */}
                 <div className="relative rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.04] p-5 text-[13px] dark:bg-emerald-950/15 shadow-xs">
-                  <div className="flex items-center justify-between gap-2 text-emerald-600 dark:text-emerald-400 font-bold mb-2">
+                  <div className="flex items-center justify-between gap-2 text-emerald-700 dark:text-emerald-400 font-bold mb-2">
                     <div className="flex items-center gap-2">
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/20 text-[10px]">
                         <Check className="h-3 w-3" />
                       </span>
                       <span>Content Studio — Chuẩn 125 ký tự Hook</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+                    <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
                       CTR +42%
                     </span>
                   </div>
@@ -189,9 +199,9 @@ export default function ThreeAnglesFramework() {
                   key={angle.id}
                   type="button"
                   onClick={() => setSelectedAngleId(angle.id)}
-                  className={`group relative flex flex-col text-left rounded-2xl border p-5 transition-all duration-200 cursor-pointer ${
+                  className={`btn-tactile group relative flex flex-col text-left rounded-2xl border p-5 transition-all duration-200 cursor-pointer ${
                     isSelected
-                      ? "border-indigo-500/50 bg-[var(--surface)] shadow-[0_10px_30px_-10px_rgba(99,102,241,0.2)] ring-1 ring-indigo-500/30"
+                      ? `bg-[var(--surface)] ring-1 ${angle.activeRing}`
                       : "border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                   }`}
                 >
@@ -214,10 +224,10 @@ export default function ThreeAnglesFramework() {
                   </p>
 
                   <div className="mt-3 flex items-center justify-between text-[11px] font-semibold">
-                    <span className={isSelected ? "text-indigo-600 dark:text-indigo-400" : "text-[var(--ink-tertiary)]"}>
+                    <span className={isSelected ? "text-[var(--brand)] font-bold" : "text-[var(--ink-tertiary)]"}>
                       {isSelected ? "Đang chọn hiển thị" : "Bấm để xem mẫu bài"}
                     </span>
-                    <ArrowRight className={`h-3.5 w-3.5 transition-transform ${isSelected ? "translate-x-1 text-indigo-500" : "text-[var(--ink-tertiary)] group-hover:translate-x-0.5"}`} />
+                    <ArrowRight className={`h-3.5 w-3.5 transition-transform ${isSelected ? "translate-x-1 text-[var(--brand)]" : "text-[var(--ink-tertiary)] group-hover:translate-x-0.5"}`} />
                   </div>
                 </button>
               );

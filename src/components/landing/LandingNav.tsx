@@ -41,17 +41,18 @@ export default function LandingNav({ user }: LandingNavProps) {
 
   return (
     <header className="sticky top-3 z-50 mx-auto max-w-6xl px-4 transition-all duration-300 sm:top-4 sm:px-6">
-      <div className="flex h-14 items-center justify-between rounded-2xl border border-black/5 dark:border-white/10 bg-white/75 dark:bg-[#0c0d12]/80 px-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_35px_-5px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:h-16 sm:px-6">
+      <div className="flex h-13 items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)]/85 px-4 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)] backdrop-blur-md sm:h-13 sm:px-6">
         {/* Brand */}
         <Link href="/" className="btn-tactile flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]">
-            <Layers3 className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#00D492] text-black font-black text-xs shadow-[0_0_15px_rgba(0,212,146,0.35)]">
+            CS
           </div>
-          <span className="text-sm font-bold tracking-tight text-[var(--ink-primary)]">
-            Content Studio
+          <span className="text-sm font-extrabold tracking-tight text-[var(--ink-primary)]">
+            CONTENT STUDIO
           </span>
-          <span className="hidden rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-indigo-500 dark:text-indigo-400 sm:inline-block">
-            v3.2 Pro
+          <span className="hidden items-center gap-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-teal-400 sm:inline-flex">
+            <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
+            SYNTHESIZER
           </span>
         </Link>
 
@@ -75,13 +76,13 @@ export default function LandingNav({ user }: LandingNavProps) {
 
           {user ? (
             <>
-              <div className="hidden items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 sm:flex">
-                <Zap className="h-3 w-3 fill-emerald-500 text-emerald-500" />
-                <span>10 lượt khả dụng</span>
+              <div className="hidden items-center gap-1.5 rounded-lg border border-teal-500/20 bg-teal-500/10 px-3 py-1.5 text-xs font-mono font-medium text-teal-400 sm:flex">
+                <Zap className="h-3 w-3 fill-teal-400 text-teal-400" />
+                <span>10 CREDITS</span>
               </div>
               <Link
                 href="/workspace"
-                className="btn-shimmer hidden items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold sm:inline-flex"
+                className="btn-tactile hidden items-center gap-2 rounded-lg bg-[#00D492] hover:bg-teal-400 text-black px-4 py-2 text-xs font-bold shadow-lg shadow-teal-500/20 transition sm:inline-flex"
               >
                 <span>Vào Studio</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -91,15 +92,15 @@ export default function LandingNav({ user }: LandingNavProps) {
             <>
               <Link
                 href="/login"
-                className="hidden text-xs font-semibold text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)] sm:inline-block"
+                className="hidden text-xs font-semibold px-3 py-1.5 rounded-lg text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] transition border border-[var(--border-subtle)] hover:bg-[var(--surface-raised)] sm:inline-block"
               >
                 Đăng nhập
               </Link>
               <Link
                 href="/workspace"
-                className="btn-shimmer hidden items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold sm:inline-flex"
+                className="btn-tactile hidden items-center gap-2 rounded-lg bg-[#00D492] hover:bg-teal-400 text-black px-4 py-2 text-xs font-bold shadow-lg shadow-teal-500/20 transition sm:inline-flex"
               >
-                <span>Mở Studio (Khách)</span>
+                <span>Khởi Động Studio</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </>

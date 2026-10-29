@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <title>Content Studio — Concept A Workspace: Director's Focus Stage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #040508;
+      color: #F3F4F6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    .btn-tactile:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#040508] flex flex-col antialiased selection:bg-indigo-500/30">
+  <!-- Minimalist Studio Nav -->
+  <header class="h-16 border-b border-white/10 px-4 md:px-8 flex items-center justify-between shrink-0 bg-[#080A10]/90 backdrop-blur-md sticky top-0 z-40">
+    <div class="flex items-center space-x-3">
+      <a href="index.html" class="flex items-center gap-2.5 text-white font-extrabold text-sm tracking-tight hover:opacity-80 transition">
+        <div class="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs font-black shadow-md shadow-indigo-600/30">C</div>
+        <span>CONTENT STUDIO</span>
+      </a>
+      <span class="text-gray-600">/</span>
+      <span class="text-xs font-mono text-gray-400">STAGE: ÁO SƠ MI LỤA BẢO LỘC</span>
+      <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">CONCEPT A</span>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-gray-400">TÀI KHOẢN:</span>
+        <span class="text-white font-bold">18 CREDITS</span>
+      </div>
+      <a href="index.html" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-gray-300 hover:text-white transition">
+        &larr; Trang Chủ
+      </a>
+    </div>
+  </header>
+
+  <!-- Director's Canvas -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-8 flex flex-col space-y-8">
+    
+    <!-- Stage 1: The Focused Brief Console (Expansive & Generous) -->
+    <div class="bg-[#0E111B] border border-white/10 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-white/10 gap-2 mb-6">
+        <div>
+          <h2 class="text-lg md:text-xl font-bold text-white tracking-tight flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+            Bản Tóm Tắt Ý Tưởng (Brief Sheet)
+          </h2>
+          <p class="text-xs text-gray-400 mt-1">Nhập thông tin sản phẩm thô để hệ thống phân tích insight khách hàng và kiến tạo 3 góc quảng cáo.</p>
+        </div>
+        <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+          TIẾNG VIỆT CHUYÊN SÂU
+        </span>
+      </div>
+
+      <div class="space-y-5">
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Tên sản phẩm / Bộ sưu tập *</label>
+          <input type="text" id="aProdName" value="Bộ sưu tập Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc" class="w-full bg-[#151928] border border-white/10 rounded-xl px-4 py-3 text-sm md:text-base font-semibold text-white focus:outline-none focus:border-indigo-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Mô tả đặc tính cốt lõi & Lợi thế cạnh tranh *</label>
+          <textarea id="aProdDesc" rows="3" class="w-full bg-[#151928] border border-white/10 rounded-xl p-4 text-xs md:text-sm text-gray-200 leading-relaxed font-body focus:outline-none focus:border-indigo-500 transition">100% kén tơ tằm tự nhiên Bảo Lộc. Kỹ thuật dệt tay 36 giờ tạo nếp rũ mềm mại không nhăn, hạ nhiệt tức thì 2-3°C khi chạm vào da. Khuy xà cừ khắc chìm, may đo chuẩn Haute Couture. Giá từ 690.000đ, ưu đãi 15% tuần lễ ra mắt.</textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Chân dung khách hàng mục tiêu</label>
+            <input type="text" id="aAudience" value="Nữ quản lý & chuyên viên văn phòng 22–35 tuổi" class="w-full bg-[#151928] border border-white/10 rounded-xl px-4 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-mono text-gray-300 uppercase tracking-wider mb-2 font-semibold">Tone giọng tiếp thị</label>
+            <select id="aToneSelect" class="w-full bg-[#151928] border border-white/10 rounded-xl px-4 py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-indigo-500">
+              <option value="trang-trong" selected>Trang trọng, quý phái (Quiet Luxury)</option>
+              <option value="ke-chuyen">Kể chuyện cảm xúc (Storytelling)</option>
+              <option value="dong-cam">Đồng cảm & Thấu hiểu sâu sắc</option>
+              <option value="kich-thich">Kích thích hành động nhanh (Urgent FOMO)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-xs font-mono text-gray-400">
+          Mỗi lần tạo tiêu tốn 1 credit · Đã lưu bản thảo tự động
+        </div>
+        <button onclick="triggerConceptAGenerate()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 btn-tactile">
+          <svg class="w-4 h-4 animate-spin hidden" id="aSpinner" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+          <span id="aGenBtnLabel">Đồng Bộ & Tái Tạo 3 Góc (⌘+Enter)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage 2: The Three Angles Showcase Deck -->
+    <div class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          Kịch Bản Đa Góc Nhìn Xuất Xưởng
+        </h2>
+        <span class="text-xs font-mono text-gray-400">3 PHƯƠNG ÁN ĐÃ HOÀN TẤT</span>
+      </div>
+
+      <!-- Angle 1 Card -->
+      <div class="bg-[#0E111B] border border-indigo-500/40 rounded-2xl p-6 shadow-xl relative">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold border border-indigo-500/30">
+              GÓC 01 · PAS
+            </span>
+            <span class="text-xs font-bold text-gray-200">VẤN ĐỀ & GIẢI PHÁP (PROBLEM - AGITATE - SOLVE)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-gray-400">520 ký tự</span>
+            <button onclick="copyDeck('deck1')" class="btn-tactile px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+        <input type="text" id="deckHook1" value="Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?" class="w-full bg-transparent font-bold text-white text-base md:text-lg mb-3 focus:outline-none border-b border-transparent focus:border-indigo-500 pb-1">
+        <textarea id="deckBody1" rows="4" class="w-full bg-transparent text-xs md:text-sm text-gray-300 font-body leading-relaxed focus:outline-none resize-none">Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác. Giá chỉ từ 690.000đ cùng ưu đãi 15% trong tuần đầu ra mắt.</textarea>
+        <input type="text" id="deckTags1" value="#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien" class="w-full bg-transparent text-xs font-mono text-indigo-400 focus:outline-none mt-2">
+      </div>
+
+      <!-- Angle 2 Card -->
+      <div class="bg-[#0E111B] border border-rose-500/40 rounded-2xl p-6 shadow-xl relative">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-400 font-mono text-xs font-bold border border-rose-500/30">
+              GÓC 02 · AIDA
+            </span>
+            <span class="text-xs font-bold text-gray-200">CẢM XÚC & KHÁT KHAO (ATTENTION - INTEREST - DESIRE - ACTION)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-gray-400">498 ký tự</span>
+            <button onclick="copyDeck('deck2')" class="btn-tactile px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+        <input type="text" id="deckHook2" value="Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng, tĩnh lặng." class="w-full bg-transparent font-bold text-white text-base md:text-lg mb-3 focus:outline-none border-b border-transparent focus:border-rose-500 pb-1">
+        <textarea id="deckBody2" rows="4" class="w-full bg-transparent text-xs md:text-sm text-gray-300 font-body leading-relaxed focus:outline-none resize-none">Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào. Sở hữu ngay với mức giá khởi điểm 690.000đ (Ưu đãi 15% duy nhất tuần đầu).</textarea>
+        <input type="text" id="deckTags2" value="#QuietLuxury #ThoiTrangQuyPhai #LuaBaoLoc #ThanhLichTinhLang" class="w-full bg-transparent text-xs font-mono text-rose-400 focus:outline-none mt-2">
+      </div>
+
+      <!-- Angle 3 Card -->
+      <div class="bg-[#0E111B] border border-emerald-500/40 rounded-2xl p-6 shadow-xl relative">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-white/10 gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold border border-emerald-500/30">
+              GÓC 03 · FAB
+            </span>
+            <span class="text-xs font-bold text-gray-200">TÍNH NĂNG & GIÁ TRỊ THẬT (FEATURE - ADVANTAGE - BENEFIT)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-gray-400">534 ký tự</span>
+            <button onclick="copyDeck('deck3')" class="btn-tactile px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+        <input type="text" id="deckHook3" value="36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc xà cừ khắc chìm." class="w-full bg-transparent font-bold text-white text-base md:text-lg mb-3 focus:outline-none border-b border-transparent focus:border-emerald-500 pb-1">
+        <textarea id="deckBody3" rows="4" class="w-full bg-transparent text-xs md:text-sm text-gray-300 font-body leading-relaxed focus:outline-none resize-none">Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Chuẩn may đo cao cấp Haute Couture bảo toàn trọn vẹn giá trị di sản thủ công Việt. Cơ hội trải nghiệm từ 690.000đ (-15% tuần lễ ra mắt).</textarea>
+        <input type="text" id="deckTags3" value="#ThuCongTruyenThong #GiaTriThat #ChatLieuTuNhien #BaoLocSilk" class="w-full bg-transparent text-xs font-mono text-emerald-400 focus:outline-none mt-2">
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    function triggerConceptAGenerate() {
+      const sp = document.getElementById('aSpinner');
+      const lbl = document.getElementById('aGenBtnLabel');
+      sp.classList.remove('hidden');
+      lbl.textContent = 'Đang phân tích tâm lý khách hàng...';
+
+      setTimeout(() => {
+        sp.classList.add('hidden');
+        lbl.textContent = 'Đồng Bộ & Tái Tạo 3 Góc (⌘+Enter)';
+        alert('Đã cập nhật 3 góc bài viết theo phân tích mới!');
+      }, 700);
+    }
+
+    function copyDeck(id) {
+      let hook = '', body = '', tags = '';
+      if (id === 'deck1') {
+        hook = document.getElementById('deckHook1').value;
+        body = document.getElementById('deckBody1').value;
+        tags = document.getElementById('deckTags1').value;
+      } else if (id === 'deck2') {
+        hook = document.getElementById('deckHook2').value;
+        body = document.getElementById('deckBody2').value;
+        tags = document.getElementById('deckTags2').value;
+      } else {
+        hook = document.getElementById('deckHook3').value;
+        body = document.getElementById('deckBody3').value;
+        tags = document.getElementById('deckTags3').value;
+      }
+      navigator.clipboard.writeText(`${hook}\n\n${body}\n\n${tags}`);
+      alert('Đã sao chép nội dung góc quảng cáo vào clipboard!');
+    }
+  </script>
+</body>
+</html>
+

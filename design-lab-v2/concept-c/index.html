@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <title>Content Studio — Concept C: Interactive Product Theatre</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            synth: {
+              base: '#090A0E',
+              surface: '#12141C',
+              surfaceElevated: '#1A1E2B',
+              border: 'rgba(255, 255, 255, 0.1)',
+              borderActive: 'rgba(0, 212, 146, 0.4)',
+              teal: '#00D492',
+              violet: '#7C3AED',
+              blue: '#2563EB',
+              coral: '#F43F5E',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090A0E;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+      overflow-x: hidden;
+    }
+    .synthesizer-chassis {
+      background: linear-gradient(180deg, #161924 0%, #10121A 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+    .btn-tactile:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased bg-[#090A0E] text-slate-100">
+  <!-- Top Command Nav -->
+  <header class="fixed top-0 inset-x-0 z-50 px-4 md:px-8 py-3.5 backdrop-blur-xl border-b border-white/5 bg-[#090A0E]/85">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-[#00D492] flex items-center justify-center font-extrabold text-black text-xs shadow-lg shadow-teal-500/20">
+          PT
+        </div>
+        <div>
+          <span class="font-extrabold tracking-tight text-white text-sm">CONTENT STUDIO</span>
+          <span class="ml-2 text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20">CONCEPT C</span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-7 text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <a href="#synthesizer" class="text-white hover:text-teal-400 transition">Cỗ Máy Tổng Hợp</a>
+        <a href="#engine" class="hover:text-white transition">Quy Trình 3 Bước</a>
+        <a href="workspace.html" class="text-teal-400 hover:text-teal-300 transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span> Mở Synthesizer Studio
+        </a>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <a href="workspace.html" class="hidden sm:inline-flex text-xs font-semibold px-3.5 py-1.5 rounded-lg text-gray-300 hover:text-white transition border border-white/10">
+          Đăng Nhập
+        </a>
+        <a href="workspace.html" class="btn-tactile text-xs font-bold px-4 py-2 rounded-lg bg-[#00D492] hover:bg-teal-400 text-black shadow-lg shadow-teal-500/20">
+          Khởi Động Studio &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section: The Interactive Synthesizer Theatre -->
+  <main class="pt-28 md:pt-36 pb-24 px-4 md:px-8 max-w-7xl mx-auto" id="synthesizer">
+    <!-- Top Eyebrow -->
+    <div class="flex justify-center mb-6">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-teal-500/20 bg-teal-500/10 text-teal-300 text-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+        THE LIVE CONTENT SYNTHESIZER // PRODUCT THEATRE
+      </div>
+    </div>
+
+    <!-- Main Title -->
+    <div class="text-center max-w-4xl mx-auto mb-12">
+      <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-5 leading-[1.08]">
+        Tạo Kịch Bản Quảng Cáo <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-sky-300 to-indigo-400">
+          Chuẩn Xác Như Một Cỗ Máy Kỹ Thuật.
+        </span>
+      </h1>
+      <p class="text-base sm:text-lg text-gray-400 font-body max-w-2xl mx-auto leading-relaxed">
+        Trực tiếp trải nghiệm quy trình biến đổi một ý tưởng thô thành 3 kịch bản chuyển đổi cao ngay trên màn hình. Chọn mẫu ngành hàng và theo dõi chuyển động.
+      </p>
+    </div>
+
+    <!-- The Interactive Synthesizer Instrument -->
+    <div class="synthesizer-chassis rounded-2xl md:rounded-3xl p-5 md:p-8 max-w-5xl mx-auto">
+      
+      <!-- Top Preset Selector Console -->
+      <div class="pb-6 mb-6 border-b border-white/10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase text-gray-400 block mb-1">BƯỚC 1: CHỌN ĐỀ BÀI DOANH NGHIỆP THỰC TẾ</span>
+          <span class="text-sm font-bold text-white">Nội dung thô từ chủ shop & marketer</span>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs font-mono">
+          <button onclick="pickSynthBrief(0)" class="synth-btn active px-3 py-1.5 rounded-lg border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition" data-s="0">
+            [1] Áo sơ mi lụa Bảo Lộc
+          </button>
+          <button onclick="pickSynthBrief(1)" class="synth-btn px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white font-medium transition" data-s="1">
+            [2] Nước mắm cá cơm Phú Quốc
+          </button>
+          <button onclick="pickSynthBrief(2)" class="synth-btn px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white font-medium transition" data-s="2">
+            [3] Mỹ phẩm thuần chay phục hồi
+          </button>
+        </div>
+      </div>
+
+      <!-- Raw Brief Display -->
+      <div class="bg-black/60 border border-white/10 rounded-xl p-4 md:p-5 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <span class="text-[11px] font-mono text-teal-400 uppercase tracking-widest" id="synthNiche">NGÀNH HÀNG: THỜI TRANG CÔNG SỞ</span>
+          <p class="text-sm md:text-base font-bold text-white font-body" id="synthRaw">
+            "Ra mắt bộ sưu tập áo sơ mi lụa tơ tằm dệt tay Bảo Lộc dành cho nữ 22–35 tuổi. Phong cách thanh lịch, giá từ 690.000đ. Ưu đãi 15% tuần đầu."
+          </p>
+        </div>
+        <button onclick="synthesizeCopy()" class="shrink-0 px-4 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-mono text-xs uppercase font-bold transition shadow-lg shadow-teal-500/20 btn-tactile">
+          ⚡ TỔNG HỢP LẠI (0.5S)
+        </button>
+      </div>
+
+      <!-- Step 2: The Three Angles Outputs -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        
+        <!-- Output 1: PAS -->
+        <div class="bg-[#12141C] border border-white/10 rounded-xl p-5 flex flex-col justify-between hover:border-teal-500/40 transition">
+          <div>
+            <div class="flex items-center justify-between pb-2 mb-3 border-b border-white/5 font-mono text-xs">
+              <span class="text-rose-400 font-bold">GÓC 01 · PAS</span>
+              <span class="text-gray-500">ĐÁNH NỖI ĐAU</span>
+            </div>
+            <h4 class="text-sm md:text-base font-bold text-white mb-2 leading-snug font-sans" id="sHook1">
+              Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?
+            </h4>
+            <p class="text-xs text-gray-300 font-body leading-relaxed mb-4" id="sBody1">
+              Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, cho bạn vẻ chỉn chu từ sáng đến tối.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-teal-400">CTR DỰ KIẾN: 4.8%</span>
+            <button onclick="copySynth(1)" class="text-gray-300 hover:text-white underline">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+        <!-- Output 2: AIDA -->
+        <div class="bg-[#12141C] border border-white/10 rounded-xl p-5 flex flex-col justify-between hover:border-teal-500/40 transition">
+          <div>
+            <div class="flex items-center justify-between pb-2 mb-3 border-b border-white/5 font-mono text-xs">
+              <span class="text-indigo-400 font-bold">GÓC 02 · AIDA</span>
+              <span class="text-gray-500">KHÁT KHAO VỊ THẾ</span>
+            </div>
+            <h4 class="text-sm md:text-base font-bold text-white mb-2 leading-snug font-sans" id="sHook2">
+              Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng.
+            </h4>
+            <p class="text-xs text-gray-300 font-body leading-relaxed mb-4" id="sBody2">
+              Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-teal-400">CHIA SẺ: CAO</span>
+            <button onclick="copySynth(2)" class="text-gray-300 hover:text-white underline">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+        <!-- Output 3: FAB -->
+        <div class="bg-[#12141C] border border-white/10 rounded-xl p-5 flex flex-col justify-between hover:border-teal-500/40 transition">
+          <div>
+            <div class="flex items-center justify-between pb-2 mb-3 border-b border-white/5 font-mono text-xs">
+              <span class="text-emerald-400 font-bold">GÓC 03 · FAB</span>
+              <span class="text-gray-500">TÍNH NĂNG VẬT LÝ</span>
+            </div>
+            <h4 class="text-sm md:text-base font-bold text-white mb-2 leading-snug font-sans" id="sHook3">
+              36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc xà cừ khắc chìm.
+            </h4>
+            <p class="text-xs text-gray-300 font-body leading-relaxed mb-4" id="sBody3">
+              Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Chuẩn may đo cao cấp Haute Couture bảo toàn trọn vẹn giá trị di sản.
+            </p>
+          </div>
+          <div class="pt-3 border-t border-white/5 flex items-center justify-between font-mono text-[11px]">
+            <span class="text-teal-400">ROAS: 3.5X+</span>
+            <button onclick="copySynth(3)" class="text-gray-300 hover:text-white underline">
+              Sao chép
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Footer -->
+      <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span class="text-xs font-mono text-gray-400">Sẵn sàng đưa sản phẩm của riêng bạn vào cỗ máy tổng hợp?</span>
+        <a href="workspace.html" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-teal-500/20 text-center btn-tactile">
+          Vào Studio Thực Tế Ngay &rarr;
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-white/10 py-8 px-4 text-center text-xs font-mono text-gray-500">
+    CONTENT STUDIO // THEATRE ENGINE © 2026
+  </footer>
+
+  <script>
+    const SYNTH_DATA = [
+      {
+        niche: 'NGÀNH HÀNG: THỜI TRANG CÔNG SỞ',
+        raw: '"Ra mắt bộ sưu tập áo sơ mi lụa tơ tằm dệt tay Bảo Lộc dành cho nữ 22–35 tuổi. Phong cách thanh lịch, giá từ 690.000đ. Ưu đãi 15% tuần đầu."',
+        h1: 'Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?',
+        b1: 'Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, cho bạn vẻ chỉn chu từ sáng đến tối.',
+        h2: 'Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng.',
+        b2: 'Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào.',
+        h3: '36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc xà cừ khắc chìm.',
+        b3: 'Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Chuẩn may đo cao cấp Haute Couture bảo toàn trọn vẹn giá trị di sản.'
+      },
+      {
+        niche: 'NGÀNH HÀNG: GIA VỊ & NÔNG SẢN CAO CẤP',
+        raw: '"Nước mắm cá cơm than truyền thống Phú Quốc 40 độ đạm ủ chượp thùng gỗ bời lời 18 tháng. Chai thủy tinh 500ml giá 145.000đ."',
+        h1: 'Nước mắm công nghiệp chứa hương liệu nhân tạo khiến bữa cơm gia đình mất đi phong vị nguyên bản?',
+        b1: 'Ủ chượp thủ công 18 tháng từ cá cơm than tươi rói và muối biển tinh khiết, nước mắm truyền thống Phú Quốc lưu giữ trọn vẹn hậu vị ngọt đầm tự nhiên của đạm cá nguyên chất.',
+        h2: 'Hương thơm nồng nàn của mắm truyền thống đánh thức ký ức gian bếp mẹ nấu thân thương.',
+        b2: 'Chỉ cần một giọt mắm cốt sánh vàng như hổ phách, bát canh rau luộc hay đĩa thịt ba chỉ bình dị cũng trở thành kiệt tác ẩm thực đậm đà tình thân.',
+        h3: '40 độ đạm tự nhiên 100% không pha loãng, không chất điều vị, ủ ròng 18 tháng trong thùng gỗ bời lời cổ thụ.',
+        b3: 'Mỗi giọt mắm đạt chỉ số dinh dưỡng axit amin tự nhiên cao nhất, chứng nhận chỉ dẫn địa lý bảo hộ toàn cầu. Đóng chai thủy tinh bảo toàn chất lượng tuyệt hảo.'
+      },
+      {
+        niche: 'NGÀNH HÀNG: MỸ PHẨM CHĂM SÓC DA',
+        raw: '"Serum rau má hữu cơ phục hồi da treatment nhạy cảm, giảm đỏ sau 48h, thuần chay 100%. Chai 30ml giá 350.000đ."',
+        h1: 'Da bong tróc, châm chích và đỏ ửng sau treatment khiến bạn hoang mang không dám ra ngoài?',
+        b1: 'Chiết xuất 85% rau má hữu cơ cô đặc giúp làm dịu cảm giác bỏng rát tức thì và phục hồi hàng rào lipid bảo vệ da sau 48 giờ sử dụng liên tục.',
+        h2: 'Lấy lại làn da mộc mịn màng, căng mọng để tự tin xuất hiện không cần lớp phấn che khuyết điểm.',
+        b2: 'Sự nâng niu thuần khiết từ thảo mộc thiên nhiên mang đến cho bạn cảm giác an tâm tuyệt đối, phục hồi nét rạng rỡ vốn có của làn da.',
+        h3: 'Công thức thuần chay 100% chứng nhận Vegan Quốc tế, 0% cồn, 0% hương liệu, độ pH 5.5 lý tưởng cho da nhạy cảm.',
+        b3: 'Chứa phức hợp Madecassoside 2.0 thế hệ mới gia tăng tốc độ phục hồi biểu bì gấp 3 lần, kiểm nghiệm lâm sàng an toàn trên 200 phụ nữ Á Đông.'
+      }
+    ];
+
+    let currentSIdx = 0;
+
+    function pickSynthBrief(idx) {
+      currentSIdx = idx;
+      const d = SYNTH_DATA[idx];
+      document.getElementById('synthNiche').textContent = d.niche;
+      document.getElementById('synthRaw').textContent = d.raw;
+      document.getElementById('sHook1').textContent = d.h1;
+      document.getElementById('sBody1').textContent = d.b1;
+      document.getElementById('sHook2').textContent = d.h2;
+      document.getElementById('sBody2').textContent = d.b2;
+      document.getElementById('sHook3').textContent = d.h3;
+      document.getElementById('sBody3').textContent = d.b3;
+
+      document.querySelectorAll('.synth-btn').forEach((btn, i) => {
+        if (i === idx) {
+          btn.className = 'synth-btn active px-3 py-1.5 rounded-lg border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition';
+        } else {
+          btn.className = 'synth-btn px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white font-medium transition';
+        }
+      });
+    }
+
+    function synthesizeCopy() {
+      alert('Cỗ máy đã tái tổng hợp 3 kịch bản theo dữ liệu mới!');
+    }
+
+    function copySynth(num) {
+      let h = '', b = '';
+      if (num === 1) { h = document.getElementById('sHook1').textContent; b = document.getElementById('sBody1').textContent; }
+      else if (num === 2) { h = document.getElementById('sHook2').textContent; b = document.getElementById('sBody2').textContent; }
+      else { h = document.getElementById('sHook3').textContent; b = document.getElementById('sBody3').textContent; }
+      navigator.clipboard.writeText(`${h}\n\n${b}`);
+      alert('Đã sao chép kịch bản!');
+    }
+  </script>
+</body>
+</html>
+

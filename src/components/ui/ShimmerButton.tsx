@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils/cn";
 
 export interface ShimmerButtonProps extends ComponentPropsWithoutRef<"button"> {
   shimmerColor?: string;
-  shimmerSize?: string;
   borderRadius?: string;
   shimmerDuration?: string;
   background?: string;
@@ -16,51 +15,54 @@ export interface ShimmerButtonProps extends ComponentPropsWithoutRef<"button"> {
 export const ShimmerButton = React.forwardRef<HTMLButtonElement, ShimmerButtonProps>(
   (
     {
-      shimmerColor = "#ffffff",
-      shimmerSize = "0.05em",
+      shimmerColor = "rgba(255, 255, 255, 0.35)",
       shimmerDuration = "3s",
-      borderRadius = "100px",
-      background = "var(--ink-primary)",
+      borderRadius = "9999px",
+      background,
       className,
       children,
+      style,
       ...props
     },
     ref
   ) => {
     return (
       <button
+        ref={ref}
         style={
           {
-            "--spread": "90deg",
-            "--shimmer-color": shimmerColor,
             "--radius": borderRadius,
-            "--speed": shimmerDuration,
-            "--cut": shimmerSize,
-            "--bg": background,
+            "--shimmer-color": shimmerColor,
+            ...(background ? { background } : {}),
+            ...style,
           } as CSSProperties
         }
         className={cn(
-          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden [border-radius:var(--radius)] border border-white/10 px-6 py-3 whitespace-nowrap text-white [background:var(--bg)]",
-          "transform-gpu transition-all duration-300 ease-in-out active:scale-95 shadow-md hover:shadow-lg",
+          "group relative isolate inline-flex cursor-pointer items-center justify-center overflow-hidden [border-radius:var(--radius)]",
+          "px-7 py-3.5 text-sm font-semibold text-white",
+          "bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 bg-[length:200%_auto] hover:bg-[right_center]",
+          "border border-white/20 shadow-[0_0_25px_rgba(99,102,241,0.4)] hover:shadow-[0_0_35px_rgba(99,102,241,0.65)]",
+          "transform-gpu transition-all duration-300 ease-out active:scale-95",
           className
         )}
-        ref={ref}
         {...props}
       >
-        {/* spark container */}
-        <div
-          className={cn(
-            "-z-30 blur-[2px]",
-            "absolute inset-0 overflow-visible"
-          )}
-        >
-          {/* spark */}
-          <div className="absolute inset-0 aspect-[1] rounded-none animate-[spin_3s_linear_infinite] [background:conic-gradient(from_0deg,transparent_0_340deg,var(--shimmer-color)_360deg)]" />
-        </div>
-        {/* content */}
-        <div className="relative z-10 flex items-center gap-2">
+        {/* Sleek linear specular sheen sweeping smoothly across the button without cutting text */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer-sweep_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:duration-1000"
+        />
+
+        {/* Top edge glass reflection highlight */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent"
+        />
+
+        {/* Content */}
+        <span className="relative z-10 flex items-center gap-2 tracking-wide">
           {children}
-        </div>
+        </span>
       </button>
     );
   }
@@ -68,4 +70,3 @@ export const ShimmerButton = React.forwardRef<HTMLButtonElement, ShimmerButtonPr
 
 ShimmerButton.displayName = "ShimmerButton";
 export default ShimmerButton;
-

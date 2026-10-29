@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <title>Content Studio — Concept A Workspace: Director's Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #07080B;
+      color: #E5E7EB;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    .btn-tactile:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col bg-[#07080B] antialiased">
+  <!-- Studio Top Navigation -->
+  <header class="h-14 border-b border-white/10 px-4 flex items-center justify-between shrink-0 bg-[#0C0E14]">
+    <div class="flex items-center space-x-3">
+      <a href="index.html" class="flex items-center gap-2 text-white font-bold text-sm tracking-tight hover:opacity-80 transition">
+        <div class="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-xs">C</div>
+        <span>CONTENT STUDIO</span>
+      </a>
+      <span class="text-gray-600">/</span>
+      <span class="text-xs font-mono text-gray-400">DỰ ÁN: ÁO SƠ MI LỤA BẢO LỘC</span>
+      <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">CONCEPT A</span>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span class="text-gray-400">CREDITS:</span>
+        <span class="text-white font-bold">18/20</span>
+      </div>
+      <a href="index.html" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-gray-300 hover:text-white transition">
+        Về Trang Chủ
+      </a>
+      <button class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition btn-tactile">
+        Nâng Cấp Pro
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 3-Pane Workspace -->
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    
+    <!-- Left Pane: Input Brief Sheet (360px on desktop) -->
+    <div class="w-full lg:w-[380px] border-b lg:border-b-0 lg:border-r border-white/10 bg-[#0A0C11] flex flex-col shrink-0">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <div class="text-xs font-mono tracking-wider uppercase text-blue-400 flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          BẢN TÓM TẮT ĐẦU VÀO
+        </div>
+        <span class="text-[10px] font-mono text-gray-500">BRIEF PARAMS</span>
+      </div>
+
+      <div class="p-4 space-y-4 overflow-y-auto flex-1 custom-scroll">
+        <div>
+          <label class="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-1.5">Tên sản phẩm *</label>
+          <input type="text" id="productName" value="Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc" class="w-full bg-[#12151E] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-1.5">Mô tả đặc tính & Lợi ích *</label>
+          <textarea id="productDesc" rows="4" class="w-full bg-[#12151E] border border-white/10 rounded-lg p-3 text-xs text-white focus:outline-none focus:border-blue-500 transition leading-relaxed font-body">100% tơ tằm kén tự nhiên vùng cao nguyên Bảo Lộc. Kỹ thuật dệt tay 36 giờ tạo nếp rũ mềm mại tự nhiên, hạ nhiệt 2-3°C khi tiếp xúc. Khuy xà cừ khắc logo tinh xảo. May đo Haute Couture.</textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-1.5">Khách hàng mục tiêu *</label>
+          <input type="text" id="targetAudience" value="Nữ quản lý & chuyên viên văn phòng 28-45 tuổi" class="w-full bg-[#12151E] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-1.5">Tone giọng truyền thông</label>
+          <div class="grid grid-cols-2 gap-1.5 text-xs font-medium">
+            <button type="button" class="tone-btn active py-1.5 px-2.5 rounded-lg border border-blue-500 bg-blue-500/20 text-blue-300 text-left">
+              Trang trọng, quý phái
+            </button>
+            <button type="button" class="tone-btn py-1.5 px-2.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white text-left">
+              Kể chuyện (Story)
+            </button>
+            <button type="button" class="tone-btn py-1.5 px-2.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white text-left">
+              Đồng cảm, thấu hiểu
+            </button>
+            <button type="button" class="tone-btn py-1.5 px-2.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:text-white text-left">
+              Kích thích hành động
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-white/10 bg-[#0C0E14]">
+        <button onclick="triggerMockGenerate()" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 btn-tactile">
+          <svg class="w-4 h-4 animate-spin hidden" id="spinner" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+          <span id="genBtnText">Tạo Lại 3 Góc Bài Viết (⌘+Enter)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Pane: Multi-Draft Canvas (Flex-1) -->
+    <div class="flex-1 flex flex-col bg-[#07080B] overflow-hidden">
+      <!-- Top Segmented Tabs for Angles -->
+      <div class="p-3 border-b border-white/10 bg-[#0C0E14] flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/10">
+          <button onclick="switchTab(0)" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 shadow" data-tab="0">
+            01. PAS: Vấn Đề
+          </button>
+          <button onclick="switchTab(1)" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white" data-tab="1">
+            02. AIDA: Cảm Xúc
+          </button>
+          <button onclick="switchTab(2)" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white" data-tab="2">
+            03. FAB: Tính Năng
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-mono text-gray-500" id="liveCharBadge">540 / 1.000 ký tự</span>
+          <button onclick="copyActiveAngle()" class="btn-tactile text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span id="copyBtnLabel">Sao chép bản thảo</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor Content Canvas -->
+      <div class="flex-1 p-6 overflow-y-auto custom-scroll space-y-5">
+        <!-- Hook Strip -->
+        <div class="bg-[#0F1117] border border-white/10 rounded-xl p-4">
+          <div class="text-[11px] font-mono text-blue-400 uppercase tracking-wider mb-2">TIÊU ĐỀ GIẬT HOOK CHUYỂN ĐỔI</div>
+          <input type="text" id="hookInput" value="Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?" class="w-full bg-transparent font-bold text-white text-base focus:outline-none border-b border-transparent focus:border-blue-500 pb-1">
+        </div>
+
+        <!-- Editable Main Body -->
+        <div class="bg-[#0F1117] border border-white/10 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-mono text-gray-400 uppercase tracking-wider">NỘI DUNG CHI TIẾT (EDIT TRỰC TIẾP)</span>
+            <span class="text-[10px] font-mono text-emerald-400">TỰ ĐỘNG LƯU</span>
+          </div>
+          <textarea id="bodyTextarea" rows="8" class="w-full bg-transparent text-sm text-gray-200 leading-relaxed font-body focus:outline-none resize-none">Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác.</textarea>
+        </div>
+
+        <!-- Hashtags Row -->
+        <div class="bg-[#0F1117] border border-white/10 rounded-xl p-4">
+          <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wider mb-2">HASHTAGS ĐỀ XUẤT</div>
+          <input type="text" id="hashtagsInput" value="#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien" class="w-full bg-transparent text-xs font-mono text-blue-400 focus:outline-none">
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Pane: Live Social Feed Simulator (380px on desktop) -->
+    <div class="hidden xl:flex w-[380px] border-l border-white/10 bg-[#0A0C11] flex-col shrink-0">
+      <div class="p-4 border-b border-white/10 flex items-center justify-between">
+        <div class="text-xs font-mono tracking-wider uppercase text-gray-400 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          MÔ PHỎNG FACEBOOK FEED
+        </div>
+        <span class="text-[10px] font-mono text-gray-500">PREVIEW</span>
+      </div>
+
+      <div class="p-4 flex-1 overflow-y-auto custom-scroll">
+        <!-- Mock Facebook Post Container -->
+        <div class="bg-[#12151E] border border-white/10 rounded-2xl overflow-hidden shadow-xl text-xs">
+          <!-- Feed Header -->
+          <div class="p-3 flex items-center space-x-2.5 border-b border-white/5">
+            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xs">
+              BL
+            </div>
+            <div>
+              <div class="font-bold text-white text-xs">Bảo Lộc Silk Atelier</div>
+              <div class="text-[10px] text-gray-500 font-mono">Được tài trợ · 🌐</div>
+            </div>
+          </div>
+          <!-- Feed Text -->
+          <div class="p-3 font-body text-gray-200 leading-relaxed text-[12px]">
+            <p class="font-bold text-white mb-2" id="fbHook">Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?</p>
+            <p id="fbBody" class="mb-2">Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da...</p>
+            <p class="text-blue-400 font-mono text-[11px]" id="fbTags">#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo</p>
+          </div>
+          <!-- Simulated Image Banner -->
+          <div class="h-44 bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center border-y border-white/5 relative">
+            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">[Ảnh Sản Phẩm Lụa Tơ Tằm]</span>
+          </div>
+          <!-- Interaction Footer -->
+          <div class="p-3 bg-black/20 flex items-center justify-between text-gray-400 font-mono text-[11px]">
+            <span>👍 248 lượt thích</span>
+            <span>34 bình luận · 12 chia sẻ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const DRAFTS = [
+      {
+        hook: 'Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?',
+        body: 'Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác.',
+        tags: '#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien',
+        chars: '540 / 1.000 ký tự'
+      },
+      {
+        hook: 'Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng, tĩnh lặng của người phụ nữ tinh tế.',
+        body: 'Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào — bước vào phòng làm việc và thu hút mọi ánh nhìn.',
+        tags: '#QuietLuxury #ThoiTrangQuyPhai #LuaBaoLoc #ThanhLichTinhLang',
+        chars: '512 / 1.000 ký tự'
+      },
+      {
+        hook: '36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc vỏ trai khảm xà cừ tạo nên kiệt tác độc bản.',
+        body: 'Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Từng đường may giấu chỉ chuẩn may đo cao cấp (Haute Couture), bảo toàn trọn vẹn giá trị di sản thủ công Việt.',
+        tags: '#ThuCongTruyenThong #GiaTriThat #ChatLieuTuNhien #BaoLocSilk',
+        chars: '528 / 1.000 ký tự'
+      }
+    ];
+
+    let currentDraftIndex = 0;
+
+    function switchTab(index) {
+      currentDraftIndex = index;
+      const data = DRAFTS[index];
+      document.getElementById('hookInput').value = data.hook;
+      document.getElementById('bodyTextarea').value = data.body;
+      document.getElementById('hashtagsInput').value = data.tags;
+      document.getElementById('liveCharBadge').textContent = data.chars;
+
+      // Update social preview
+      document.getElementById('fbHook').textContent = data.hook;
+      document.getElementById('fbBody').textContent = data.body;
+      document.getElementById('fbTags').textContent = data.tags;
+
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        if (i === index) {
+          btn.className = 'tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 shadow';
+        } else {
+          btn.className = 'tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 hover:text-white';
+        }
+      });
+    }
+
+    function triggerMockGenerate() {
+      const spinner = document.getElementById('spinner');
+      const btnText = document.getElementById('genBtnText');
+      spinner.classList.remove('hidden');
+      btnText.textContent = 'Đang phân tích tâm lý...';
+      
+      setTimeout(() => {
+        spinner.classList.add('hidden');
+        btnText.textContent = 'Tạo Lại 3 Góc Bài Viết (⌘+Enter)';
+        switchTab((currentDraftIndex + 1) % 3);
+      }, 700);
+    }
+
+    function copyActiveAngle() {
+      const hook = document.getElementById('hookInput').value;
+      const body = document.getElementById('bodyTextarea').value;
+      const tags = document.getElementById('hashtagsInput').value;
+      navigator.clipboard.writeText(`${hook}\n\n${body}\n\n${tags}`);
+      const btn = document.getElementById('copyBtnLabel');
+      btn.textContent = 'Đã sao chép!';
+      setTimeout(() => { btn.textContent = 'Sao chép bản thảo'; }, 1500);
+    }
+  </script>
+</body>
+</html>
+

@@ -184,9 +184,9 @@ export default function InteractivePlayground() {
                   key={p.id}
                   type="button"
                   onClick={() => setActiveId(p.id)}
-                  className={`btn-tactile rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-150 ${
+                  className={`btn-tactile rounded-lg border px-4 py-2 text-xs font-bold transition-all duration-150 ${
                     isActive
-                      ? "border-[var(--accent-navy)] bg-[var(--accent-navy)] text-white shadow-xs"
+                      ? "border-teal-400 bg-[#00D492] text-black shadow-[0_0_15px_rgba(0,212,146,0.25)]"
                       : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
                   }`}
                 >

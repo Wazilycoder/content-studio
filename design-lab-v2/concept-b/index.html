@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <title>Content Studio — Concept B: Modern Swiss Constructivist</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            body: ['"Be Vietnam Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            swiss: {
+              white: '#FFFFFF',
+              gray: '#F3F4F6',
+              border: '#0D0D11',
+              charcoal: '#0D0D11',
+              cobalt: '#0F3FE8',
+              cobaltDark: '#0A2CB3',
+              vermilion: '#E11D48',
+              emerald: '#059669',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FFFFFF;
+      color: #0D0D11;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .swiss-border {
+      border: 2px solid #0D0D11;
+    }
+    .swiss-border-b {
+      border-bottom: 2px solid #0D0D11;
+    }
+    .swiss-border-r {
+      border-right: 2px solid #0D0D11;
+    }
+    .btn-tactile:active {
+      transform: translate(2px, 2px);
+      box-shadow: none !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased bg-white text-[#0D0D11]">
+  <!-- Swiss Constructivist Masthead Header -->
+  <header class="swiss-border-b bg-white sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="flex items-center gap-2 font-display font-extrabold text-xl tracking-tighter">
+          <span class="w-6 h-6 bg-[#0F3FE8] text-white flex items-center justify-center text-xs font-mono font-bold">CS</span>
+          <span>CONTENT STUDIO</span>
+        </a>
+        <span class="hidden sm:inline-block text-xs font-mono uppercase px-2 py-0.5 bg-black text-white font-bold">
+          SWISS EDITORIAL GALLEY // CONCEPT B
+        </span>
+      </div>
+
+      <nav class="hidden md:flex items-center space-x-8 text-xs font-mono uppercase font-bold tracking-wider">
+        <a href="#galley" class="text-[#0F3FE8] hover:underline">Hệ Thống 3 Cột Galley</a>
+        <a href="#principles" class="hover:text-[#0F3FE8] transition">Nguyên Lý Kiến Trúc</a>
+        <a href="workspace.html" class="hover:text-[#0F3FE8] transition flex items-center gap-1.5">
+          <span class="w-2 h-2 bg-[#0F3FE8]"></span> Bàn Sắp Chữ (Workspace)
+        </a>
+      </nav>
+
+      <div class="flex items-center space-x-3">
+        <a href="workspace.html" class="px-4 py-2 bg-[#0D0D11] text-white font-mono text-xs uppercase font-bold hover:bg-[#0F3FE8] transition shadow-[3px_3px_0px_#0F3FE8] btn-tactile">
+          Khởi Động Galley &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-24">
+    <!-- Meta Telemetry Bar -->
+    <div class="flex flex-wrap items-center justify-between font-mono text-xs border-b border-black/10 pb-3 mb-10 text-gray-500">
+      <span class="font-bold text-black uppercase">QUY CHUẨN XUẤT BẢN THƯƠNG MẠI CHÂU ÂU</span>
+      <span>INDEX NO: 2026-CH-VN</span>
+      <span>HÀ NỘI · SÀI GÒN</span>
+    </div>
+
+    <!-- Monumental Asymmetric Title Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 items-baseline">
+      <div class="lg:col-span-8">
+        <h1 class="font-display text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.95] text-[#0D0D11]">
+          Kiến Tạo 3 Bản Thảo <br>
+          <span class="text-[#0F3FE8]">Song Hành Cùng Lúc.</span>
+        </h1>
+      </div>
+      <div class="lg:col-span-4 border-l-0 lg:border-l-2 border-[#0D0D11] lg:pl-8 font-body text-sm text-gray-700 leading-relaxed">
+        <p class="mb-4 font-semibold text-black">
+          Từ chối sự cẩu thả của những đoạn văn mẫu AI chung chung. Mỗi bản brief được bóc tách khoa học thành 3 hệ luận điểm tiếp thị độc lập.
+        </p>
+        <div class="font-mono text-xs uppercase text-[#0F3FE8] font-bold">
+          [+] PAS: Nỗi đau thực tế<br>
+          [+] AIDA: Đòn bẩy khát khao<br>
+          [+] FAB: Bằng chứng lý tính
+        </div>
+      </div>
+    </div>
+
+    <!-- The 3-Column Synchronized Galley (The Hero Showcase) -->
+    <div class="swiss-border bg-white shadow-[6px_6px_0px_#0D0D11] mb-16" id="galley">
+      <!-- Top Galley Toolbar -->
+      <div class="swiss-border-b p-4 bg-[#F3F4F6] flex flex-col md:flex-row items-start md:items-center justify-between gap-3 font-mono text-xs">
+        <div class="flex items-center gap-3">
+          <span class="px-2 py-0.5 bg-[#0D0D11] text-white font-bold">ĐỀ BÀI (BRIEF)</span>
+          <span class="font-bold text-black">ÁO SƠ MI LỤA TƠ TẰM DỆT TAY BẢO LỘC (NỮ 22-35T)</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-gray-500">ĐỘ DÀI: TỐI ƯU HÓA FACEBOOK FEED</span>
+          <a href="workspace.html" class="underline font-bold text-[#0F3FE8] hover:text-black">
+            MỞ BÀN THẢO ĐỐI SOÁT &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- 3 Parallel Synchronized Columns -->
+      <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x-2 divide-[#0D0D11]">
+        
+        <!-- Galley Column 1: PAS -->
+        <div class="p-6 flex flex-col justify-between bg-white hover:bg-gray-50 transition">
+          <div>
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-black/10 font-mono text-xs">
+              <span class="font-bold text-[#E11D48]">COL 01 // PAS (VẤN ĐỀ)</span>
+              <span class="text-gray-400">520 KÝ TỰ</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-black mb-3 leading-snug">
+              Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?
+            </h3>
+            <p class="font-body text-xs text-gray-700 leading-relaxed mb-4">
+              Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác. Giá từ 690.000đ cùng ưu đãi 15% tuần lễ đầu.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-black/10 flex items-center justify-between font-mono text-xs">
+            <span class="text-gray-500">TỶ LỆ CTR: CAO</span>
+            <button onclick="copySwiss('Áo sơ mi công sở khiến bạn bí bách...')" class="font-bold text-[#0F3FE8] hover:underline">
+              [ SAO CHÉP ]
+            </button>
+          </div>
+        </div>
+
+        <!-- Galley Column 2: AIDA -->
+        <div class="p-6 flex flex-col justify-between bg-white hover:bg-gray-50 transition">
+          <div>
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-black/10 font-mono text-xs">
+              <span class="font-bold text-[#0F3FE8]">COL 02 // AIDA (CẢM XÚC)</span>
+              <span class="text-gray-400">498 KÝ TỰ</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-black mb-3 leading-snug">
+              Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay tự toát lên thần thái sang trọng, tĩnh lặng.
+            </h3>
+            <p class="font-body text-xs text-gray-700 leading-relaxed mb-4">
+              Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào. Sở hữu ngay với mức giá khởi điểm 690.000đ (-15% tuần đầu ra mắt).
+            </p>
+          </div>
+          <div class="pt-4 border-t border-black/10 flex items-center justify-between font-mono text-xs">
+            <span class="text-gray-500">TỶ LỆ CHIA SẺ: CAO</span>
+            <button onclick="copySwiss('Không cần phô trương logo...')" class="font-bold text-[#0F3FE8] hover:underline">
+              [ SAO CHÉP ]
+            </button>
+          </div>
+        </div>
+
+        <!-- Galley Column 3: FAB -->
+        <div class="p-6 flex flex-col justify-between bg-white hover:bg-gray-50 transition">
+          <div>
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-black/10 font-mono text-xs">
+              <span class="font-bold text-[#059669]">COL 03 // FAB (TÍNH NĂNG)</span>
+              <span class="text-gray-400">534 KÝ TỰ</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-black mb-3 leading-snug">
+              36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên Bảo Lộc cùng cúc xà cừ khắc chìm độc bản.
+            </h3>
+            <p class="font-body text-xs text-gray-700 leading-relaxed mb-4">
+              Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Chuẩn may đo cao cấp Haute Couture bảo toàn trọn vẹn giá trị di sản thủ công Việt. Trải nghiệm ngay chỉ từ 690.000đ.
+            </p>
+          </div>
+          <div class="pt-4 border-t border-black/10 flex items-center justify-between font-mono text-xs">
+            <span class="text-gray-500">CHUYỂN ĐỔI: CAO</span>
+            <button onclick="copySwiss('36 giờ dệt tay thủ công...')" class="font-bold text-[#0F3FE8] hover:underline">
+              [ SAO CHÉP ]
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 2: Principles of Constructivist Copywriting -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t-2 border-[#0D0D11]" id="principles">
+      <div>
+        <div class="font-mono text-2xl font-black text-[#0F3FE8] mb-2">01 / CHUẨN XÁC</div>
+        <h3 class="font-display font-bold text-lg mb-2">Kiểm Soát Độ Dài Từng Ký Tự</h3>
+        <p class="font-body text-xs text-gray-600 leading-relaxed">
+          Không viết lan man thừa thãi. Mọi kịch bản đều được tính toán số ký tự tối ưu cho thuật toán hiển thị của Facebook và Instagram để tránh bị cắt chữ sau nút "Xem thêm".
+        </p>
+      </div>
+
+      <div>
+        <div class="font-mono text-2xl font-black text-[#0F3FE8] mb-2">02 / ĐỐI SOÁT</div>
+        <h3 class="font-display font-bold text-lg mb-2">So Sánh Trực Diện 3 Đòn Bẩy</h3>
+        <p class="font-body text-xs text-gray-600 leading-relaxed">
+          Xem xét đồng thời cả 3 góc trên cùng một mặt phẳng. Dễ dàng nhận diện góc nào mạnh nhất để dồn 80% ngân sách quảng cáo ngay từ ngày đầu tiên.
+        </p>
+      </div>
+
+      <div>
+        <div class="font-mono text-2xl font-black text-[#0F3FE8] mb-2">03 / TỐI GIẢN</div>
+        <h3 class="font-display font-bold text-lg mb-2">Không Rườm Rà Hạt Bụi</h3>
+        <p class="font-body text-xs text-gray-600 leading-relaxed">
+          Loại bỏ mọi hiệu ứng hạt bụi canvas, viền xoay hay bóng đổ mờ ảo. Tập trung 100% năng lượng vào sức mạnh thuyết phục của ngôn từ thương mại.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t-2 border-[#0D0D11] py-8 px-4 text-center font-mono text-xs uppercase text-gray-600 bg-[#F3F4F6]">
+    CONTENT STUDIO // MODERN SWISS ARCHITECTURAL SYSTEM © 2026
+  </footer>
+
+  <script>
+    function copySwiss(text) {
+      navigator.clipboard.writeText(text);
+      alert('Đã sao chép kịch bản (Swiss Galley) vào clipboard!');
+    }
+  </script>
+</body>
+</html>
+

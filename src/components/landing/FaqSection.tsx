@@ -20,7 +20,6 @@ type CategoryId = "all" | "pricing" | "quality" | "ads" | "security";
 
 interface FaqItem {
   category: Exclude<CategoryId, "all">;
-  badge: string;
   question: string;
   answer: string;
 }
@@ -42,103 +41,60 @@ const CATEGORIES: CategoryMeta[] = [
 const FAQS: FaqItem[] = [
   {
     category: "quality",
-    badge: "🔥 Phổ biến",
     question: "Bài viết sinh ra có bị trùng lặp với các shop đối thủ không?",
     answer:
       "Hoàn toàn không. Thuật toán phân tích ngữ nghĩa độc lập từ tên sản phẩm, công năng và khách hàng mục tiêu của bạn để kiến tạo 3 góc bài viết độc bản: PAS (Vấn đề - Giải pháp), Cảm xúc và Trực diện tính năng. Không có bài viết nào giống nhau.",
   },
   {
     category: "pricing",
-    badge: "💡 Khuyên dùng",
     question: "Gói Free có bị giới hạn tính năng hay gắn watermark không?",
     answer:
       "Gói Miễn phí không giới hạn số lượng bài viết tạo ra, không gắn watermark và hỗ trợ đầy đủ 3 góc bài viết. Chỉ có thời gian chờ (cooldown) 45 giây giữa các lần tạo để bảo đảm tài nguyên server.",
   },
   {
     category: "quality",
-    badge: "🔥 Phổ biến",
     question: "Bài viết AI có bị Facebook hoặc Instagram bóp tương tác không?",
     answer:
       "Không. Content Studio tích hợp bộ lọc Anti-AI-Slop độc quyền, chủ động loại bỏ các từ ngữ sáo rỗng, nhịp câu máy móc, và bổ sung các điểm ngắt nhịp tự nhiên giống 100% văn phong người viết thực tế.",
   },
   {
     category: "ads",
-    badge: "⚡ Tối ưu Ads",
     question: "Tôi có thể dùng nội dung này để chạy Facebook & Instagram Ads không?",
     answer:
       "Cực kỳ phù hợp. Định dạng 3 góc bài viết được thiết kế chuẩn cấu trúc A/B Testing: Bạn có thể lấy Góc 1 test nhóm khách hàng đang gặp nỗi đau, Góc 2 cho tệp cảm xúc và Góc 3 cho tệp so sánh tính năng.",
   },
   {
     category: "pricing",
-    badge: "💎 Pro Turbo",
     question: "Nâng cấp lên Chủ Shop Turbo (99.000đ) mang lại lợi ích gì?",
     answer:
       "Bạn được kích hoạt cụm xử lý GPU chuyên biệt, loại bỏ hoàn toàn 45s thời gian chờ (tạo bài tức thì 0s), lưu trữ lịch sử không giới hạn và hỗ trợ ưu tiên khi cần tinh chỉnh prompt theo ngách.",
   },
   {
     category: "security",
-    badge: "🛡️ Bảo mật",
     question: "Dữ liệu kinh doanh và ý tưởng sản phẩm của tôi có được bảo mật không?",
     answer:
       "Dữ liệu của bạn được cô lập tuyệt đối theo kiến trúc Row Level Security (RLS) của Supabase. Chúng tôi không bao giờ dùng mô tả sản phẩm của bạn để train model công cộng.",
   },
   {
     category: "quality",
-    badge: "✏️ Soạn thảo",
     question: "Tôi có thể chỉnh sửa trực tiếp nội dung trước khi copy không?",
     answer:
       "Có. Ngay trên mỗi thẻ bài viết, bạn chỉ cần bấm nút 'Chỉnh sửa' là có thể gõ thêm câu chữ, icon hoặc số điện thoại. Bộ đếm ký tự Facebook/Instagram sẽ cập nhật theo thời gian thực.",
   },
   {
     category: "security",
-    badge: "🤝 Hỗ trợ",
     question: "Tôi cần hỗ trợ hoặc muốn đề xuất thêm tính năng thì liên hệ ở đâu?",
     answer:
       "Bạn có thể gửi phản hồi trực tiếp qua nút 'Trợ giúp' trên thanh điều hướng hoặc liên hệ kênh Telegram/Email hỗ trợ 24/7 của đội ngũ kỹ thuật.",
   },
 ];
 
-const CATEGORY_CONFIG: Record<
-  Exclude<CategoryId, "all">,
-  { icon: LucideIcon; colorClass: string }
-> = {
-  pricing: {
-    icon: Wallet,
-    colorClass:
-      "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400",
-  },
-  quality: {
-    icon: SlidersHorizontal,
-    colorClass:
-      "text-indigo-500 bg-indigo-500/10 border-indigo-500/20 dark:text-indigo-400",
-  },
-  ads: {
-    icon: Megaphone,
-    colorClass:
-      "text-sky-500 bg-sky-500/10 border-sky-500/20 dark:text-sky-400",
-  },
-  security: {
-    icon: ShieldCheck,
-    colorClass:
-      "text-teal-500 bg-teal-500/10 border-teal-500/20 dark:text-teal-400",
-  },
+const CATEGORY_ICONS: Record<Exclude<CategoryId, "all">, LucideIcon> = {
+  pricing: Wallet,
+  quality: SlidersHorizontal,
+  ads: Megaphone,
+  security: ShieldCheck,
 };
-
-function getBadgeStyle(badge: string) {
-  if (badge.includes("Phổ biến"))
-    return "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400";
-  if (badge.includes("Khuyên dùng"))
-    return "border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400";
-  if (badge.includes("Tối ưu Ads"))
-    return "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400";
-  if (badge.includes("Pro Turbo"))
-    return "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400";
-  if (badge.includes("Bảo mật"))
-    return "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
-  if (badge.includes("Soạn thảo"))
-    return "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400";
-  return "border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)]";
-}
 
 export default function FaqSection() {
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>("all");
@@ -154,8 +110,7 @@ export default function FaqSection() {
       if (!query) return true;
       return (
         faq.question.toLowerCase().includes(query) ||
-        faq.answer.toLowerCase().includes(query) ||
-        faq.badge.toLowerCase().includes(query)
+        faq.answer.toLowerCase().includes(query)
       );
     });
   }, [selectedCategory, searchQuery]);
@@ -198,7 +153,7 @@ export default function FaqSection() {
                   onChange={(event) => setSearchQuery(event.target.value)}
                   placeholder="Tìm nhanh thắc mắc (quảng cáo, hoàn tiền, trùng lặp)..."
                   aria-label="Tìm nhanh câu hỏi thường gặp"
-                  className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] py-2.5 pl-10 pr-10 text-[13.5px] text-[var(--ink-primary)] outline-none transition-colors placeholder:text-[var(--ink-secondary)]/70 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] py-2.5 pl-10 pr-10 text-[13.5px] text-[var(--ink-primary)] outline-none transition-colors placeholder:text-[var(--ink-tertiary)] focus:border-emerald-600/60 focus:ring-2 focus:ring-emerald-600/15 dark:focus:border-teal-500/60 dark:focus:ring-teal-500/20"
                 />
                 {searchQuery && (
                   <button
@@ -229,8 +184,8 @@ export default function FaqSection() {
                     aria-pressed={isActive}
                     className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium transition-colors ${
                       isActive
-                        ? "border-indigo-600 bg-indigo-600 text-white shadow-xs"
-                        : "border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:border-indigo-500/40 hover:text-[var(--ink-primary)]"
+                        ? "border-emerald-600 bg-transparent text-emerald-700 dark:border-teal-500/50 dark:text-teal-400"
+                        : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -255,14 +210,13 @@ export default function FaqSection() {
                 <div className="space-y-1">
                   {filteredFaqs.map((faq, index) => {
                     const isOpen = openIndex === index;
-                    const config = CATEGORY_CONFIG[faq.category];
-                    const CategoryIcon = config.icon;
+                    const CategoryIcon = CATEGORY_ICONS[faq.category];
                     return (
                       <div
                         key={faq.question}
-                        className={`overflow-hidden rounded-xl border transition-all duration-200 ${
+                        className={`overflow-hidden rounded-xl border transition-colors duration-200 ${
                           isOpen
-                            ? "border-indigo-500/30 bg-[var(--surface-raised)]/50"
+                            ? "border-[var(--border-strong)] bg-[var(--surface-raised)]/50"
                             : "border-transparent hover:bg-[var(--surface-raised)]/30"
                         }`}
                       >
@@ -272,33 +226,25 @@ export default function FaqSection() {
                           aria-expanded={isOpen}
                           className="flex w-full cursor-pointer items-center justify-between gap-4 p-3.5 text-left transition-colors sm:p-4.5"
                         >
-                          <span className="flex items-center gap-3 min-w-0">
-                            <span
-                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[var(--ink-secondary)] ${config.colorClass}`}
-                            >
-                              <CategoryIcon className="h-3.5 w-3.5" />
+                          <span className="flex min-w-0 items-center gap-3">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
+                              <CategoryIcon
+                                className="h-3.5 w-3.5"
+                                strokeWidth={1.75}
+                              />
                             </span>
-                            <span className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2.5 min-w-0">
-                              <span className="text-[13.5px] font-semibold text-[var(--ink-primary)] sm:text-[14px]">
-                                {faq.question}
-                              </span>
-                              <span
-                                className={`w-fit shrink-0 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold ${getBadgeStyle(
-                                  faq.badge,
-                                )}`}
-                              >
-                                {faq.badge}
-                              </span>
+                            <span className="min-w-0 text-[13.5px] font-semibold text-[var(--ink-primary)] sm:text-[14px]">
+                              {faq.question}
                             </span>
                           </span>
                           <ChevronDown
-                            className={`h-4 w-4 shrink-0 text-[var(--ink-secondary)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                              isOpen ? "rotate-180 text-indigo-600 dark:text-indigo-400" : ""
+                            className={`h-4 w-4 shrink-0 text-[var(--ink-tertiary)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                              isOpen ? "rotate-180 text-[var(--brand)]" : ""
                             }`}
                           />
                         </button>
                         <div
-                          className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                          className={`grid transition-[grid-template-rows] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                             isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                           }`}
                         >
@@ -326,7 +272,7 @@ export default function FaqSection() {
               </div>
               <Link
                 href="/workspace"
-                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-500"
+                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[var(--brand)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
               >
                 Dùng thử miễn phí ngay
                 <ArrowRight className="h-3.5 w-3.5" />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { BorderBeam } from "@/components/ui/BorderBeam";
 import { PRICING_PLANS, type PricingPlan } from "@/lib/config/pricing";
 
 type BillingCycle = "monthly" | "yearly";
@@ -38,7 +39,7 @@ export default function PricingSection() {
   return (
     <section
       id="pricing"
-      className="scroll-mt-20 bg-[var(--canvas)] py-16 sm:py-20"
+      className="scroll-mt-20 bg-[var(--canvas)] py-12 sm:py-14 border-t border-[var(--border-hairline)]"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <ScrollReveal direction="up" duration={600}>
@@ -103,13 +104,13 @@ export default function PricingSection() {
                 <div
                   className={`relative flex h-full flex-col rounded-3xl border p-6 sm:p-7 transition-all duration-300 ${
                     plan.highlight
-                      ? "border-indigo-500 bg-[var(--surface)] shadow-[0_20px_50px_-15px_rgba(99,102,241,0.25)] ring-2 ring-indigo-500/20 md:-translate-y-2"
+                      ? "border-teal-400/70 bg-[var(--surface)] shadow-[0_20px_50px_-15px_rgba(0,212,146,0.2)] ring-1 ring-teal-400/30 md:-translate-y-2"
                       : "border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs hover:border-[var(--border-strong)]"
                   }`}
                 >
                   {plan.highlight ? (
-                    <span className="btn-shimmer absolute -top-3.5 left-6 inline-flex items-center rounded-full px-3 py-1 text-[10.5px] font-bold uppercase tracking-wider shadow-sm">
-                      ✨ Khuyên dùng nhiều nhất
+                    <span className="absolute -top-3.5 left-6 inline-flex items-center gap-1 rounded-full border border-teal-500/40 bg-teal-500/20 px-3 py-0.5 font-mono text-[10.5px] font-bold uppercase tracking-wider text-teal-300 shadow-sm backdrop-blur-md">
+                      ✨ KHUYÊN DÙNG
                     </span>
                   ) : plan.badge ? (
                     <span className="absolute -top-3.5 left-6 inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--ink-secondary)]">
@@ -152,9 +153,9 @@ export default function PricingSection() {
 
                   <Link
                     href="/workspace"
-                    className={`group mt-6 inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-semibold transition-all duration-200 ${
+                    className={`btn-tactile group mt-6 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-all duration-150 ${
                       plan.highlight
-                        ? "btn-shimmer text-white shadow-md hover:scale-[1.01]"
+                        ? "bg-[#00D492] hover:bg-teal-400 text-black shadow-lg shadow-teal-500/20"
                         : "border border-[var(--border-subtle)] bg-[var(--surface-raised)] text-[var(--ink-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--surface)]"
                     }`}
                   >

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <title>Content Studio — Concept C Workspace: The Production Synthesizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090A0E;
+      color: #F8FAFC;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    .btn-tactile:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col bg-[#090A0E] antialiased">
+  <!-- Synthesizer Command Nav -->
+  <header class="h-14 border-b border-white/10 px-4 md:px-8 flex items-center justify-between shrink-0 bg-[#12141C]">
+    <div class="flex items-center space-x-3 text-xs font-mono">
+      <a href="index.html" class="flex items-center gap-2 text-white font-extrabold tracking-tight hover:opacity-80 transition font-sans text-sm">
+        <span class="w-6 h-6 rounded bg-[#00D492] text-black font-black flex items-center justify-center text-xs">PT</span>
+        <span>CONTENT STUDIO</span>
+      </a>
+      <span class="text-gray-600">/</span>
+      <span class="text-teal-400 font-bold">SYNTHESIZER DECK</span>
+      <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-400 text-[10px]">CONCEPT C</span>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-black/40 border border-white/10 text-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+        <span class="text-gray-400">CREDITS:</span>
+        <span class="text-white font-bold">18/20</span>
+      </div>
+      <a href="index.html" class="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-gray-300 hover:text-white transition">
+        &larr; Trang Chủ
+      </a>
+      <button onclick="triggerSynthGen()" class="px-3.5 py-1.5 rounded-lg bg-[#00D492] hover:bg-teal-400 text-black text-xs font-mono font-bold transition btn-tactile">
+        ⚡ TỔNG HỢP (⌘+ENTER)
+      </button>
+    </div>
+  </header>
+
+  <!-- Pinned Top Brief Capsule Ribbon -->
+  <div class="border-b border-white/10 bg-[#161924] p-3 md:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs shrink-0">
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="font-mono text-teal-400 font-bold uppercase text-[11px]">ĐỀ BÀI SẢN PHẨM:</span>
+      <input type="text" id="wsBriefTitle" value="Áo sơ mi lụa Bảo Lộc dành cho nữ 22-35 tuổi, giá từ 690k" class="bg-black/50 border border-white/10 rounded-lg px-3 py-1 text-white text-xs font-medium w-72 sm:w-96 focus:outline-none focus:border-teal-400">
+    </div>
+    <div class="flex items-center gap-3 font-mono text-[11px]">
+      <span class="text-gray-400 uppercase">GÓC KÍCH HOẠT:</span>
+      <div class="flex rounded-lg border border-white/10 p-0.5 bg-black/40">
+        <button onclick="setSynthTab(0)" class="synth-tab active px-3 py-1 rounded text-teal-300 bg-teal-500/20 font-bold transition" data-st="0">PAS</button>
+        <button onclick="setSynthTab(1)" class="synth-tab px-3 py-1 rounded text-gray-400 hover:text-white transition" data-st="1">AIDA</button>
+        <button onclick="setSynthTab(2)" class="synth-tab px-3 py-1 rounded text-gray-400 hover:text-white transition" data-st="2">FAB</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main 2-Pane Production Workbench -->
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+    
+    <!-- Left: Studio Editor & Psychology Inspector (Flex-1) -->
+    <div class="flex-1 flex flex-col overflow-hidden bg-[#090A0E] p-4 md:p-6 space-y-4">
+      
+      <!-- Telemetry Strip -->
+      <div class="flex items-center justify-between font-mono text-xs text-gray-400 pb-2 border-b border-white/5">
+        <span class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+          <b class="text-white" id="synthAngleName">GÓC 01 · PAS (VẤN ĐỀ & GIẢI PHÁP)</b>
+        </span>
+        <div class="flex items-center gap-3">
+          <span class="text-teal-400" id="synthCharsCount">520 / 1.000 ký tự</span>
+          <button onclick="copyActiveSynth()" class="btn-tactile px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-white font-bold" id="synthCopyBtn">
+            Sao chép
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Inline Editor Container -->
+      <div class="bg-[#12141C] border border-white/10 rounded-2xl p-5 space-y-4 flex-1 flex flex-col overflow-y-auto custom-scroll">
+        <div>
+          <label class="block font-mono text-[10px] text-teal-400 uppercase tracking-widest mb-1.5">TIÊU ĐỀ GIẬT HOOK (DÒNG 1 QUYẾT ĐỊNH 80% CTR):</label>
+          <input type="text" id="wsHook" value="Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?" class="w-full bg-transparent font-bold text-white text-base md:text-lg focus:outline-none border-b border-transparent focus:border-teal-500 pb-1 font-sans">
+        </div>
+
+        <div class="flex-1 flex flex-col">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-mono text-[10px] text-gray-400 uppercase tracking-widest">NỘI DUNG THUYẾT PHỤC (BODY COPY):</label>
+            <span class="text-[10px] font-mono text-emerald-400">TỰ ĐỘNG LƯU CLOUD</span>
+          </div>
+          <textarea id="wsBody" rows="7" class="w-full bg-transparent text-xs md:text-sm text-gray-200 leading-relaxed font-body focus:outline-none resize-none flex-1">Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác. Giá chỉ từ 690.000đ cùng ưu đãi 15% trong tuần đầu ra mắt.</textarea>
+        </div>
+
+        <div>
+          <label class="block font-mono text-[10px] text-gray-400 uppercase tracking-widest mb-1.5">BỘ THẺ HASHTAGS BẢO ĐẢM TẦM TIẾP CẬN:</label>
+          <input type="text" id="wsTags" value="#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien" class="w-full bg-transparent text-xs font-mono text-teal-400 focus:outline-none">
+        </div>
+      </div>
+
+      <!-- Psychology Breakdown Strip -->
+      <div class="bg-[#161924] border border-white/10 rounded-xl p-3.5 flex items-center justify-between text-xs font-mono">
+        <span class="text-gray-400">INSIGHT TÂM LÝ: <span class="text-white font-sans" id="wsPsychology">Đánh trúng nỗi sợ bí bách mùa nóng và mặc cảm trang phục kém chỉn chu.</span></span>
+        <span class="text-emerald-400 font-bold shrink-0">ĐIỂM HIỆU QUẢ: 9.4/10</span>
+      </div>
+
+    </div>
+
+    <!-- Right: Smartphone Live Simulator (380px on desktop) -->
+    <div class="hidden xl:flex w-[380px] border-l border-white/10 bg-[#0E1017] flex-col shrink-0 p-5 overflow-hidden">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/5 font-mono text-xs">
+        <span class="text-gray-400 uppercase">MÔ PHỎNG MÀN HÌNH FEED</span>
+        <span class="text-teal-400">IPHONE 16 PRO</span>
+      </div>
+
+      <!-- Realistic Smartphone Chassis -->
+      <div class="flex-1 bg-black border-4 border-gray-800 rounded-[2.5rem] p-3 flex flex-col shadow-2xl relative overflow-hidden">
+        <!-- Dynamic Island Pill -->
+        <div class="w-20 h-4 bg-gray-900 rounded-full mx-auto mb-3"></div>
+
+        <!-- Phone Feed Content -->
+        <div class="flex-1 overflow-y-auto custom-scroll text-xs space-y-2.5">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-full bg-[#00D492] text-black font-bold flex items-center justify-center text-[10px]">
+              BL
+            </div>
+            <div>
+              <div class="font-bold text-white text-[11px]">Bảo Lộc Silk Atelier</div>
+              <div class="text-[9px] text-gray-500 font-mono">Được tài trợ · 🌐</div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5 text-[11px] font-body text-gray-300 leading-relaxed">
+            <p class="font-bold text-white text-xs" id="phoneHook">Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?</p>
+            <p id="phoneBody">Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da...</p>
+            <p class="text-teal-400 font-mono text-[10px]" id="phoneTags">#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo</p>
+          </div>
+
+          <!-- Product Media Simulation -->
+          <div class="h-40 bg-gradient-to-tr from-slate-900 via-teal-950 to-slate-900 rounded-xl flex items-center justify-center font-mono text-gray-500 text-[10px]">
+            [HÌNH ẢNH SẢN PHẨM THỰC TẾ]
+          </div>
+
+          <div class="flex items-center justify-between text-gray-400 font-mono text-[10px] pt-1">
+            <span>👍 342 Thích</span>
+            <span>56 Bình luận · 18 Chia sẻ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const SYNTH_ANGLES = [
+      {
+        name: 'GÓC 01 · PAS (VẤN ĐỀ & GIẢI PHÁP)',
+        hook: 'Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt?',
+        body: 'Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác. Giá chỉ từ 690.000đ cùng ưu đãi 15% trong tuần đầu ra mắt.',
+        tags: '#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien',
+        chars: '520 / 1.000 ký tự',
+        psychology: 'Đánh trúng nỗi sợ bí bách mùa nóng và mặc cảm trang phục kém chỉn chu.'
+      },
+      {
+        name: 'GÓC 02 · AIDA (CẢM XÚC & KHÁT KHAO)',
+        hook: 'Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng, tĩnh lặng.',
+        body: 'Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào. Sở hữu ngay với mức giá khởi điểm 690.000đ (Ưu đãi 15% duy nhất tuần đầu).',
+        tags: '#QuietLuxury #ThoiTrangQuyPhai #LuaBaoLoc #ThanhLichTinhLang',
+        chars: '498 / 1.000 ký tự',
+        psychology: 'Đánh vào niềm tự hào thầm kín và khát khao khẳng định gu thẩm mỹ tinh tế.'
+      },
+      {
+        name: 'GÓC 03 · FAB (TÍNH NĂNG & GIÁ TRỊ THẬT)',
+        hook: '36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc xà cừ khắc chìm.',
+        body: 'Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Chuẩn may đo cao cấp Haute Couture bảo toàn trọn vẹn giá trị di sản thủ công Việt. Cơ hội trải nghiệm từ 690.000đ (-15% tuần lễ ra mắt).',
+        tags: '#ThuCongTruyenThong #GiaTriThat #ChatLieuTuNhien #BaoLocSilk',
+        chars: '534 / 1.000 ký tự',
+        psychology: 'Thuyết phục khách hàng khó tính bằng dẫn chứng kỹ thuật dệt và mật độ momme.'
+      }
+    ];
+
+    let currentSynthIdx = 0;
+
+    function setSynthTab(idx) {
+      currentSynthIdx = idx;
+      const d = SYNTH_ANGLES[idx];
+      document.getElementById('synthAngleName').textContent = d.name;
+      document.getElementById('synthCharsCount').textContent = d.chars;
+      document.getElementById('wsHook').value = d.hook;
+      document.getElementById('wsBody').value = d.body;
+      document.getElementById('wsTags').value = d.tags;
+      document.getElementById('wsPsychology').textContent = d.psychology;
+
+      document.getElementById('phoneHook').textContent = d.hook;
+      document.getElementById('phoneBody').textContent = d.body;
+      document.getElementById('phoneTags').textContent = d.tags;
+
+      document.querySelectorAll('.synth-tab').forEach((tab, i) => {
+        if (i === idx) {
+          tab.className = 'synth-tab active px-3 py-1 rounded text-teal-300 bg-teal-500/20 font-bold transition';
+        } else {
+          tab.className = 'synth-tab px-3 py-1 rounded text-gray-400 hover:text-white transition';
+        }
+      });
+    }
+
+    function triggerSynthGen() {
+      alert('Đã cập nhật và đồng bộ kịch bản trên toàn bộ Synth Deck!');
+    }
+
+    function copyActiveSynth() {
+      const hook = document.getElementById('wsHook').value;
+      const body = document.getElementById('wsBody').value;
+      const tags = document.getElementById('wsTags').value;
+      navigator.clipboard.writeText(`${hook}\n\n${body}\n\n${tags}`);
+      const btn = document.getElementById('synthCopyBtn');
+      btn.textContent = 'Đã chép!';
+      setTimeout(() => { btn.textContent = 'Sao chép'; }, 1500);
+    }
+  </script>
+</body>
+</html>
+

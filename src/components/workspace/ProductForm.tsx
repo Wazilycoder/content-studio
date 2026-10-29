@@ -98,7 +98,7 @@ function validate(values: ContentFormInput): FieldErrors {
 const inputBaseClass =
   "w-full rounded-xl border bg-[var(--canvas)] px-3.5 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-all duration-150 focus:outline-none focus:ring-2";
 const inputNormalClass =
-  "border-[var(--border-subtle)] focus:border-indigo-500 focus:ring-indigo-500/20";
+  "border-[var(--border-subtle)] focus:border-teal-400 focus:ring-teal-400/20";
 const inputErrorClass =
   "border-red-500 focus:border-red-500 focus:ring-red-500/20";
 
@@ -350,26 +350,26 @@ function ProductForm({
                   activeBorder: "border-amber-500/50 dark:border-amber-400/50",
                   activeBg: "bg-amber-500/10",
                   text: "text-amber-700 dark:text-amber-400",
-                  dot: "bg-amber-500",
+                  dot: "bg-amber-400",
                 },
                 "trang-trong": {
-                  activeBorder: "border-indigo-500/50 dark:border-indigo-400/50",
-                  activeBg: "bg-indigo-500/10",
-                  text: "text-indigo-700 dark:text-indigo-400",
-                  dot: "bg-indigo-500",
+                  activeBorder: "border-teal-500/50 dark:border-teal-400/50",
+                  activeBg: "bg-teal-500/10",
+                  text: "text-teal-700 dark:text-teal-300",
+                  dot: "bg-teal-400",
                 },
                 "tre-trung": {
-                  activeBorder: "border-pink-500/50 dark:border-pink-400/50",
-                  activeBg: "bg-pink-500/10",
-                  text: "text-pink-700 dark:text-pink-400",
-                  dot: "bg-pink-500",
+                  activeBorder: "border-sky-500/50 dark:border-sky-400/50",
+                  activeBg: "bg-sky-500/10",
+                  text: "text-sky-700 dark:text-sky-400",
+                  dot: "bg-sky-400",
                 },
               };
               const colors = toneColors[option.value] || {
-                activeBorder: "border-indigo-500",
-                activeBg: "bg-indigo-500/10",
-                text: "text-indigo-600",
-                dot: "bg-indigo-500",
+                activeBorder: "border-teal-500",
+                activeBg: "bg-teal-500/10",
+                text: "text-teal-400",
+                dot: "bg-teal-400",
               };
 
               return (
@@ -473,8 +473,8 @@ function ProductForm({
           disabled={loading}
           className={
             cooldownActive
-              ? "inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3.5 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
-              : "btn-shimmer inline-flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[14px] font-semibold text-white shadow-[0_0_20px_-3px_rgba(99,102,241,0.4)] transition-all disabled:cursor-not-allowed disabled:opacity-70"
+              ? "btn-tactile inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3.5 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
+              : "btn-tactile inline-flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[14px] font-bold bg-[#00D492] hover:bg-teal-400 text-black shadow-[0_0_20px_rgba(0,212,146,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-60"
           }
         >
           {loading ? (

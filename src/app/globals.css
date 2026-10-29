@@ -3,57 +3,59 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Editorial Studio Palette v2 */
-  --canvas: #F8F8F6;
+  /* Warm Editorial Porcelain — Light Master Palette (7:1 contrast on white) */
+  --canvas: #FBFBFA;
   --surface: #FFFFFF;
-  --surface-raised: #F0F1F3;
-  --canvas-base: #F8F8F6;
+  --surface-raised: #F4F4F0;
+  --canvas-base: #FBFBFA;
   --surface-stage: #FFFFFF;
-  --border-subtle: #E0E3E8;
-  --border-strong: #CBD2E2;
-  --border-hairline: #E0E3E8;
-  --border-focus: rgba(67, 85, 245, 0.4);
-  --ink-primary: #15171C;
-  --ink-secondary: #515662;
-  --ink-tertiary: #71717A;
-  --brand: #4355F5;
-  --pas: #4355F5;
-  --aida: #E76E67;
-  --fab: #16846E;
-  --accent-navy: #4355F5;
-  --accent-navy-hover: #3642C4;
-  --accent-purple: #7C3AED;
-  --accent-emerald: #16846E;
-  --accent-indigo: #4355F5;
-  --glow-accent: rgba(67, 85, 245, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-hairline: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --border-focus: rgba(10, 107, 82, 0.5);
+  --ink-primary: #090A0E;
+  --ink-secondary: #4A5060;
+  --ink-tertiary: #7A8294;
+  --brand: #0A6B52;
+  --pas: #E11D48;
+  --aida: #0284C7;
+  --fab: #059669;
+  --accent-navy: #0A6B52;
+  --accent-navy-hover: #085442;
+  --accent-purple: #6D28D9;
+  --accent-emerald: #0A6B52;
+  --accent-indigo: #0A6B52;
+  --glow-accent: rgba(10, 107, 82, 0.12);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark {
-  /* Editorial Studio Palette v2 */
-  --canvas: #0B0D13;
-  --surface: #141720;
-  --surface-raised: #1C202B;
-  --canvas-base: #0B0D13;
-  --surface-stage: #141720;
-  --border-subtle: #303543;
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-hairline: #303543;
-  --border-focus: rgba(137, 150, 255, 0.5);
-  --ink-primary: #F5F6F8;
-  --ink-secondary: #A8AFBE;
+  /* Linear Basalt OLED Master Palette */
+  --canvas: #08090C;
+  --surface: #0E1017;
+  --surface-raised: #12141C;
+  --canvas-base: #08090C;
+  --surface-stage: #0E1017;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(0, 212, 146, 0.5);
+  --ink-primary: #F8FAFC;
+  --ink-secondary: #94A3B8;
   --ink-tertiary: #64748B;
-  --brand: #8996FF;
-  --pas: #8290FF;
-  --aida: #FF9D92;
-  --fab: #59C8AA;
-  --accent-navy: #8996FF;
-  --accent-navy-hover: #6E7DFF;
+  --brand: #00D492;
+  --pas: #F43F5E;
+  --aida: #38BDF8;
+  --fab: #00D492;
+  --accent-navy: #00D492;
+  --accent-navy-hover: #00B87E;
   --accent-purple: #8B5CF6;
-  --accent-emerald: #59C8AA;
-  --accent-indigo: #8996FF;
-  --glow-accent: rgba(137, 150, 255, 0.15);
+  --accent-emerald: #00D492;
+  --accent-indigo: #00D492;
+  --glow-accent: rgba(0, 212, 146, 0.18);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -101,14 +103,49 @@ body {
   max-width: 100%;
 }
 
-/* Phản hồi xúc giác cho mọi điểm chạm */
+/* Phản hồi xúc giác cho mọi điểm chạm - Emil Kowalski & Linear Standard */
 .btn-tactile {
-  transition: transform 0.1s ease, background-color 0.15s ease;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 .btn-tactile:active {
-  transform: scale(0.98);
+  transform: scale(0.975);
+}
+
+/* Background Grid Mesh (magic-ui/retro-grid) — kết nối không gian thị giác toàn trang */
+.bg-grid-mesh {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+}
+
+:root:not(.dark) .bg-grid-mesh {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+}
+
+/* Linear-tier Precision Chassis (Doppelrand Double-Bezel) */
+.synthesizer-chassis {
+  background: linear-gradient(180deg, #12141C 0%, #0E1017 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.panel-recessed {
+  background-color: #08090C;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.hairline-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hairline-highlight {
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Vùng chạm tối thiểu 44px trên thiết bị di động */
@@ -434,6 +471,31 @@ body {
     transform: translate3d(0, 0, 0);
   }
 }
+@keyframes marquee-reverse {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+/* Làm mờ hai mép băng chuyền (Edge Fade Mask) */
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
 .animate-marquee {
   display: flex;
   width: max-content;
@@ -600,11 +662,20 @@ body {
   -webkit-backdrop-filter: blur(20px);
 }
 
-.double-bezel-inner {
-  border-radius: calc(2rem - 0.375rem);
-  background: var(--surface);
+/* Double-Bezel utility (Linear tactile outer shell) */
+.double-bezel {
+  padding: 0.375rem;
+  border-radius: 1rem;
   border: 1px solid var(--border-subtle);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--surface-raised) 40%, transparent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.double-bezel-inner {
+  border-radius: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border-hairline);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
 }
 
 /* Shimmer Button Effect */

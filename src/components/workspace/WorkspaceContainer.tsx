@@ -242,6 +242,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           form.requestSubmit();
         }
       }
+
+      // Linear-style shortcut: 1, 2, 3 to switch angles when outside inputs
+      const target = event.target as HTMLElement | null;
+      const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA");
+      if (!isInput && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        if (event.key === "1") setActiveAngleIndex(0);
+        if (event.key === "2") setActiveAngleIndex(1);
+        if (event.key === "3") setActiveAngleIndex(2);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
