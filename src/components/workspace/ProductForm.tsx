@@ -57,6 +57,51 @@ const EXTENDED_TONES: ToneMeta[] = [
   },
 ];
 
+interface IndustryPreset {
+  label: string;
+  title: string;
+  input: ContentFormInput;
+}
+
+const INDUSTRY_PRESETS: IndustryPreset[] = [
+  {
+    label: "Áo sơ mi lụa",
+    title: "Preset thời trang công sở",
+    input: {
+      productName: "Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc",
+      productDescription:
+        "Chất liệu lụa tơ tằm 100% dệt thủ công tại làng nghề Bảo Lộc, bề mặt mềm mại óng ả tự nhiên, thấm hút mồ hôi tốt, form áo thanh lịch phù hợp môi trường công sở. Đường may tỉ mỉ, cổ áo cứng cáp giữ phom chuẩn.",
+      targetAudience:
+        "Nữ chuyên viên văn phòng 28–45 tuổi, yêu thích phong cách thanh lịch tối giản",
+      tone: "trang-trong",
+    },
+  },
+  {
+    label: "Serum B5",
+    title: "Preset mỹ phẩm skincare",
+    input: {
+      productName: "Serum Vitamin B5 phục hồi da chuyên sâu",
+      productDescription:
+        "Nồng độ Panthenol 10% kết hợp HA phân tử thấp, phục hồi hàng rào ẩm, làm dịu da kích ứng sau treatment. Kết cấu mỏng nhẹ thẩm thấu nhanh, không gây bít lỗ chân lông, phù hợp cả da nhạy cảm.",
+      targetAudience:
+        "Phụ nữ 25–40 tuổi có làn da nhạy cảm, thường xuyên trang điểm",
+      tone: "chuyen-gia",
+    },
+  },
+  {
+    label: "Nước mắm",
+    title: "Preset thực phẩm đặc sản",
+    input: {
+      productName: "Nước mắm cá cơm Phú Quốc ủ thùng gỗ 12 tháng",
+      productDescription:
+        "Ủ chượp truyền thống trong thùng gỗ từ cá cơm than tươi, độ đạm 40N, vị mặn dịu hậu ngọt tự nhiên, màu cánh gián sánh quyện. Không chất bảo quản, đóng chai thủy tinh nguyên chất.",
+      targetAudience:
+        "Nội trợ gia đình quan tâm thực phẩm sạch, người sành ăn",
+      tone: "ke-chuyen",
+    },
+  },
+];
+
 type FieldName = "productName" | "productDescription" | "targetAudience";
 type FieldErrors = Partial<Record<FieldName, string>>;
 
@@ -121,7 +166,6 @@ function ProductForm({
   value,
   onChange,
   onSubmit,
-  onLoadSample,
   loading,
   cooldownSeconds = 0,
   isPro = false,
@@ -157,8 +201,8 @@ function ProductForm({
     setTouched((previous) => ({ ...previous, [field]: true }));
   };
 
-  const handleSampleClick = () => {
-    onLoadSample();
+  const handlePresetFill = (preset: IndustryPreset) => {
+    onChange(preset.input);
     setIsSamplePulsing(true);
     window.setTimeout(() => setIsSamplePulsing(false), 850);
   };
@@ -192,16 +236,26 @@ function ProductForm({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleSampleClick}
-          disabled={loading}
-          title="Điền nhanh một bộ dữ liệu mẫu để thử nghiệm"
-          className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-all duration-150 hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <FlaskConical className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-          Dữ liệu mẫu
-        </button>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <span className="inline-flex items-center gap-1 text-[10.5px] font-medium uppercase tracking-wider text-[var(--ink-tertiary)]">
+            <FlaskConical className="h-3 w-3 text-[var(--accent-navy)]" />
+            Thử nhanh
+          </span>
+          <div className="flex items-center gap-1">
+            {INDUSTRY_PRESETS.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => handlePresetFill(preset)}
+                disabled={loading}
+                title={preset.title}
+                className="btn-tactile rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-1 text-[11px] font-medium text-[var(--ink-secondary)] transition-all duration-150 hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="space-y-5 px-5 py-5">

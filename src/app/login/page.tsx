@@ -70,6 +70,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   const [showcaseExpanded, setShowcaseExpanded] = useState(false);
   const [showcaseAngle, setShowcaseAngle] = useState(0);
   const [securityModalOpen, setSecurityModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "angles" | "pricing" | "security">("overview");
   const emailInputRef = useRef<HTMLInputElement | null>(null);
 
   const refreshCaptcha = useCallback(async () => {
@@ -143,9 +144,9 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:grid lg:h-screen lg:grid-cols-2 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden">
+    <div className="mx-auto flex min-h-screen w-full max-w-[1440px] flex-col bg-[var(--canvas)] text-[var(--ink-primary)] lg:grid lg:h-screen lg:grid-cols-12 lg:grid-rows-[auto_minmax(0,1fr)] lg:overflow-hidden">
       {/* ===== PRO NAVIGATION HEADER ===== */}
-      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-6 py-3.5 lg:col-span-2 dark:bg-[#0F0F12]/95">
+      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-6 py-3.5 lg:col-span-12 dark:bg-[#0F0F12]/95">
         <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-sm">
@@ -167,36 +168,60 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
               <Home className="h-3.5 w-3.5" />
               <span>Trang chủ</span>
             </Link>
-            <Link
-              href="/#features"
-              className="btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+            <button
+              type="button"
+              onClick={() => setActiveTab("overview")}
+              className={`btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                activeTab === "overview"
+                  ? "bg-[#00D492]/10 text-[#00D492]"
+                  : "text-[var(--ink-secondary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+              }`}
+            >
+              Tổng quan
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("angles")}
+              className={`btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                activeTab === "angles"
+                  ? "bg-[#00D492]/10 text-[#00D492]"
+                  : "text-[var(--ink-secondary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+              }`}
             >
               Tính năng AIDA &amp; PAS
-            </Link>
-            <Link
-              href="/#pricing"
-              className="btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("pricing")}
+              className={`btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                activeTab === "pricing"
+                  ? "bg-[#00D492]/10 text-[#00D492]"
+                  : "text-[var(--ink-secondary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+              }`}
             >
               Bảng giá Pro Turbo
-            </Link>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("security")}
+              className={`btn-tactile rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+                activeTab === "security"
+                  ? "bg-[#00D492]/10 text-[#00D492]"
+                  : "text-[var(--ink-secondary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+              }`}
+            >
+              Bảo mật SSL 256-bit
+            </button>
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSecurityModalOpen(true)}
-              className="btn-tactile hidden items-center gap-1.5 rounded-full border border-[var(--accent-emerald)]/25 bg-[var(--accent-emerald)]/[0.08] px-2.5 py-1 text-[11px] font-medium text-[var(--accent-emerald)] transition-colors hover:bg-[var(--accent-emerald)]/15 sm:inline-flex"
-            >
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Bảo mật SSL 256-bit
-            </button>
             <ThemeToggle />
           </div>
         </div>
       </header>
 
       {/* ===== COLUMN A — AUTHENTICATION ENGINE (LOCKED / CENTERED) ===== */}
-      <div className="relative flex w-full flex-col items-center justify-center px-4 py-8 sm:px-8 lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar">
+      <div className="lg:col-span-5 relative flex w-full flex-col items-center justify-center px-4 py-8 sm:px-8 lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar">
         {/* Ambient back-glow */}
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(99,102,241,0.12),transparent_70%)]" />
 
@@ -266,7 +291,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
               <button
                 type="submit"
                 disabled={loading}
-                  className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition-[transform,background-color] duration-150 ease-out hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn-tactile mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00D492] px-4 py-2.5 text-xs font-bold text-black shadow-[0_0_20px_rgba(0,212,146,0.25)] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -446,7 +471,7 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn-shimmer mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-xs font-semibold shadow-[0_0_20px_-3px_rgba(99,102,241,0.4)] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn-tactile mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00D492] py-3 text-xs font-bold text-black shadow-[0_0_20px_rgba(0,212,146,0.25)] transition-all hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -487,13 +512,15 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
 
                           {/* ===== COLUMN B — EDITORIAL SHOWCASE (INDEPENDENT SCROLL) ===== */}
                           <div
-                            className="relative hidden flex-col border-l border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-8 py-10 xl:px-14 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar justify-start"
+                            className="lg:col-span-7 relative hidden flex-col border-l border-[var(--border-subtle)] bg-[var(--surface-raised)]/70 px-8 py-10 xl:px-14 lg:flex lg:h-full lg:min-h-0 lg:overflow-y-auto custom-scrollbar justify-start"
                             style={{
                               backgroundImage:
                                 "radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent-navy) 15%, transparent), transparent 70%)",
                             }}
                           >
                             <div className="my-0 mx-auto w-full max-w-lg pb-12 pt-2">
+                              {activeTab === "overview" && (
+                              <>
                               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)]">
                                 <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
                                 NỀN TẢNG KIẾN TẠO NỘI DUNG CHUYỂN ĐỔI CAO
@@ -650,11 +677,201 @@ export default function AuthPage({ initialMode = "login" }: AuthPageProps) {
                                   </div>
                                   <span>280 bình luận · 96 lượt chia sẻ</span>
                                 </div>
+                                  </div>
+                                  </>)}
+                                  {activeTab === "angles" && (
+                                    <div className="animate-fade-in space-y-5">
+                                      <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                                        <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                                        KHUNG 3 GÓC NHÌN KỸ THUẬT
+                                      </div>
+                                      <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
+                                        3 Góc Tiếp Cận Tâm Lý Độc Bản
+                                      </h2>
+                                      <p className="text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
+                                        Phân giải sản phẩm dưới 3 lăng kính tâm lý học chuyển đổi, xóa bỏ hoàn toàn văn mẫu AI chung chung.
+                                      </p>
+                                      <div className="space-y-3">
+                                        {[
+                                          {
+                                            num: "01",
+                                            tag: "PAS",
+                                            title: "Pain — Agitate — Solution",
+                                            desc: "Đánh trúng nỗi đau thực tế → Giải pháp tức thì.",
+                                            hint: "Khoét sâu vấn đề khách hàng đang gặp, đẩy cảm xúc lên cao trào rồi trao giải pháp.",
+                                          },
+                                          {
+                                            num: "02",
+                                            tag: "AIDA",
+                                            title: "Attention — Interest — Desire — Action",
+                                            desc: "Chạm đến khao khát bản ngã & phong cách sống.",
+                                            hint: "Dẫn dắt từ chú ý, khơi gợi quan tâm, nuôi dưỡng khao khát và chốt hành động.",
+                                          },
+                                          {
+                                            num: "03",
+                                            tag: "FAB",
+                                            title: "Feature — Advantage — Benefit",
+                                            desc: "Chứng minh thông số kỹ thuật, chứng nhận & chất liệu thật.",
+                                            hint: "Biến đặc điểm kỹ thuật thành lợi ích cảm nhận rõ rệt cho người dùng.",
+                                          },
+                                        ].map((angle) => (
+                                          <div
+                                            key={angle.num}
+                                            className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-4"
+                                          >
+                                            <div className="flex items-center gap-2">
+                                              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/10 px-1.5 text-[11px] font-bold tabular-nums text-[var(--accent-navy)]">
+                                                {angle.num}
+                                              </span>
+                                              <span className="rounded bg-[var(--surface-raised)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--accent-emerald)]">
+                                                {angle.tag}
+                                              </span>
+                                              <span className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                                                {angle.title}
+                                              </span>
+                                            </div>
+                                            <p className="mt-2 text-[12.5px] font-medium text-[var(--ink-primary)]">
+                                              {angle.desc}
+                                            </p>
+                                            <p className="mt-1 text-[12px] leading-relaxed text-[var(--ink-secondary)]">
+                                              {angle.hint}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {activeTab === "pricing" && (
+                                    <div className="animate-fade-in space-y-5">
+                                      <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                                        <Sparkles className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                                        MA TRẬN BẢNG GIÁ
+                                      </div>
+                                      <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
+                                        Bảng Giá Minh Bạch. Kích Hoạt Tức Thì.
+                                      </h2>
+                                      <div className="space-y-3">
+                                        {[
+                                          {
+                                            name: "Free Starter",
+                                            price: "0đ",
+                                            period: "trọn đời",
+                                            highlight: false,
+                                            perks: ["10 lượt tạo dùng thử", "Cooldown 45s điều tiết", "Đầy đủ 3 góc AIDA/PAS/FAB"],
+                                          },
+                                          {
+                                            name: "Chủ Shop Turbo",
+                                            price: "99.000đ",
+                                            period: "/tháng",
+                                            highlight: true,
+                                            perks: ["Tạo bài 0s, không chờ", "Không giới hạn lượt tạo", "Xuất gói nội dung đa kênh"],
+                                          },
+                                          {
+                                            name: "Business Agency",
+                                            price: "499.000đ",
+                                            period: "/tháng",
+                                            highlight: false,
+                                            perks: ["Đa người dùng & phân quyền", "Truy cập API doanh nghiệp", "Ưu tiên hỗ trợ 24/7"],
+                                          },
+                                        ].map((plan) => (
+                                          <div
+                                            key={plan.name}
+                                            className={`rounded-2xl border p-4 ${
+                                              plan.highlight
+                                                ? "border-[#00D492]/40 bg-[#00D492]/[0.06] shadow-[0_0_20px_rgba(0,212,146,0.12)]"
+                                                : "border-[var(--border-subtle)] bg-[var(--surface)]"
+                                            }`}
+                                          >
+                                            <div className="flex items-baseline justify-between gap-2">
+                                              <span className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                                                {plan.name}
+                                              </span>
+                                              {plan.highlight && (
+                                                <span className="rounded-full bg-[#00D492] px-2 py-0.5 text-[10px] font-bold text-black">
+                                                  BEST VALUE
+                                                </span>
+                                              )}
+                                            </div>
+                                            <div className="mt-1 flex items-baseline gap-1">
+                                              <span className="text-[22px] font-bold tracking-tight tabular-nums text-[var(--ink-primary)]">
+                                                {plan.price}
+                                              </span>
+                                              <span className="text-[12px] text-[var(--ink-tertiary)]">
+                                                {plan.period}
+                                              </span>
+                                            </div>
+                                            <ul className="mt-2.5 space-y-1">
+                                              {plan.perks.map((perk) => (
+                                                <li key={perk} className="flex items-center gap-1.5 text-[12px] text-[var(--ink-secondary)]">
+                                                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-[var(--accent-emerald)]" />
+                                                  <span>{perk}</span>
+                                                </li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                        ))}
+                                      </div>
+                                      <p className="text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                                        Xem đầy đủ quyền lợi trước khi hoàn tất đăng ký. Nâng cấp bất kỳ lúc nào, kích hoạt tức thì.
+                                      </p>
+                                    </div>
+                                  )}
+                                  {activeTab === "security" && (
+                                    <div className="animate-fade-in space-y-5">
+                                      <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+                                        <ShieldCheck className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
+                                        BẢO CHỨNG BẢO MẬT 4 LỚP
+                                      </div>
+                                      <h2 className="text-[26px] font-semibold leading-[1.25] tracking-tight text-[var(--ink-primary)]">
+                                        Bảo Chứng An Toàn Dữ Liệu Doanh Nghiệp
+                                      </h2>
+                                      <div className="space-y-3">
+                                        {[
+                                          {
+                                            icon: Lock,
+                                            title: "Mã hóa SSL 256-bit & TLS 1.3",
+                                            desc: "Toàn bộ kết nối được bảo vệ chuẩn ngân hàng.",
+                                          },
+                                          {
+                                            icon: Database,
+                                            title: "Supabase Row-Level Security (RLS)",
+                                            desc: "Cô lập dữ liệu độc quyền ở cấp database.",
+                                          },
+                                          {
+                                            icon: KeyRound,
+                                            title: "Session HMAC SHA-256",
+                                            desc: "Phòng chống tuyệt đối giả mạo phiên làm việc.",
+                                          },
+                                          {
+                                            icon: ShieldCheck,
+                                            title: "Cam kết Zero Training Data",
+                                            desc: "Dữ liệu bài viết của bạn không bao giờ bị dùng để train AI.",
+                                          },
+                                        ].map((layer, index) => (
+                                          <div
+                                            key={layer.title}
+                                            className="flex items-start gap-3 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5"
+                                          >
+                                            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-emerald)]/10 text-[var(--accent-emerald)]">
+                                              <layer.icon className="h-4 w-4" />
+                                            </span>
+                                            <div className="min-w-0">
+                                              <p className="text-[13px] font-semibold text-[var(--ink-primary)]">
+                                                {index + 1}. {layer.title}
+                                              </p>
+                                              <p className="mt-0.5 text-[12px] leading-relaxed text-[var(--ink-secondary)]">
+                                                {layer.desc}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div>
 
-                          {securityModalOpen && (
+                              {securityModalOpen && (
                             <div
                               className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm animate-fade-in"
                               onClick={() => setSecurityModalOpen(false)}

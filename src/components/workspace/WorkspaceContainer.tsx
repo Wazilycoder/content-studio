@@ -627,9 +627,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               </span>
             )}
           </div>
-          <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
-            Brief 40% · Không gian biên tập 60% · Xem trước trong Drawer khi cần.
-          </p>
+          <span className="mt-1 block font-mono text-[11px] text-[var(--ink-tertiary)]">
+            [WORKSPACE · ACTIVE PIPELINE: 3 ANGLES]
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -960,83 +960,58 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   {/* Inline textarea */}
                   <div className="flex-1 px-4 pb-3">
                     <textarea
-                      ref={(el) => {
-                        if (el) {
-                          el.style.height = "auto";
-                          el.style.height = `${el.scrollHeight}px`;
-                        }
-                      }}
                       value={currentText}
                       onChange={(e) => {
-                        const value = e.target.value;
-                        setEditedCaptions((prev) => ({ ...prev, [activeAngleIndex]: value }));
-                        e.target.style.height = "auto";
-                        e.target.style.height = `${e.target.scrollHeight}px`;
+                        setEditedCaptions((prev) => ({ ...prev, [activeAngleIndex]: e.target.value }));
                       }}
                       rows={8}
-                      className="studio-textarea w-full resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-4 text-[var(--ink-primary)] outline-hidden transition-colors focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
+                      className="studio-textarea w-full resize-y rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-4 text-[var(--ink-primary)] outline-hidden transition-colors [field-sizing:content] focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
                       placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
                     />
                       <p className="mt-2 text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
                         125 ký tự đầu tiên là &quot;Hook&quot; — phần hiển thị trước nút &quot;Xem thêm&quot; trên bảng tin Facebook.
                       </p>
 
-                      {/* Bộ đếm kép đặt ngay dưới trình biên tập: Facebook Hook 125 & Instagram 2.200 */}
-                      <div className="mt-3.5 space-y-2.5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-4 backdrop-blur-sm">
+                      {/* Linear Precision Telemetry Gauge — FB Hook 125 & IG 2.200 */}
+                      <div className="mt-3.5 space-y-2.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3.5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-[13px] font-medium text-[var(--ink-secondary)]">
-                            Tổng độ dài:{" "}
-                            <strong className="tabular-nums text-[14px] font-bold text-[var(--ink-primary)]">
-                              {charCount.toLocaleString("vi-VN")}
-                            </strong>{" "}
-                            ký tự
+                          <span className="font-mono text-[11px] font-medium text-[var(--ink-tertiary)]">
+                            TELEMETRY · {charCount.toLocaleString("vi-VN")} chars
                           </span>
-
-                          <div className="flex flex-wrap items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-1.5 font-mono">
                             <span
-                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors ${
+                              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
                                 overLimit
-                                  ? "border-amber-500/40 bg-amber-500/15 text-amber-600 dark:text-amber-300"
-                                  : "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
+                                  ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-300"
+                                  : "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
                               }`}
                             >
                               <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                              <span>FB Hook:</span>
-                              <span className="tabular-nums">{charCount}/125</span>
+                              FB Hook: {charCount}/125
+                              {overLimit && <span className="ml-0.5">· Cần xem thêm</span>}
                             </span>
-
                             <span
-                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold transition-colors ${
+                              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
                                 isOverInstagram
-                                  ? "border-rose-500/40 bg-rose-500/15 text-rose-600 dark:text-rose-300"
+                                  ? "border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-300"
                                   : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)]"
                               }`}
                             >
-                              {isOverInstagram ? (
-                                <AlertTriangle className="h-3 w-3 shrink-0" />
-                              ) : (
-                                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-60" />
-                              )}
-                              <span>IG:</span>
-                              <span className="tabular-nums">
-                                {charCount.toLocaleString("vi-VN")}/2.200
-                              </span>
+                              {isOverInstagram && <AlertTriangle className="h-3 w-3 shrink-0" />}
+                              IG: {charCount.toLocaleString("vi-VN")}/2.200
                             </span>
                           </div>
                         </div>
-
-                        <div className="relative h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
                           <div
-                            className={`h-full rounded-full transition-[width,background-color] duration-300 ${
+                            className={`h-full rounded-full transition-[width] duration-300 ${
                               isOverInstagram
                                 ? "bg-rose-500"
                                 : overLimit
                                 ? "bg-amber-500"
-                                : "bg-gradient-to-r from-indigo-500 to-emerald-500"
+                                : "bg-gradient-to-r from-teal-500 to-emerald-400"
                             }`}
-                            style={{
-                              width: `${Math.min((charCount / 125) * 100, 100)}%`,
-                            }}
+                            style={{ width: `${Math.min((charCount / 125) * 100, 100)}%` }}
                           />
                         </div>
                       </div>
