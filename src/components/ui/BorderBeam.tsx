@@ -25,8 +25,13 @@ export function BorderBeam({
   return (
     <div
       aria-hidden="true"
+      style={
+        {
+          "--border-width": `${borderWidth}px`,
+        } as React.CSSProperties
+      }
       className={cn(
-        "pointer-events-none absolute -inset-[1px] rounded-[inherit] overflow-hidden z-0",
+        "pointer-events-none absolute -inset-[1px] rounded-[inherit] border border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)] overflow-hidden z-0",
         className
       )}
     >

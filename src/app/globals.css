@@ -729,12 +729,69 @@ body {
   .workspace-zone {
     transition: none !important;
   }
-  .zone-panel-transition,
-  .zone-panel-visible,
-  .zone-panel-hidden {
-    transition: none !important;
-    transform: none !important;
+    .zone-panel-transition,
+    .zone-panel-visible,
+    .zone-panel-hidden {
+      transition: none !important;
+      transform: none !important;
+    }
   }
-}
+
+  /* ============================================================
+     Sprint 3 — Precision Studio (Editor-First Workspace)
+     ============================================================ */
+
+  /* Thanh cuộn mảnh, thanh lịch cho cột Brief và Bản thảo */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-tertiary);
+  }
+
+  /* Vùng soạn thảo chuẩn biên tập: 15px, nhịp dòng thoáng */
+  .studio-textarea {
+    font-size: 15px;
+    line-height: 1.72;
+    letter-spacing: 0.002em;
+    tab-size: 2;
+  }
+  .studio-textarea::placeholder {
+    color: var(--ink-tertiary);
+  }
+
+  /* Drawer xem trước: trượt vào từ mép phải */
+  @keyframes drawerSlideIn {
+    from {
+      opacity: 0;
+      transform: translate3d(24px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  .animate-drawer-in {
+    animation: drawerSlideIn 0.28s var(--ease-spring) both;
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-drawer-in {
+      animation: none !important;
+    }
+  }
 
 

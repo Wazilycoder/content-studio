@@ -16,15 +16,11 @@ import {
   Globe,
   History,
   Loader2,
-  Maximize2,
-  Minimize2,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightClose,
-  PanelRightOpen,
+    Eye,
     RefreshCw,
     RotateCcw,
     Wand2,
+    X,
     Zap,
   } from "lucide-react";
 import ProductForm from "./ProductForm";
@@ -68,7 +64,7 @@ const DEFAULT_DEMO_RESULT: GeneratedContent = SAMPLE_SCENARIOS[0].output;
 const ANGLE_META: Array<{ tag: string; label: string }> = [
   { tag: "PAS", label: "Vấn đề & Giải pháp" },
   { tag: "Cảm xúc", label: "Cảm xúc & Phong cách" },
-  { tag: "FAB", label: "Tính năng & Lợi ích" },
+  { tag: "FAB", label: "Giá trị & Chế tác" },
 ];
 
 const ANGLE_SECTION_TITLES: string[] = [
@@ -110,16 +106,8 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
   const [draftSaved, setDraftSaved] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-  const [mobileTab, setMobileTab] = useState<"input" | "editor" | "preview">("input");
-  const [collapsedZones, setCollapsedZones] = useState({
-    zone1: false,
-    zone2: false,
-    zone3: false,
-  });
-
-  const toggleZone = useCallback((zone: "zone1" | "zone2" | "zone3") => {
-    setCollapsedZones((prev) => ({ ...prev, [zone]: !prev[zone] }));
-  }, []);
+  const [mobileTab, setMobileTab] = useState<"brief" | "editor">("brief");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [editedCaptions, setEditedCaptions] = useState<Record<number, string>>({});
@@ -621,7 +609,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h1 className="text-[16px] font-semibold tracking-tight text-[var(--ink-primary)]">
-              Không gian sáng tạo nội dung
+              Studio biên tập nội dung
             </h1>
             {draftSaved && (
               <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
@@ -631,35 +619,19 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             )}
           </div>
           <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
-            Nhập thông tin · Tinh chỉnh góc bài viết · Xem trước bảng tin thời gian thực.
+            Brief 40% · Không gian biên tập 60% · Xem trước trong Drawer khi cần.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="hidden lg:flex items-center gap-0.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] p-0.5">
-            {[
-              { key: "zone1" as const, Icon: FileText, label: "Vùng 1" },
-              { key: "zone2" as const, Icon: Wand2, label: "Vùng 2" },
-              { key: "zone3" as const, Icon: Globe, label: "Vùng 3" },
-            ].map((zone) => {
-              const isCollapsed = collapsedZones[zone.key];
-              return (
-                <button
-                  key={zone.key}
-                  type="button"
-                  onClick={() => toggleZone(zone.key)}
-                  title={isCollapsed ? `Mở ${zone.label}` : `Thu gọn ${zone.label}`}
-                  className={`btn-tactile inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
-                    isCollapsed
-                      ? "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                      : "bg-[var(--accent-navy)] text-white shadow-xs"
-                  }`}
-                >
-                  <zone.Icon className="h-3 w-3 shrink-0" />
-                  <span>{zone.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            disabled={!result}
+            className="btn-tactile hidden lg:inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-50"
+          >
+            <Eye className="h-3.5 w-3.5" />
+            Xem trước
+          </button>
           <button
             type="button"
             onClick={handleOpenTopUp}
@@ -697,16 +669,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         </div>
       </div>
     ),
-    [
-      draftSaved,
-      collapsedZones,
-      toggleZone,
-      isPro,
-      activePlan,
-      handleOpenTopUp,
-      handleOpenHistory,
-    ],
-  );
+      [
+        draftSaved,
+        result,
+        isPro,
+        activePlan,
+        handleOpenTopUp,
+        handleOpenHistory,
+      ],
+    );
 
   const activeCaption =
     result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
@@ -731,98 +702,68 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         <div className="mx-auto flex h-full w-full max-w-[1680px] flex-col px-3 pb-28 pt-3 sm:px-6 sm:py-4 md:pb-6 lg:py-3 lg:pb-3">
           {toolbarRow}
 
-          {/* Mobile Segmented Control — thanh trượt mượt giữa 3 chế độ */}
+          {/* Mobile Segmented Control — Brief / Bản thảo */}
           <div className="relative mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1 lg:hidden">
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{
-                width: "calc(33.3333% - 2.667px)",
-                transform: `translateX(${
-                  mobileTab === "input" ? 0 : mobileTab === "editor" ? 100 : 200
-                }%)`,
+                width: "calc(50% - 4px)",
+                transform: `translateX(${mobileTab === "brief" ? 0 : 100}%)`,
               }}
             />
             <button
               type="button"
-              onClick={() => setMobileTab("input")}
-              aria-pressed={mobileTab === "input"}
-              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
-                mobileTab === "input"
+              onClick={() => setMobileTab("brief")}
+              aria-pressed={mobileTab === "brief"}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-colors ${
+                mobileTab === "brief"
                   ? "text-[var(--accent-navy)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Nhập liệu</span>
+              <span className="truncate">Brief</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("editor")}
               aria-pressed={mobileTab === "editor"}
-              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-colors ${
                 mobileTab === "editor"
                   ? "text-[var(--accent-navy)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
               }`}
             >
               <Wand2 className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Biên tập</span>
+              <span className="truncate">Bản thảo</span>
               {result && (
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-emerald)]" />
               )}
             </button>
-            <button
-              type="button"
-              onClick={() => setMobileTab("preview")}
-              aria-pressed={mobileTab === "preview"}
-              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2 text-[13px] font-semibold transition-colors ${
-                mobileTab === "preview"
-                  ? "text-[var(--accent-navy)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
-              }`}
-            >
-              <Globe className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Xem trước</span>
-            </button>
           </div>
 
-          <div className="workspace-layout grid flex-1 grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-[45fr_55fr] lg:overflow-hidden">
-            {/* ===== CỘT TRÁI — NHẬP LIỆU & BIÊN TẬP ===== */}
-            <div className="flex min-w-0 flex-col gap-3 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5 custom-scrollbar">
+          <div className="grid flex-1 grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-[400px_1fr] lg:overflow-hidden xl:grid-cols-[440px_1fr]">
+            {/* ===== CỘT TRÁI — BRIEF INSPECTOR (40%) ===== */}
+            <div className="flex min-w-0 flex-col gap-3 lg:contents">
             <div
-              className={`workspace-zone ${
-                collapsedZones.zone1 ? "zone-collapsed" : "zone-expanded-1"
-              } relative min-w-0 ${
-                mobileTab === "input" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+              className={`custom-scrollbar relative min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5 ${
+                mobileTab === "brief" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
               }`}
             >
-              {/* Expanded View */}
-              <aside
-                className={`w-full min-w-0 flex-col gap-2.5 zone-panel-transition ${
-                    collapsedZones.zone1
-                      ? "zone-panel-hidden flex"
-                      : "zone-panel-visible flex"
-                  }`}
-                  aria-hidden={collapsedZones.zone1}
-              >
+              <aside className="flex w-full min-w-0 flex-col gap-2.5">
                 <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 shadow-xs">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                       <FileText className="h-3.5 w-3.5" />
                     </span>
                     <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                      Thông tin sản phẩm
+                      Brief sản phẩm
                     </h2>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => toggleZone("zone1")}
-                    title="Thu gọn Vùng 1"
-                    className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                  >
-                    <PanelLeftClose className="h-3.5 w-3.5" />
-                  </button>
+                  <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium uppercase tracking-wider text-[var(--ink-tertiary)]">
+                    4 trường
+                  </span>
                 </div>
                 <ProductForm
                   value={formInputs}
@@ -868,84 +809,51 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                 )}
               </aside>
 
-              {/* Desktop Collapsed Rail */}
-              <aside
-                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
-                  collapsedZones.zone1
-                    ? "zone-rail-visible"
-                    : "zone-rail-hidden"
-                }`}
-                aria-hidden={!collapsedZones.zone1}
-              >
-                <button
-                  type="button"
-                  onClick={() => toggleZone("zone1")}
-                  title="Mở lại Vùng 1 (Thông tin sản phẩm)"
-                  className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
-                >
-                  <PanelLeftOpen className="h-4 w-4" />
-                </button>
-                <div className="flex flex-1 items-center justify-center">
-                  <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
-                    VÙNG 1 · THÔNG TIN
-                  </span>
-                </div>
-                <div className="h-4" />
-              </aside>
-            </div>
+              </div>
 
-            {/* ===== BIÊN TẬP — GÓC BÀI VIẾT ĐANG CHỌN ===== */}
+            {/* ===== CỘT PHẢI — WRITING SUITE (60%) ===== */}
             <div
-              className={`workspace-zone ${
-                collapsedZones.zone2 ? "zone-collapsed" : "zone-expanded-2"
-              } relative min-w-0 ${
+              className={`relative min-w-0 lg:h-full lg:min-h-0 ${
                 mobileTab === "editor" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
               }`}
             >
-              {/* Expanded View */}
-              <section
-                className={`w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs zone-panel-transition ${
-                    collapsedZones.zone2
-                      ? "zone-panel-hidden flex"
-                      : "zone-panel-visible flex"
-                  }`}
-                  aria-hidden={collapsedZones.zone2}
-              >
-              <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+              <section className="custom-scrollbar flex h-full w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:overflow-y-auto">
+              <header className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
                     <Wand2 className="h-3.5 w-3.5" />
                   </span>
-                  <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                    Biên tập góc bài viết
+                  <h2 className="truncate text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                    Bản thảo biên tập
                   </h2>
                 </div>
-                  <div className="flex items-center gap-1.5">
-                    {result && (
-                      <button
-                        type="button"
-                        onClick={handleRegenerate}
-                        disabled={loading}
-                        className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
-                      >
-                        {loading ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <RefreshCw className="h-3 w-3" />
-                        )}
-                        {loading ? "Đang tạo..." : "Tạo lại"}
-                      </button>
-                    )}
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewOpen(true)}
+                    disabled={!result}
+                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-50"
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    Xem trước
+                  </button>
+                  {result && (
                     <button
                       type="button"
-                      onClick={() => toggleZone("zone2")}
-                      title="Thu gọn Vùng 2"
-                      className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                      onClick={handleRegenerate}
+                      disabled={loading}
+                      className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
                     >
-                      <Minimize2 className="h-3.5 w-3.5" />
+                      {loading ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-3 w-3" />
+                      )}
+                      {loading ? "Đang tạo..." : "Tạo lại"}
                     </button>
-                  </div>
-                </header>
+                  )}
+                </div>
+              </header>
 
               {result && activeCaption ? (
                 <>
@@ -976,7 +884,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                             }`}
                           >
                             <span className="w-full truncate text-center text-[12.5px] font-semibold">
-                              {meta?.tag ?? `G${index + 1}`}
+                              {String(index + 1).padStart(2, "0")}. {meta?.tag ?? `G${index + 1}`}
                             </span>
                             <span className="w-full truncate text-center text-[12px] font-normal text-[var(--ink-tertiary)]">
                               {meta?.label ?? cap.angle}
@@ -1057,7 +965,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                         e.target.style.height = `${e.target.scrollHeight}px`;
                       }}
                       rows={8}
-                      className="w-full resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-3.5 text-[14.5px] leading-[1.75] text-[var(--ink-primary)] outline-hidden transition-colors focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
+                      className="studio-textarea w-full resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-4 text-[var(--ink-primary)] outline-hidden transition-colors focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
                       placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
                     />
                       <p className="mt-2 text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
@@ -1214,10 +1122,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   <div className="mt-4 border-t border-[var(--border-subtle)] p-4 lg:hidden">
                     <button
                       type="button"
-                      onClick={() => setMobileTab("preview")}
-                      className="btn-tactile flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] py-3 text-[13px] font-semibold text-white shadow-xs"
+                      onClick={() => setPreviewOpen(true)}
+                      className="btn-tactile touch-target flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] py-3 text-[13px] font-semibold text-white shadow-xs"
                     >
-                      <span>Xem trước Mockup Facebook (Vùng 3)</span>
+                      <span>Xem trước bài đăng</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
@@ -1229,151 +1137,87 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   </span>
                   <p className="text-[13px] font-medium text-[var(--ink-primary)]">Chưa có nội dung</p>
                   <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
-                    Nhập thông tin sản phẩm ở Vùng 1 và bấm &quot;Tạo 3 góc bài viết&quot; để AI kiến tạo nội dung.
+                    Điền brief ở cột Brief và bấm &quot;Tạo 3 góc bài viết&quot; để AI kiến tạo nội dung.
                   </p>
                   <div className="mt-4 lg:hidden">
                     <button
                       type="button"
-                      onClick={() => setMobileTab("input")}
+                      onClick={() => setMobileTab("brief")}
                       className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)]"
                     >
                       <ArrowLeft className="h-3.5 w-3.5" />
-                      <span>Quay lại Vùng 1</span>
+                      <span>Quay lại Brief</span>
                     </button>
                   </div>
                 </div>
                 )}
               </section>
 
-              {/* Desktop Collapsed Rail */}
-              <aside
-                className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
-                  collapsedZones.zone2
-                    ? "zone-rail-visible"
-                    : "zone-rail-hidden"
-                }`}
-                aria-hidden={!collapsedZones.zone2}
+              </div>
+
+            </div>
+
+            </div>
+
+            {/* ===== PREVIEW DRAWER — Xem trước đa kênh ===== */}
+            {previewOpen && (
+              <div
+                role="presentation"
+                onClick={() => setPreviewOpen(false)}
+                className="animate-fade-in fixed inset-0 z-50 flex justify-end bg-black/45 backdrop-blur-sm"
               >
-                <button
-                  type="button"
-                  onClick={() => toggleZone("zone2")}
-                  title="Mở lại Vùng 2 (Biên tập)"
-                  className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Xem trước bài đăng"
+                  onClick={(event) => event.stopPropagation()}
+                  className="animate-drawer-in flex h-full w-full max-w-md flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-2xl sm:max-w-lg"
                 >
-                  <Maximize2 className="h-4 w-4" />
-                </button>
-                <div className="flex flex-1 items-center justify-center">
-                  <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
-                    VÙNG 2 · BIÊN TẬP
-                  </span>
-                </div>
-                <div className="h-4" />
-              </aside>
-            </div>
-
-            </div>
-
-            {/* ===== CỘT PHẢI — LIVE MOBILE PREVIEW ===== */}
-            <div
-              className={`workspace-zone ${
-                collapsedZones.zone3 ? "zone-collapsed" : "zone-expanded-3"
-              } relative min-w-0 lg:h-full lg:min-h-0 ${
-                mobileTab === "preview" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
-              }`}
-            >
-              {/* Expanded View */}
-              <aside
-                className={`flex h-full w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:overflow-y-auto custom-scrollbar zone-panel-transition ${
-                    collapsedZones.zone3
-                      ? "zone-panel-hidden flex"
-                      : "zone-panel-visible flex"
-                  }`}
-                  aria-hidden={collapsedZones.zone3}
-              >
-              <header className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-                    <Globe className="h-3.5 w-3.5" />
-                  </span>
-                  <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                    Xem trước đa kênh
-                  </h2>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setMobileTab("editor")}
-                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-1 text-[11px] font-medium text-[var(--ink-secondary)] lg:hidden"
-                  >
-                    <ArrowLeft className="h-3 w-3" />
-                    <span>Sửa bài (Vùng 2)</span>
-                  </button>
-                      <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
-                        Live
+                  <header className="flex shrink-0 items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
+                        <Globe className="h-3.5 w-3.5" />
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => toggleZone("zone3")}
-                        title="Thu gọn Vùng 3"
-                        className="btn-tactile hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                      >
-                        <PanelRightClose className="h-3.5 w-3.5" />
-                      </button>
+                      <h2 className="truncate text-[13.5px] font-semibold text-[var(--ink-primary)]">
+                        Xem trước đa kênh
+                      </h2>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewOpen(false)}
+                      aria-label="Đóng xem trước"
+                      className="btn-tactile inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                   </header>
-
-              <div className="flex-1 p-3">
-                {result && activeCaption ? (
-                  <FacebookMockup
-                    activeText={currentText}
-                    activeAngle={activeCaption.angle}
-                    pageName={formInputs.productName}
-                    headline={result.headlines[0]}
-                    hashtags={result.hashtags}
-                    onNotify={showToast}
-                  />
-                ) : (
-                  <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
-                      <Globe className="h-5 w-5" />
-                    </span>
-                    <p className="text-[13px] font-medium text-[var(--ink-primary)]">
-                      Bản xem trước trực tiếp
-                    </p>
-                    <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
-                      Bài viết bạn tinh chỉnh ở Vùng 2 sẽ đồng bộ thời gian thực tại đây, mô phỏng đúng bảng tin Facebook, TikTok và Shopee.
-                    </p>
+                  <div className="custom-scrollbar flex-1 overflow-y-auto p-3">
+                    {result && activeCaption ? (
+                      <FacebookMockup
+                        activeText={currentText}
+                        activeAngle={activeCaption.angle}
+                        pageName={formInputs.productName}
+                        headline={result.headlines[0]}
+                        hashtags={result.hashtags}
+                        onNotify={showToast}
+                      />
+                    ) : (
+                      <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
+                          <Globe className="h-5 w-5" />
+                        </span>
+                        <p className="text-[13px] font-medium text-[var(--ink-primary)]">
+                          Chưa có bản thảo để xem trước
+                        </p>
+                        <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                          Tạo 3 góc bài viết ở cột Brief, sau đó mở lại Drawer này để xem mockup Facebook và Instagram.
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-                  </div>
-                </aside>
-
-                {/* Desktop Collapsed Rail */}
-                <aside
-                  className={`hidden lg:flex absolute inset-0 w-full max-w-[44px] h-full min-h-0 flex-col items-center justify-between rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] py-3 shadow-xs ${
-                    collapsedZones.zone3
-                      ? "zone-rail-visible"
-                      : "zone-rail-hidden"
-                  }`}
-                  aria-hidden={!collapsedZones.zone3}
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggleZone("zone3")}
-                    title="Mở lại Vùng 3 (Xem trước)"
-                    className="btn-tactile flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-raised)] text-[var(--accent-navy)] transition-colors hover:bg-[var(--accent-navy)] hover:text-white"
-                  >
-                    <PanelRightOpen className="h-4 w-4" />
-                  </button>
-                  <div className="flex flex-1 items-center justify-center">
-                    <span className="rotate-180 text-[11px] font-semibold tracking-wider text-[var(--ink-secondary)] [writing-mode:vertical-rl]">
-                      VÙNG 3 · XEM TRƯỚC
-                    </span>
-                  </div>
-                  <div className="h-4" />
-                </aside>
+                </div>
               </div>
-              </div>
+            )}
 
               <HistoryDrawer
             open={historyOpen}
@@ -1422,7 +1266,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           {/* Mobile sticky action bar */}
           <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md lg:hidden">
             <div className="mx-auto flex max-w-6xl items-center gap-3">
-              {mobileTab === "input" ? (
+              {mobileTab === "brief" ? (
                 <>
                   <div className="flex min-w-0 flex-1 items-center gap-2">
                     <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
@@ -1436,18 +1280,18 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                               : "text-emerald-600 dark:text-emerald-400"
                           }`}
                         >
-                          {activePlan.tierBadge} · 0s Chờ
+                          {activePlan.tierBadge} · 0s chờ
                         </span>
                       ) : user ? (
-                        "Gói Miễn Phí (45s Chờ)"
+                        "Gói Miễn Phí (45s chờ)"
                       ) : (
-                        "Đăng nhập lưu lịch sử"
+                        "Đăng nhập để lưu lịch sử"
                       )}
                     </p>
                     <button
                       type="button"
                       onClick={() => setTopUpModalOpen(true)}
-                      className="text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
+                      className="shrink-0 text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
                     >
                       {isPro ? "Đổi gói" : "+ Nâng cấp"}
                     </button>
@@ -1456,7 +1300,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     type="submit"
                     form="product-form"
                     disabled={loading || (cooldownSeconds > 0 && !isPro)}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
+                    className="touch-target inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {loading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -1472,37 +1316,25 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     </span>
                   </button>
                 </>
-              ) : mobileTab === "editor" ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setMobileTab("input")}
-                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    <span>Vùng 1</span>
-                  </button>
-                  <div className="flex-1" />
-                  <button
-                    type="button"
-                    onClick={() => setMobileTab("preview")}
-                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
-                  >
-                    <span>Xem trước (Vùng 3)</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
-                </>
               ) : (
                 <>
                   <button
                     type="button"
-                    onClick={() => setMobileTab("editor")}
-                    className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
+                    onClick={() => setMobileTab("brief")}
+                    className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
-                    <span>Sửa bài (Vùng 2)</span>
+                    <span>Brief</span>
                   </button>
                   <div className="flex-1" />
+                  <button
+                    type="button"
+                    onClick={() => setPreviewOpen(true)}
+                    aria-label="Xem trước bài đăng"
+                    className="btn-tactile touch-target inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[var(--ink-secondary)]"
+                  >
+                    <Eye className="h-4 w-4" />
+                  </button>
                   {result && activeCaption && (
                     <button
                       type="button"
@@ -1513,10 +1345,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                           "Đã sao chép bài viết.",
                         )
                       }
-                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
+                      className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
                     >
                       <Copy className="h-3.5 w-3.5" />
-                      <span>Sao chép bài viết</span>
+                      <span>Sao chép</span>
                     </button>
                   )}
                 </>
