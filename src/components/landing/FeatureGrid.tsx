@@ -1,8 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Trash2, RotateCw } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Trash2,
+  RotateCw,
+  FileText,
+  Gauge,
+  Zap,
+  History,
+  Layers,
+} from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
 
 export default function FeatureGrid() {
   // Mini interactive tone preview
@@ -35,97 +46,34 @@ export default function FeatureGrid() {
   return (
     <section
       id="features"
-      className="scroll-mt-20 border-y border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 py-16 sm:py-24"
+      className="scroll-mt-20 border-y border-[var(--border-hairline)] bg-[var(--surface-raised)]/40 py-16 sm:py-24"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal direction="up" duration={600}>
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3.5 py-1 text-xs font-semibold text-[var(--ink-secondary)] shadow-xs">
+            <span className="inline-flex items-center rounded-full border border-[var(--border-hairline)] bg-[var(--surface)] px-3.5 py-1 text-xs font-semibold text-[var(--ink-secondary)] shadow-xs">
               ĐÁP ỨNG 5/5 YÊU CẦU ĐỀ BÀI BẢNG B
             </span>
             <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-4xl">
               Đủ bộ công cụ thực chiến — Không tính năng thừa
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-base">
-              Mỗi tính năng đều được thiết kế tỉ mỉ, bám sát từng tiêu chí chấm điểm của Đề 2: từ bộ đếm ký tự kép đến form 4 trường dữ liệu và lưu trữ ngoại tuyến an toàn.
+              Mỗi tính năng đều bám sát tiêu chí chấm điểm của Đề 2: form 4 trường dữ liệu, bộ đếm ký tự kép, 3 góc nhìn độc bản và lịch sử lưu trữ ngoại tuyến an toàn.
             </p>
           </div>
         </ScrollReveal>
 
         {/* Bento Grid Architecture */}
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {/* Tile 1: Dual Character Counter (2-column span on large screens) */}
-          <div className="lg:col-span-2 rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 sm:p-8 shadow-xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-0.5 text-xs font-bold text-indigo-600 dark:text-indigo-400">
-                  TIÊU CHÍ KỸ THUẬT LÕI
-                </span>
-                <span className="text-xs font-medium text-[var(--ink-tertiary)]">
-                  Chuẩn thuật toán Newsfeed 2026
-                </span>
-              </div>
-
-              <h3 className="mt-4 text-xl font-bold text-[var(--ink-primary)]">
-                Bộ đếm ký tự kép thời gian thực (FB 125 &amp; IG 2.200)
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--ink-secondary)] leading-relaxed">
-                Facebook tự động ẩn nội dung sau 125 ký tự bằng nút &quot;… Xem thêm&quot;. Content Studio phân tách trực quan độ dài hook mở đầu và toàn văn caption để bạn không bao giờ bỏ lỡ cơ hội chốt đơn.
-              </p>
-            </div>
-
-            {/* Live Interactive Gauge Demo */}
-            <div className="mt-6 space-y-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-4 sm:p-5">
-              {/* Facebook Meter */}
-              <div>
-                <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
-                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Ngưỡng Hook Facebook (&quot;… Xem thêm&quot;)
-                  </span>
-                  <span className="font-mono text-emerald-600 dark:text-emerald-400">
-                    118 / 125 ký tự (Tối ưu)
-                  </span>
-                </div>
-                <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full w-[94%] transition-all duration-500" />
-                </div>
-              </div>
-
-              {/* Instagram Meter */}
-              <div>
-                <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
-                  <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
-                    <span className="h-2 w-2 rounded-full bg-indigo-500" />
-                    Giới hạn ký tự Instagram Caption
-                  </span>
-                  <span className="font-mono text-indigo-600 dark:text-indigo-400">
-                    1.420 / 2.200 ký tự (64%)
-                  </span>
-                </div>
-                <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full w-[64%] transition-all duration-500" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tile 2: 3 Contest Tones (1-column span) */}
-          <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 sm:p-8 shadow-xs flex flex-col justify-between">
-            <div>
-              <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-3 py-0.5 text-xs font-bold text-purple-600 dark:text-purple-400">
-                3 TÔNG GIỌNG BẮT BUỘC
-              </span>
-              <h3 className="mt-4 text-xl font-bold text-[var(--ink-primary)]">
-                Tùy biến phong cách bán hàng
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--ink-secondary)] leading-relaxed">
-                Chuyển đổi tức thì giữa 3 tông giọng quy định trong đề thi. Bấm thử từng tông bên dưới:
-              </p>
-            </div>
-
-            {/* Interactive Tone Buttons & Preview */}
-            <div className="mt-5 space-y-3">
+        <BentoGrid className="mt-12">
+          {/* Card 1: Form 4 trường & 3 tông giọng chuẩn đề bài */}
+          <BentoCard
+            name="Form 4 trường & 3 tông giọng chuẩn đề bài"
+            description="Nhập Tên sản phẩm, Tông giọng, Khách hàng mục tiêu và Điểm nhấn cần khoe — hệ thống tự chọn từ vựng, nhịp câu khớp với tông Hài hước, Trang trọng hoặc Trẻ trung. Bấm thử từng tông bên dưới:"
+            badge="3 TÔNG GIỌNG BẮT BUỘC"
+            Icon={FileText}
+            className="md:col-span-2"
+          >
+            <div className="space-y-3">
               <div className="flex flex-wrap gap-1.5">
                 <button
                   type="button"
@@ -162,107 +110,72 @@ export default function FeatureGrid() {
                 </button>
               </div>
 
-              <div className="min-h-[70px] rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-3 text-xs italic text-[var(--ink-secondary)] leading-relaxed">
+              <div className="min-h-[70px] rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] p-3 text-xs italic text-[var(--ink-secondary)] leading-relaxed">
                 &quot;{toneExamples[selectedTone]}&quot;
               </div>
             </div>
-          </div>
+          </BentoCard>
 
-          {/* Tile 3: 3 Captions + 3 Headlines + 5 Hashtags */}
-          <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 sm:p-8 shadow-xs flex flex-col justify-between">
-            <div>
-              <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400">
-                ĐỦ ĐẦU RA QUY ĐỊNH
-              </span>
-              <h3 className="mt-4 text-xl font-bold text-[var(--ink-primary)]">
-                3 Caption · 3 Headline · 5 Hashtag
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--ink-secondary)] leading-relaxed">
-                Mỗi lần bấm Tạo bài, AI xuất xưởng trọn vẹn gói nội dung đa chiều để bạn thử nghiệm A/B testing hiệu quả.
-              </p>
-            </div>
-
-            <div className="mt-5 space-y-2">
-              <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
-                <span className="font-semibold text-[var(--ink-primary)]">3 Góc nhìn (PAS · Cảm xúc · FAB)</span>
-                <span className="text-emerald-500 font-bold">✓ Độc bản</span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
-                <span className="font-semibold text-[var(--ink-primary)]">3 Tiêu đề giật tít Hook</span>
-                <span className="text-indigo-500 font-bold">✓ Chuẩn CTR</span>
-              </div>
-              <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
-                <span className="font-semibold text-[var(--ink-primary)]">5 Hashtag chuẩn ngách</span>
-                <span className="text-purple-500 font-bold">✓ Tối ưu SEO</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Tile 4: LocalStorage Individual Deletion */}
-          <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 sm:p-8 shadow-xs flex flex-col justify-between">
-            <div>
-              <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                QUẢN LÝ LỊCH SỬ NGOẠI TUYẾN
-              </span>
-              <h3 className="mt-4 text-xl font-bold text-[var(--ink-primary)]">
-                LocalStorage xóa từng mục an toàn
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--ink-secondary)] leading-relaxed">
-                Toàn bộ bản nháp được lưu riêng trên máy tính của bạn. Dễ dàng xem lại, khôi phục vào form hoặc xóa từng bài viết khi không còn cần thiết.
-              </p>
-            </div>
-
-            <div className="mt-5 space-y-2">
-              {historyItems.length > 0 ? (
-                historyItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-xs"
-                  >
-                    <span className="truncate max-w-[180px] font-medium text-[var(--ink-primary)]">
-                      {item.title}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteHistory(item.id)}
-                      className="p-1 rounded-md text-[var(--ink-tertiary)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                      title="Xóa mục này"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-xl border border-dashed border-[var(--border-subtle)] p-3 text-center text-xs text-[var(--ink-tertiary)]">
-                  Đã dọn sạch lịch sử thử nghiệm! Bấm &quot;Tạo lại&quot; bên dưới để khôi phục.
+          {/* Card 2: Bộ đếm ký tự kép Facebook & Instagram */}
+          <BentoCard
+            name="Bộ đếm ký tự kép Facebook & Instagram"
+            description="Cảnh báo chuẩn mực: hook vượt ~125 ký tự sẽ bị cắt sau nút &quot;… Xem thêm&quot;, caption Instagram vượt 2.200 ký tự sẽ bị từ chối đăng."
+            badge="TIÊU CHÍ KỸ THUẬT"
+            Icon={Gauge}
+            className="md:col-span-1"
+          >
+            <div className="space-y-4 rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] p-4">
+              {/* Facebook Meter */}
+              <div>
+                <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
+                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Hook Facebook
+                  </span>
+                  <span className="font-mono text-emerald-600 dark:text-emerald-400">
+                    118 / 125
+                  </span>
                 </div>
-              )}
-            </div>
-          </div>
+                <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full w-[94%] transition-all duration-500" />
+                </div>
+              </div>
 
-          {/* Tile 5: 1-Click Multi-copy & Instant Regenerate */}
-          <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 sm:p-8 shadow-xs flex flex-col justify-between">
-            <div>
-              <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
-                THAO TÁC CỰC NHANH
-              </span>
-              <h3 className="mt-4 text-xl font-bold text-[var(--ink-primary)]">
-                Sao chép 1-Click &amp; Tạo lại tức thì
-              </h3>
-              <p className="mt-2 text-xs sm:text-sm text-[var(--ink-secondary)] leading-relaxed">
-                Sao chép từng phần hay toàn bộ bài đăng ngay lập tức. Nếu chưa hoàn toàn ưng ý, một nút bấm &quot;Tạo lại&quot; sẽ kiến tạo một phương án đột phá mới.
-              </p>
+              {/* Instagram Meter */}
+              <div>
+                <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
+                  <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+                    <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                    Caption Instagram
+                  </span>
+                  <span className="font-mono text-indigo-600 dark:text-indigo-400">
+                    1.420 / 2.200
+                  </span>
+                </div>
+                <div className="h-2.5 w-full rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full w-[64%] transition-all duration-500" />
+                </div>
+              </div>
             </div>
+          </BentoCard>
 
-            <div className="mt-5 flex gap-2">
+          {/* Card 3: 1-Click Copy & Regenerate tức thì */}
+          <BentoCard
+            name="1-Click Copy & Regenerate tức thì"
+            description="Sao chép trọn gói hoặc từng phần chỉ với một cú nhấp. Chưa ưng ý? Bấm Tạo lại để nhận phương án mới ngay lập tức."
+            badge="THAO TÁC NHANH"
+            Icon={Zap}
+            className="md:col-span-1"
+          >
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={handleCopyMini}
-                className="btn-shimmer flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold cursor-pointer"
+                className="btn-shimmer flex w-full items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-semibold cursor-pointer"
               >
                 {copiedMini ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-300 animate-bounce" />
+                    <Check className="check-pop h-3.5 w-3.5 text-emerald-300" />
                     <span>Đã sao chép!</span>
                   </>
                 ) : (
@@ -281,16 +194,76 @@ export default function FeatureGrid() {
                     { id: Date.now() + 1, title: "Cà phê Robusta rang mộc Cầu Đất", date: "Vừa xong" },
                   ]);
                 }}
-                className="btn-tactile flex items-center justify-center gap-1.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2.5 text-xs font-semibold text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] cursor-pointer"
+                className="btn-tactile flex w-full items-center justify-center gap-1.5 rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-3 py-2.5 text-xs font-semibold text-[var(--ink-secondary)] hover:text-[var(--ink-primary)] cursor-pointer"
                 title="Tạo lại dữ liệu demo"
               >
                 <RotateCw className="h-3.5 w-3.5" />
                 <span>Tạo lại</span>
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
+          </BentoCard>
+
+          {/* Card 4: Lịch sử LocalStorage xóa từng mục */}
+          <BentoCard
+            name="Lịch sử LocalStorage xóa từng mục"
+            description="Bài viết được lưu riêng trên máy bạn, không gửi lên máy chủ. Xóa từng mục bằng nút thùng rác — xóa là mất ngay, không thể hoàn tác."
+            badge="NGOẠI TUYẾN"
+            Icon={History}
+            className="md:col-span-1"
+          >
+            <div className="space-y-2">
+              {historyItems.length > 0 ? (
+                historyItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-3 py-2 text-xs"
+                  >
+                    <span className="truncate max-w-[180px] font-medium text-[var(--ink-primary)]">
+                      {item.title}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteHistory(item.id)}
+                      className="p-1 rounded-md text-[var(--ink-tertiary)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                      title="Xóa mục này"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-xl border border-dashed border-[var(--border-hairline)] p-3 text-center text-xs text-[var(--ink-tertiary)]">
+                  Đã dọn sạch lịch sử thử nghiệm! Bấm &quot;Tạo lại&quot; ở thẻ bên cạnh để khôi phục.
+                </div>
+              )}
+            </div>
+          </BentoCard>
+
+                {/* Card 5: Đa chiều góc nhìn (PAS · Cảm xúc · FAB) */}
+                <BentoCard
+                  name="Đa chiều góc nhìn (PAS · Cảm xúc · FAB)"
+                  description="Ba góc phân giải tâm lý khác nhau cho cùng một sản phẩm, đảm bảo không góc nào trùng lặp ý tưởng hay cấu trúc câu."
+                  badge="ĐỘC BẢN"
+                  Icon={Layers}
+                  className="md:col-span-1"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
+                      <span className="font-semibold text-[var(--ink-primary)]">3 Góc nhìn (PAS · Cảm xúc · FAB)</span>
+                      <span className="text-emerald-500 font-bold">✓ Độc bản</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
+                      <span className="font-semibold text-[var(--ink-primary)]">3 Tiêu đề giật tít Hook</span>
+                      <span className="text-indigo-500 font-bold">✓ Chuẩn CTR</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-3 py-2 text-xs">
+                      <span className="font-semibold text-[var(--ink-primary)]">5 Hashtag chuẩn ngách</span>
+                      <span className="text-purple-500 font-bold">✓ Tối ưu SEO</span>
+                    </div>
+                  </div>
+                </BentoCard>
+              </BentoGrid>
+            </div>
+          </section>
   );
 }

@@ -3,47 +3,57 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --canvas: #FAFAFD;
+  /* Editorial Studio Palette v2 */
+  --canvas: #F8F8F6;
   --surface: #FFFFFF;
-  --surface-raised: #F4F6FC;
+  --surface-raised: #F0F1F3;
   --canvas-base: #F8F8F6;
   --surface-stage: #FFFFFF;
-  --border-subtle: #E5E8F0;
+  --border-subtle: #E0E3E8;
   --border-strong: #CBD2E2;
-  --border-hairline: #E4E4E8;
-  --border-focus: rgba(68, 82, 232, 0.4);
-  --ink-primary: #18181B;
-  --ink-secondary: #52525B;
+  --border-hairline: #E0E3E8;
+  --border-focus: rgba(67, 85, 245, 0.4);
+  --ink-primary: #15171C;
+  --ink-secondary: #515662;
   --ink-tertiary: #71717A;
-  --accent-navy: #4452E8;
+  --brand: #4355F5;
+  --pas: #4355F5;
+  --aida: #E76E67;
+  --fab: #16846E;
+  --accent-navy: #4355F5;
   --accent-navy-hover: #3642C4;
   --accent-purple: #7C3AED;
-  --accent-emerald: #059669;
-  --accent-indigo: #4452E8;
-  --glow-accent: rgba(68, 82, 232, 0.08);
+  --accent-emerald: #16846E;
+  --accent-indigo: #4355F5;
+  --glow-accent: rgba(67, 85, 245, 0.08);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark {
-  --canvas: #090A0F;
-  --surface: #11131C;
-  --surface-raised: #181B27;
-  --canvas-base: #090A0F;
-  --surface-stage: #11131C;
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  /* Editorial Studio Palette v2 */
+  --canvas: #0B0D13;
+  --surface: #141720;
+  --surface-raised: #1C202B;
+  --canvas-base: #0B0D13;
+  --surface-stage: #141720;
+  --border-subtle: #303543;
   --border-strong: rgba(255, 255, 255, 0.16);
-  --border-hairline: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(68, 82, 232, 0.5);
-  --ink-primary: #F8FAFC;
-  --ink-secondary: #94A3B8;
+  --border-hairline: #303543;
+  --border-focus: rgba(137, 150, 255, 0.5);
+  --ink-primary: #F5F6F8;
+  --ink-secondary: #A8AFBE;
   --ink-tertiary: #64748B;
-  --accent-navy: #6370FF;
-  --accent-navy-hover: #4F5DFF;
+  --brand: #8996FF;
+  --pas: #8290FF;
+  --aida: #FF9D92;
+  --fab: #59C8AA;
+  --accent-navy: #8996FF;
+  --accent-navy-hover: #6E7DFF;
   --accent-purple: #8B5CF6;
-  --accent-emerald: #10B981;
-  --accent-indigo: #6370FF;
-  --glow-accent: rgba(68, 82, 232, 0.15);
+  --accent-emerald: #59C8AA;
+  --accent-indigo: #8996FF;
+  --glow-accent: rgba(137, 150, 255, 0.15);
 }
 
 body {

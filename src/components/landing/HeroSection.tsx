@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Check,
@@ -12,6 +13,8 @@ import {
 } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { BorderBeam } from "@/components/ui/BorderBeam";
+import { ShimmerButton } from "@/components/ui/ShimmerButton";
 
 type LandingUser = Awaited<ReturnType<typeof getUserProfile>>;
 
@@ -27,7 +30,6 @@ interface TransformationAngle {
   badgeBg: string;
   tagColor: string;
   hook: string;
-  hookLength: number;
   body: string;
   hashtags: string;
   psychology: string;
@@ -47,24 +49,22 @@ const TRANSFORMATION_ANGLES: TransformationAngle[] = [
     name: "Vấn đề & Giải pháp",
     badgeBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
     tagColor: "text-blue-500",
-    hook: "85% người bán hàng online bỏ cuộc sau 3 tháng đầu vì vẫn copy cùng một kiểu văn mẫu AI sáo rỗng khiến khách lướt qua trong 0.5 giây",
-    hookLength: 122,
-    body: "Họ vô tình đăng đúng câu 'Chào mừng quý khách...' hay 'Sản phẩm siêu hot...' mà ai cũng đã đọc hàng trăm lần. Cách duy nhất phá vỡ vòng lặp: tiếp cận trực diện nỗi đau thực tế của khách, rồi biến giải pháp thành lý do họ phải chốt đơn ngay hôm nay.",
-    hashtags: "#ContentMarketing #AntiAISlop #BanHangOnline",
-    psychology: "Đồng cảm nỗi đau → Xóa tan hoài nghi → Kích hoạt hành động",
+    hook: "Áo sơ mi công sở khiến bạn bí bách cả ngày dài, ngứa cổ và nhăn nhúm sau 2 lần giặt? Đã đến lúc chấm dứt sự khó chịu đó.",
+    body: "Sợi tơ tằm Bảo Lộc tự nhiên 100% với cấu trúc protein thoáng khí giúp hạ nhiệt tức thì 2-3°C khi tiếp xúc với da. Kỹ thuật dệt tay giữ nếp rũ mềm mại tự nhiên, không nhăn nhúm, cho bạn vẻ chỉn chu từ cuộc họp sáng sớm đến bữa tối đối tác.",
+    hashtags: "#AoSoMiLua #LuaToTamBaoLoc #ThoiTrangCongSo #ThanhLichTuNhien",
+    psychology: "Bí bách khó chịu → Giải pháp lụa tự nhiên → Tự tin suốt ngày dài",
   },
   {
-    id: "lifestyle",
+    id: "aida",
     num: "02",
     tag: "AIDA",
     name: "Cảm xúc & Phong cách",
     badgeBg: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
     tagColor: "text-pink-500",
-    hook: "Từ ngày đổi sang phong cách viết này, khách tự nhắn hỏi mua không cần chèo kéo — đơn về đều đặn mỗi ngày mà không tốn thêm chi phí quảng cáo",
-    hookLength: 124,
-    body: "Không đao to búa lớn. Không kêu gọi gượng ép. Chỉ kể lại câu chuyện chân thực khi khách hàng bước vào cuộc sống mới cùng sản phẩm — để mỗi câu từ là một bức tranh cảm xúc khiến họ nhìn thấy chính mình hạnh phúc và tự tin hơn mỗi ngày.",
-    hashtags: "#PhongCachSong #Storytelling #ChamVaoCamXuc",
-    psychology: "Bản ngã khát khao → Viễn cảnh hạnh phúc → Tự hào sở hữu",
+    hook: "Không cần phô trương logo, chiếc áo sơ mi lụa tơ tằm dệt tay Bảo Lộc tự toát lên thần thái sang trọng, tĩnh lặng của người phụ nữ tinh tế.",
+    body: "Chạm nhẹ vào làn da mỗi sáng thứ Hai như một lời khẳng định dịu dàng về gu thẩm mỹ thượng thừa. Ánh bóng mờ tự nhiên của tơ dệt thủ công tôn vinh nét quý phái mà không cần bất kỳ sự gượng ép nào — bước vào phòng làm việc và thu hút mọi ánh nhìn.",
+    hashtags: "#QuietLuxury #ThoiTrangQuyPhai #LuaBaoLoc #ThanhLichTinhLang",
+    psychology: "Gu thẩm mỹ tinh tế → Khẳng định vị thế thầm lặng → Tự hào sở hữu",
   },
   {
     id: "fab",
@@ -73,15 +73,15 @@ const TRANSFORMATION_ANGLES: TransformationAngle[] = [
     name: "Tính năng & Giá trị",
     badgeBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
     tagColor: "text-emerald-500",
-    hook: "Trực diện 3 nâng cấp công nghệ giúp bạn tiết kiệm 3 giờ viết bài mỗi ngày: chuẩn hóa 125 ký tự đầu, tự động phân giải 3 góc bài, 100% không trùng lặp",
-    hookLength: 123,
-    body: "Bán hàng bằng giá trị cốt lõi và thông số thuyết phục: mỗi caption trả lời đúng những câu khách hay lăn tăn nhất, biến người xem vãng lai thành khách hàng trung thành dài hạn — không cần chiêu trò, không cần giảm giá sốc.",
-    hashtags: "#ProTurbo #HieuQuaCao #TuDongHoa",
-    psychology: "Bằng chứng vật lý → Lợi ích định lượng → Niềm tin tuyệt đối",
+    hook: "36 giờ dệt tay thủ công từ 100% kén tơ tằm tự nhiên vùng cao nguyên Bảo Lộc cùng cúc vỏ trai khảm xà cừ tạo nên kiệt tác độc bản.",
+    body: "Mỗi chiếc áo sở hữu mật độ dệt 16 momme tối ưu cho độ bền gấp 3 lần lụa công nghiệp, không tích điện và thân thiện với làn da nhạy cảm. Từng đường may giấu chỉ chuẩn may đo cao cấp (Haute Couture), bảo toàn trọn vẹn giá trị di sản thủ công Việt.",
+    hashtags: "#ThuCongTruyenThong #GiaTriThat #ChatLieuTuNhien #BaoLocSilk",
+    psychology: "Chế tác 36h thủ công → Bền gấp 3 lần lụa dệt máy → Đầu tư xứng đáng",
   },
 ];
 
 export default function HeroSection({ user }: HeroSectionProps) {
+  const router = useRouter();
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [copiedPost, setCopiedPost] = useState(false);
 
@@ -124,32 +124,34 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
             {/* Kinetic Display Headline */}
             <h1 className="mt-5 text-balance text-4xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-6xl lg:text-[3.75rem] xl:text-[4.25rem] leading-[1.08]">
-              Một sản phẩm.
-              <br />
-              <span className="text-[var(--accent-indigo)]">Ba câu chuyện</span>
-              <br />
-              khiến khách muốn mua.
-            </h1>
+                Một sản phẩm.
+                <br />
+                <span className="text-[var(--accent-indigo)]">Ba câu chuyện.</span>
+                <br />
+                Khiến khách muốn mua.
+              </h1>
 
             {/* Subtitle */}
             <p className="mt-5 max-w-xl text-base leading-relaxed text-[var(--ink-secondary)] sm:text-[17px]">
-              Chấm dứt lối viết văn mẫu vô cảm. Tự động chuyển dịch một bản brief thông số thô thành 3 góc bài độc bản:{" "}
+              Một bản brief 4 trường thô kệch được chuyển hóa thành 3 góc bài độc bản:{" "}
               <strong className="text-[var(--ink-primary)] font-semibold">PAS (Nỗi đau)</strong>,{" "}
-              <strong className="text-[var(--ink-primary)] font-semibold">Lifestyle (Cảm xúc)</strong>, và{" "}
-              <strong className="text-[var(--ink-primary)] font-semibold">FAB (Giá trị thật)</strong> — bám chuẩn 125 ký tự Hook hiển thị trên Newsfeed.
+              <strong className="text-[var(--ink-primary)] font-semibold">AIDA (Cảm xúc)</strong>, và{" "}
+              <strong className="text-[var(--ink-primary)] font-semibold">FAB (Giá trị thật)</strong> — mỗi hook mở đầu được canh theo ngưỡng ~125 ký tự hiển thị trước &quot;Xem thêm&quot; trên Newsfeed.
             </p>
 
             {/* Call To Action Buttons (Island Button Architecture) */}
             <div className="mt-8 flex w-full flex-col items-stretch gap-4 sm:w-auto sm:flex-row sm:items-center">
-              <Link
-                href={primaryHref}
-                className="island-btn group inline-flex w-full items-center justify-center gap-3 rounded-full bg-[var(--ink-primary)] px-7 py-4 text-sm font-semibold text-[var(--canvas)] shadow-md sm:w-auto cursor-pointer"
+              <ShimmerButton
+                type="button"
+                onClick={() => router.push(primaryHref)}
+                background="var(--ink-primary)"
+                className="group w-full px-7 py-4 text-sm font-semibold text-[var(--canvas)] sm:w-auto"
               >
                 <span>Bắt đầu sáng tạo ngay</span>
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--canvas)]/20 text-current transition-transform duration-200 group-hover:translate-x-1">
                   <ArrowRight className="h-3.5 w-3.5" />
                 </span>
-              </Link>
+              </ShimmerButton>
 
               <a
                 href="#demo"
@@ -162,9 +164,9 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
             {/* Clean Micro Spec Bar (No Clutter, Authentic Pipeline) */}
             <div className="mt-8 flex flex-wrap items-center gap-2 border-t border-[var(--border-hairline)] pt-5 text-xs text-[var(--ink-tertiary)]">
-              <span className="font-semibold text-[var(--ink-primary)]">Quy chuẩn Đề 2:</span>
+              <span className="font-semibold text-[var(--ink-primary)]">Luồng xử lý:</span>
               <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--surface-stage)] px-2 py-0.5 font-medium">
-                4 Trường đầu vào
+                Brief 4 trường
               </span>
               <span>→</span>
               <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--surface-stage)] px-2 py-0.5 font-medium text-[var(--accent-indigo)]">
@@ -172,7 +174,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
               </span>
               <span>→</span>
               <span className="rounded-md border border-[var(--border-hairline)] bg-[var(--surface-stage)] px-2 py-0.5 font-medium text-[var(--accent-emerald)]">
-                125 Ký tự Hook Newsfeed
+                Khuyến nghị Hook Newsfeed
               </span>
             </div>
           </div>
@@ -221,6 +223,12 @@ export default function HeroSection({ user }: HeroSectionProps) {
               {/* TẦNG 3: THE ACTIVE MASTERPIECE CARD (Centerpiece với Spotlight quang học từ React Bits) */}
               <div className="stage-layer-active relative">
                 <SpotlightCard className="p-5 sm:p-6 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)]">
+                  <BorderBeam
+                    duration={8}
+                    colorFrom="var(--brand)"
+                    colorTo="var(--pas)"
+                    className="rounded-3xl p-[1.5px] [mask:linear-gradient(#000,#000)_content-box,linear-gradient(#000,#000)] [mask-composite:exclude] [-webkit-mask-composite:xor]"
+                  />
                   {/* Card Header */}
                   <div className="flex items-center justify-between gap-3 border-b border-[var(--border-hairline)] pb-3.5">
                     <div className="flex items-center gap-2.5">
@@ -254,7 +262,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
                       <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--accent-emerald)] mb-1">
                         <span className="flex items-center gap-1">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                          Hook đầu trang ({activeAngle.hookLength}/125 ký tự tối ưu)
+                          Hook đầu trang ({activeAngle.hook.length} ký tự)
                         </span>
                         <span className="text-[var(--ink-tertiary)] font-normal">Hiển thị trước &quot;Xem thêm&quot;</span>
                       </div>
@@ -279,10 +287,10 @@ export default function HeroSection({ user }: HeroSectionProps) {
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-hairline)] pt-4">
                     <div className="flex items-center gap-2">
                       <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                        FB: {activeAngle.hookLength}/125 ký tự
+                        FB: {activeAngle.hook.length} ký tự (~125 khuyến nghị preview)
                       </span>
                       <span className="rounded-full border border-[var(--border-hairline)] bg-[var(--surface-raised)] px-2.5 py-1 text-[11px] font-medium text-[var(--ink-secondary)]">
-                        IG: 1.420/2.200
+                        IG: 2.200 (giới hạn)
                       </span>
                     </div>
 
