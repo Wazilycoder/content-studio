@@ -148,6 +148,8 @@ Xem toàn văn tại tệp [`MINH-CHUNG-AI.md`](MINH-CHUNG-AI.md). Tóm tắt v�
 
 ## 12. Hồ sơ bàn giao
 
-- Source ZIP chứa toàn bộ mã nguồn sạch sẽ, không kèm `node_modules` hay `.env.local`.
-- Video demo 02 phút thể hiện trọn vẹn thao tác thực tế của 5 tính năng cốt lõi.
-- Tài liệu minh chứng AI và Bảng kiểm thử được đóng gói đầy đủ trong bài nộp.
+- **Mã nguồn Public GitHub:** [https://github.com/Wazilycoder/content-studio](https://github.com/Wazilycoder/content-studio)
+- **Bản Release v1.0.0:** [https://github.com/Wazilycoder/content-studio/releases/tag/v1.0.0](https://github.com/Wazilycoder/content-studio/releases/tag/v1.0.0)
+- **Link tải Source ZIP trực tiếp:** [content-studio-vibe-coding-2026.zip](https://github.com/Wazilycoder/content-studio/releases/download/v1.0.0/content-studio-vibe-coding-2026.zip) (5.2 MB, sạch sẽ không chứa `node_modules` hay `.env.local`).
+- **Video demo 02 phút:** Thể hiện trọn vẹn thao tác thực tế của 5 tính năng cốt lõi.
+- **Tài liệu minh chứng AI & Bảng kiểm thử:** [`MINH-CHUNG-AI.md`](MINH-CHUNG-AI.md) và [`BANG-KIEM-THU.md`](BANG-KIEM-THU.md) trong repository.
