@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Copy, Hash, Layers3 } from "lucide-react";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { useToast } from "@/components/ui/SonnerToast";
 
 interface AngleCaption {
   angle: string;
@@ -138,18 +139,23 @@ function countChars(text: string): number {
 }
 
 export default function InteractivePlayground() {
+  const toast = useToast();
   const [activeId, setActiveId] = useState<string>(PRODUCTS[0]!.id);
   const [copied, setCopied] = useState<string | null>(null);
 
   const active = PRODUCTS.find((p) => p.id === activeId) ?? PRODUCTS[0]!;
 
-  async function handleCopy(key: string, text: string) {
+  async function handleCopy(key: string, text: string, label = "kịch bản") {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(key);
+      toast.success(`Đã sao chép ${label}!`, {
+        description: "Sẵn sàng dán vào bài viết Facebook Ads.",
+      });
       window.setTimeout(() => setCopied(null), 1600);
     } catch {
       setCopied(null);
+      toast.error("Không thể sao chép văn bản.");
     }
   }
 
@@ -183,7 +189,12 @@ export default function InteractivePlayground() {
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => setActiveId(p.id)}
+                  onClick={() => {
+                    setActiveId(p.id);
+                    toast.info(`Đã nạp mẫu: ${p.name}`, {
+                      description: `Tông giọng: ${p.toneLabel}`,
+                    });
+                  }}
                   className={`btn-tactile rounded-lg border px-4 py-2 text-xs font-bold transition-all duration-150 ${
                     isActive
                       ? "border-teal-400 bg-[#00D492] text-black shadow-[0_0_15px_rgba(0,212,146,0.25)]"
@@ -255,7 +266,7 @@ export default function InteractivePlayground() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopy(copyKey, caption.text)}
+                      onClick={() => handleCopy(copyKey, caption.text, `caption ${caption.angle}`)}
                       aria-label="Sao chép caption"
                       className="btn-tactile text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
                     >
@@ -312,7 +323,7 @@ export default function InteractivePlayground() {
                       </span>
                       <button
                         type="button"
-                        onClick={() => handleCopy(copyKey, headline)}
+                        onClick={() => handleCopy(copyKey, headline, "headline giật tít")}
                         aria-label="Sao chép headline"
                         className="btn-tactile shrink-0 text-[var(--ink-tertiary)] transition-colors hover:text-[var(--accent-navy)]"
                       >
@@ -339,7 +350,7 @@ export default function InteractivePlayground() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleCopy("hashtags", active.hashtags.join(" "))}
+                  onClick={() => handleCopy("hashtags", active.hashtags.join(" "), "bộ 5 hashtag")}
                   className="btn-tactile inline-flex items-center gap-1 text-[11px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--accent-navy)]"
                 >
                   {copied === "hashtags" ? (

@@ -218,7 +218,7 @@ export default function HistoryDrawer({
       <div
         onClick={onClose}
         aria-hidden="true"
-        className={`absolute inset-0 bg-[var(--ink-primary)]/25 backdrop-blur-[2px] transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300 ${
           active ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -229,20 +229,22 @@ export default function HistoryDrawer({
         aria-modal="true"
         aria-label="Lịch sử tạo bài viết"
         tabIndex={-1}
-        className={`absolute inset-y-0 right-0 flex w-full max-w-full flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-[-24px_0_60px_-30px_rgba(15,23,42,0.45)] outline-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-[480px] ${
+        className={`absolute inset-y-0 right-0 flex w-full max-w-full flex-col border-l border-white/[0.14] bg-[#0A0D16]/95 backdrop-blur-3xl shadow-[-24px_0_60px_-30px_rgba(0,0,0,0.8)] outline-none transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:w-[480px] ${
           active ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <header className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] px-5 py-4">
+        <header className="flex items-start justify-between gap-3 border-b border-white/[0.08] px-5 py-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <History className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
-              <h2 className="truncate text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <History className="h-3.5 w-3.5" />
+              </span>
+              <h2 className="truncate text-sm font-semibold tracking-tight text-white">
                 Lịch sử tạo bài viết
               </h2>
             </div>
-            <p className="mt-1.5 inline-flex items-center rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
-              {loading ? "Đang tải..." : `${count} bài đã lưu`}
+            <p className="mt-1.5 inline-flex items-center rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] font-mono text-slate-300">
+              {loading ? "Đang tải..." : `${count} BẢN THẢO ĐÃ LƯU`}
             </p>
           </div>
 
@@ -250,30 +252,30 @@ export default function HistoryDrawer({
             type="button"
             onClick={onClose}
             aria-label="Đóng lịch sử"
-            className="btn-tactile shrink-0 rounded-md p-1.5 text-[var(--ink-secondary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+            className="btn-tactile shrink-0 rounded-xl border border-white/10 bg-white/[0.04] p-2 text-slate-300 transition-all hover:bg-white/[0.08] hover:text-white"
           >
             <X className="h-4 w-4" />
           </button>
         </header>
 
         {!loading && !error && count > 0 ? (
-          <div className="border-b border-[var(--border-subtle)] px-4 pb-3 pt-3">
+          <div className="border-b border-white/[0.08] px-4 pb-3 pt-3">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--ink-tertiary)]" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="Tìm kiếm theo tên sản phẩm..."
                 aria-label="Tìm kiếm bài viết trong lịch sử"
-                className="w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] py-2 pl-8 pr-8 text-[12.5px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-colors focus:border-[var(--border-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-navy)]/15"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 pl-9 pr-8 text-[12.5px] text-white placeholder:text-slate-500 backdrop-blur-md transition-colors focus:border-emerald-400/80 focus:outline-none focus:ring-2 focus:ring-emerald-400/20"
               />
               {searchQuery.length > 0 ? (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
                   aria-label="Xóa từ khóa tìm kiếm"
-                  className="btn-tactile absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-[var(--ink-tertiary)] transition-colors hover:text-[var(--ink-primary)]"
+                  className="btn-tactile absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-slate-400 transition-colors hover:text-white"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -285,10 +287,10 @@ export default function HistoryDrawer({
                 type="button"
                 onClick={() => setActiveFilterTab("all")}
                 aria-pressed={activeFilterTab === "all"}
-                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[12.5px] font-medium transition-colors ${
+                className={`btn-tactile inline-flex items-center gap-1 rounded-xl px-3 py-1 text-[12px] font-semibold transition-all ${
                   activeFilterTab === "all"
-                    ? "bg-[var(--accent-navy)] text-white"
-                    : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+                    ? "bg-gradient-to-r from-emerald-400 to-teal-400 text-black shadow-md shadow-emerald-500/20"
+                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:text-white"
                 }`}
               >
                 Tất cả ({count})
@@ -297,10 +299,10 @@ export default function HistoryDrawer({
                 type="button"
                 onClick={() => setActiveFilterTab("starred")}
                 aria-pressed={activeFilterTab === "starred"}
-                className={`btn-tactile inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[12.5px] font-medium transition-colors ${
+                className={`btn-tactile inline-flex items-center gap-1 rounded-xl px-3 py-1 text-[12px] font-semibold transition-all ${
                   activeFilterTab === "starred"
-                    ? "bg-[var(--accent-navy)] text-white"
-                    : "bg-[var(--surface-raised)] text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
+                    ? "bg-gradient-to-r from-amber-400 to-amber-500 text-black shadow-md shadow-amber-500/20"
+                    : "border border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:text-white"
                 }`}
               >
                 ★ Đã ghim ({starredCount})
@@ -344,14 +346,14 @@ export default function HistoryDrawer({
                 return (
                   <li
                     key={record.id}
-                    className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-3.5 transition-colors hover:border-[var(--border-strong)]"
+                    className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md hover:border-white/20 transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-[14px] font-semibold text-[var(--ink-primary)]">
+                        <p className="truncate text-[14px] font-semibold text-white">
                           {record.productName?.trim() || "Bài viết chưa đặt tên"}
                         </p>
-                        <p className="mt-1 text-[12px] text-[var(--ink-tertiary)]">
+                        <p className="mt-1 text-[11.5px] font-mono text-slate-400">
                           {formatTimestamp(record.createdAt)}
                         </p>
                       </div>
@@ -360,41 +362,41 @@ export default function HistoryDrawer({
                         onClick={() => handleToggleStar(record.id)}
                         aria-pressed={starred}
                         aria-label={starred ? "Bỏ ghim bài viết" : "Ghim bài viết"}
-                        className={`btn-tactile inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors ${
+                        className={`btn-tactile inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/10 transition-colors ${
                           starred
-                            ? "text-amber-500 hover:bg-amber-500/10"
-                            : "text-[var(--ink-tertiary)] hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
+                            ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                            : "bg-white/[0.04] text-slate-400 hover:text-white"
                         }`}
                       >
-                        <Star className={`h-4 w-4 ${starred ? "fill-amber-500" : ""}`} />
+                        <Star className={`h-4 w-4 ${starred ? "fill-amber-400" : ""}`} />
                       </button>
                     </div>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="inline-flex items-center rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[12px] font-medium text-[var(--ink-secondary)]">
+                    <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center rounded-lg border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11.5px] font-medium text-slate-300">
                         {formatTone(record.tone)}
                       </span>
-                      <span className="inline-flex items-center rounded-md border border-[var(--border-subtle)] px-2 py-0.5 text-[12px] text-[var(--ink-tertiary)]">
+                      <span className="inline-flex items-center rounded-lg border border-white/10 bg-white/[0.02] px-2 py-0.5 text-[11px] font-mono text-slate-400">
                         {record.captions.length} góc · {record.hashtags.length} hashtag
                       </span>
                     </div>
 
                     {previewText ? (
-                      <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+                      <p className="mt-2.5 line-clamp-2 text-[12.5px] leading-relaxed text-slate-300">
                         {previewText}
                       </p>
                     ) : null}
 
-                    <div className="mt-3 flex h-9 items-center gap-2">
+                    <div className="mt-3.5 flex h-9 items-center gap-2">
                       {isPendingDelete ? (
                         <>
-                          <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium text-rose-600 dark:text-rose-400">
-                            Xóa bài viết này?
+                          <span className="min-w-0 flex-1 truncate text-[12px] font-medium text-rose-400">
+                            Xóa bản thảo này?
                           </span>
                           <button
                             type="button"
                             onClick={() => setPendingDeleteId(null)}
-                            className="btn-tactile inline-flex h-8 items-center rounded-lg border border-[var(--border-subtle)] px-2.5 text-[12.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                            className="btn-tactile inline-flex h-8 items-center rounded-xl border border-white/10 px-3 text-[12px] font-medium text-slate-300 transition-colors hover:text-white"
                           >
                             Hủy
                           </button>
@@ -404,7 +406,7 @@ export default function HistoryDrawer({
                               const ok = await onDelete(record.id);
                               if (ok) setPendingDeleteId(null);
                             }}
-                            className="btn-tactile inline-flex h-8 items-center gap-1 rounded-lg bg-rose-600 px-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-rose-700"
+                            className="btn-tactile inline-flex h-8 items-center gap-1 rounded-xl bg-rose-600 px-3 text-[12px] font-semibold text-white transition-colors hover:bg-rose-500 shadow-md shadow-rose-600/30"
                           >
                             <Trash2 className="h-3.5 w-3.5 shrink-0" />
                             Xóa
@@ -415,7 +417,7 @@ export default function HistoryDrawer({
                           <button
                             type="button"
                             onClick={() => onRestore(record)}
-                            className="btn-tactile inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-3 text-[12.5px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)]"
+                            className="btn-tactile inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 px-3 text-[12px] font-extrabold text-black shadow-md shadow-emerald-500/20 transition-all hover:brightness-110 active:scale-[0.98]"
                           >
                             <RotateCcw className="h-3.5 w-3.5 shrink-0" />
                             Khôi phục
@@ -423,7 +425,7 @@ export default function HistoryDrawer({
                           <button
                             type="button"
                             onClick={() => setPendingDeleteId(record.id)}
-                            className="btn-tactile inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-[var(--border-subtle)] px-3 text-[12.5px] font-semibold text-[var(--ink-secondary)] transition-colors hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
+                            className="btn-tactile inline-flex h-8 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 text-[12px] font-medium text-slate-400 transition-colors hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
                           >
                             <Trash2 className="h-3.5 w-3.5 shrink-0" />
                             Xóa

@@ -2,9 +2,26 @@
 
 import { memo, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { AlertCircle, Check, ChevronDown, Clock, FlaskConical, Loader2, Wand2 } from "lucide-react";
+import {
+  AlertCircle,
+  AlignLeft,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Clock,
+  FlaskConical,
+  Loader2,
+  ShoppingBag,
+  Sparkles,
+  Tag,
+  Target,
+  Users,
+  Wand2,
+} from "lucide-react";
 import { countUnicodeChars } from "@/lib/utils/charCounter";
 import type { ContentFormInput, ToneOption } from "@/types/content";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { useToast } from "@/components/ui/SonnerToast";
 
 const MAX_PRODUCT_NAME = 100;
 const MAX_DESCRIPTION = 1000;
@@ -141,20 +158,20 @@ function validate(values: ContentFormInput): FieldErrors {
 }
 
 const inputBaseClass =
-  "w-full rounded-xl border bg-[var(--canvas)] px-3.5 py-2.5 text-[14px] text-[var(--ink-primary)] placeholder:text-[var(--ink-tertiary)] transition-all duration-150 focus:outline-none focus:ring-2";
+  "w-full rounded-lg border bg-[#07090E] px-3.5 py-2.5 text-[13.5px] text-[#F8FAFC] placeholder:text-slate-500 transition-colors duration-150 focus:outline-none focus:ring-1";
 const inputNormalClass =
-  "border-[var(--border-subtle)] focus:border-teal-400 focus:ring-teal-400/20";
+  "border-[#1E2333] hover:border-[#2D354B] focus:border-emerald-500 focus:ring-emerald-500/30";
 const inputErrorClass =
-  "border-red-500 focus:border-red-500 focus:ring-red-500/20";
+  "border-rose-500/80 focus:border-rose-500 focus:ring-rose-500/20 bg-rose-950/20 text-white";
 
 function MicroBar({ value, max }: { value: number; max: number }) {
   const ratio = Math.min(value / max, 1);
   const nearLimit = ratio >= 0.9;
   return (
-    <div className="h-1 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+    <div className="h-1 w-full overflow-hidden rounded-full bg-[#1E2333]">
       <div
-        className={`h-full rounded-full transition-all duration-500 ease-out ${
-          nearLimit ? "bg-amber-500" : "bg-emerald-500"
+        className={`h-full rounded-full transition-all duration-300 ease-out ${
+          nearLimit ? "bg-amber-400" : "bg-emerald-400"
         }`}
         style={{ width: `${ratio * 100}%` }}
       />
@@ -179,6 +196,7 @@ function ProductForm({
   const [submitted, setSubmitted] = useState(false);
   const [showExtendedTones, setShowExtendedTones] = useState(false);
   const [isSamplePulsing, setIsSamplePulsing] = useState(false);
+  const toast = useToast();
 
   const errors = useMemo(() => validate(value), [value]);
 
@@ -204,6 +222,9 @@ function ProductForm({
   const handlePresetFill = (preset: IndustryPreset) => {
     onChange(preset.input);
     setIsSamplePulsing(true);
+    toast.info(`Đã nạp nhanh: ${preset.title}`, {
+      description: "Nhấn Tạo 3 góc bài viết hoặc Ctrl+Enter để biên soạn.",
+    });
     window.setTimeout(() => setIsSamplePulsing(false), 850);
   };
 
@@ -224,22 +245,26 @@ function ProductForm({
       id="product-form"
       onSubmit={handleSubmit}
       noValidate
-      className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
+      className="rounded-xl border border-[#1E2333] bg-[#0E121B] shadow-sm"
     >
-      <div className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] px-5 pb-4 pt-5">
+      <div className="flex items-start justify-between gap-3 border-b border-[#1E2333] px-4 pb-3.5 pt-4">
         <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--ink-primary)]">
+          <div className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 font-mono">
+            <Sparkles className="h-2.5 w-2.5" />
+            <span>Đề bài sản phẩm</span>
+          </div>
+          <h2 className="text-[14px] font-semibold tracking-tight text-white">
             Thông tin sản phẩm
           </h2>
-          <p className="mt-1 text-[13px] leading-relaxed text-[var(--ink-secondary)]">
+          <p className="mt-0.5 text-[12px] leading-relaxed text-slate-400">
             Càng chi tiết, nội dung tạo ra càng sát ý bạn.
           </p>
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-1">
-          <span className="inline-flex items-center gap-1 text-[10.5px] font-medium uppercase tracking-wider text-[var(--ink-tertiary)]">
-            <FlaskConical className="h-3 w-3 text-[var(--accent-navy)]" />
-            Thử nhanh
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium uppercase tracking-wider text-slate-400">
+            <FlaskConical className="h-3 w-3 text-emerald-400" />
+            Nạp mẫu nhanh
           </span>
           <div className="flex items-center gap-1">
             {INDUSTRY_PRESETS.map((preset) => (
@@ -249,7 +274,7 @@ function ProductForm({
                 onClick={() => handlePresetFill(preset)}
                 disabled={loading}
                 title={preset.title}
-                className="btn-tactile rounded-md border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-1 text-[11px] font-medium text-[var(--ink-secondary)] transition-all duration-150 hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                className="btn-tactile rounded-lg border border-white/[0.12] bg-[#0A0D15]/80 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-300 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 shadow-xs"
               >
                 {preset.label}
               </button>
@@ -258,34 +283,41 @@ function ProductForm({
         </div>
       </div>
 
-      <div className="space-y-5 px-5 py-5">
+      <div className="space-y-4 px-4 py-4">
         {/* 01. Tên sản phẩm */}
         <div>
-          <div className="mb-2 flex items-baseline justify-between gap-2">
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
             <label
               htmlFor="productName"
-              className="text-[13px] font-medium text-[var(--ink-primary)]"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-200"
             >
-              01. Tên sản phẩm <span className="text-[#DC2626]">*</span>
+              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400">
+                1
+              </span>
+              <span>Tên sản phẩm</span>
+              <span className="text-rose-400">*</span>
             </label>
-            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
+            <span className="font-mono text-[11px] tabular-nums text-slate-400">
               {countUnicodeChars(value.productName)} / 100
             </span>
           </div>
 
-          <input
-            id="productName"
-            type="text"
-            value={value.productName}
-            onChange={(event) => update({ productName: event.target.value })}
-            onBlur={() => markTouched("productName")}
-            maxLength={MAX_PRODUCT_NAME}
-            placeholder="Ví dụ: Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc"
-            aria-invalid={Boolean(productNameError)}
-            className={`${inputBaseClass} ${
-              productNameError ? inputErrorClass : inputNormalClass
-            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
-          />
+          <div className="relative">
+            <input
+              id="productName"
+              type="text"
+              value={value.productName}
+              onChange={(event) => update({ productName: event.target.value })}
+              onBlur={() => markTouched("productName")}
+              maxLength={MAX_PRODUCT_NAME}
+              placeholder="Ví dụ: Áo sơ mi lụa tơ tằm dệt tay Bảo Lộc"
+              aria-invalid={Boolean(productNameError)}
+              className={`${inputBaseClass} pl-9.5 ${
+                productNameError ? inputErrorClass : inputNormalClass
+              } ${isSamplePulsing ? "sample-pulse ring-2 ring-emerald-500/35" : ""}`}
+            />
+            <ShoppingBag className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          </div>
 
           <div className="mt-1.5">
             <MicroBar
@@ -295,7 +327,7 @@ function ProductForm({
           </div>
 
           {productNameError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-rose-400">
               <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{productNameError}</span>
             </p>
@@ -304,33 +336,40 @@ function ProductForm({
 
         {/* 02. Mô tả & Chất liệu */}
         <div>
-          <div className="mb-2 flex items-baseline justify-between gap-2">
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
             <label
               htmlFor="productDescription"
-              className="text-[13px] font-medium text-[var(--ink-primary)]"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-200"
             >
-              02. Mô tả &amp; Chất liệu <span className="text-[#DC2626]">*</span>
+              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400">
+                2
+              </span>
+              <span>Mô tả &amp; Chất liệu</span>
+              <span className="text-rose-400">*</span>
             </label>
-            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
+            <span className="font-mono text-[11px] tabular-nums text-slate-400">
               {countUnicodeChars(value.productDescription)} / 1.000
             </span>
           </div>
 
-          <textarea
-            id="productDescription"
-            rows={5}
-            value={value.productDescription}
-            onChange={(event) =>
-              update({ productDescription: event.target.value })
-            }
-            onBlur={() => markTouched("productDescription")}
-            maxLength={MAX_DESCRIPTION}
-            placeholder="Chất liệu, công dụng, điểm khác biệt, quy cách đóng gói..."
-            aria-invalid={Boolean(descriptionError)}
-            className={`${inputBaseClass} resize-y leading-relaxed ${
-              descriptionError ? inputErrorClass : inputNormalClass
-            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
-          />
+          <div className="relative">
+            <textarea
+              id="productDescription"
+              rows={4}
+              value={value.productDescription}
+              onChange={(event) =>
+                update({ productDescription: event.target.value })
+              }
+              onBlur={() => markTouched("productDescription")}
+              maxLength={MAX_DESCRIPTION}
+              placeholder="Chất liệu, công dụng, điểm khác biệt, quy cách đóng gói..."
+              aria-invalid={Boolean(descriptionError)}
+              className={`${inputBaseClass} pl-9.5 resize-y leading-relaxed ${
+                descriptionError ? inputErrorClass : inputNormalClass
+              } ${isSamplePulsing ? "sample-pulse ring-2 ring-emerald-500/35" : ""}`}
+            />
+            <AlignLeft className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          </div>
 
           <div className="mt-1.5">
             <MicroBar
@@ -340,7 +379,7 @@ function ProductForm({
           </div>
 
           {descriptionError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-rose-400">
               <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{descriptionError}</span>
             </p>
@@ -349,31 +388,38 @@ function ProductForm({
 
         {/* 03. Khách hàng mục tiêu */}
         <div>
-          <div className="mb-2 flex items-baseline justify-between gap-2">
+          <div className="mb-1.5 flex items-baseline justify-between gap-2">
             <label
               htmlFor="targetAudience"
-              className="text-[13px] font-medium text-[var(--ink-primary)]"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-200"
             >
-              03. Khách hàng mục tiêu <span className="text-[#DC2626]">*</span>
+              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400">
+                3
+              </span>
+              <span>Khách hàng mục tiêu</span>
+              <span className="text-rose-400">*</span>
             </label>
-            <span className="text-[12px] tabular-nums text-[var(--ink-tertiary)]">
+            <span className="font-mono text-[11px] tabular-nums text-slate-400">
               {countUnicodeChars(value.targetAudience)} / 200
             </span>
           </div>
 
-          <input
-            id="targetAudience"
-            type="text"
-            value={value.targetAudience}
-            onChange={(event) => update({ targetAudience: event.target.value })}
-            onBlur={() => markTouched("targetAudience")}
-            maxLength={MAX_AUDIENCE}
-            placeholder="Ví dụ: Nữ chuyên viên văn phòng 28–45 tuổi"
-            aria-invalid={Boolean(audienceError)}
-            className={`${inputBaseClass} ${
-              audienceError ? inputErrorClass : inputNormalClass
-            } ${isSamplePulsing ? "sample-pulse ring-2 ring-[var(--accent-navy)]/35" : ""}`}
-          />
+          <div className="relative">
+            <input
+              id="targetAudience"
+              type="text"
+              value={value.targetAudience}
+              onChange={(event) => update({ targetAudience: event.target.value })}
+              onBlur={() => markTouched("targetAudience")}
+              maxLength={MAX_AUDIENCE}
+              placeholder="Ví dụ: Nữ chuyên viên văn phòng 28–45 tuổi"
+              aria-invalid={Boolean(audienceError)}
+              className={`${inputBaseClass} pl-9.5 ${
+                audienceError ? inputErrorClass : inputNormalClass
+              } ${isSamplePulsing ? "sample-pulse ring-2 ring-emerald-500/35" : ""}`}
+            />
+            <Users className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          </div>
 
           <div className="mt-1.5">
             <MicroBar
@@ -383,7 +429,7 @@ function ProductForm({
           </div>
 
           {audienceError ? (
-            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-[#DC2626]">
+            <p className="mt-1.5 flex items-start gap-1 text-[12px] leading-relaxed text-rose-400">
               <AlertCircle className="mt-[1px] h-3.5 w-3.5 shrink-0" />
               <span>{audienceError}</span>
             </p>
@@ -392,38 +438,38 @@ function ProductForm({
 
         {/* Tông giọng */}
         <div>
-          <span className="mb-2 block text-[13px] font-medium text-[var(--ink-primary)]">
+          <span className="mb-2 block text-[13px] font-semibold text-slate-200">
             Tông giọng
           </span>
 
-          <div role="group" aria-label="Chọn tông giọng" className="space-y-2">
+          <div role="group" aria-label="Chọn tông giọng" className="space-y-1.5">
             {PRIMARY_TONES.map((option) => {
               const active = value.tone === option.value;
               const toneColors: Record<string, { activeBorder: string; activeBg: string; text: string; dot: string }> = {
                 "hai-huoc": {
-                  activeBorder: "border-amber-500/50 dark:border-amber-400/50",
+                  activeBorder: "border-amber-400/60",
                   activeBg: "bg-amber-500/10",
-                  text: "text-amber-700 dark:text-amber-400",
+                  text: "text-amber-300",
                   dot: "bg-amber-400",
                 },
                 "trang-trong": {
-                  activeBorder: "border-teal-500/50 dark:border-teal-400/50",
-                  activeBg: "bg-teal-500/10",
-                  text: "text-teal-700 dark:text-teal-300",
-                  dot: "bg-teal-400",
+                  activeBorder: "border-emerald-400/60",
+                  activeBg: "bg-emerald-500/10",
+                  text: "text-emerald-300",
+                  dot: "bg-emerald-400",
                 },
                 "tre-trung": {
-                  activeBorder: "border-sky-500/50 dark:border-sky-400/50",
+                  activeBorder: "border-sky-400/60",
                   activeBg: "bg-sky-500/10",
-                  text: "text-sky-700 dark:text-sky-400",
+                  text: "text-sky-300",
                   dot: "bg-sky-400",
                 },
               };
               const colors = toneColors[option.value] || {
-                activeBorder: "border-teal-500",
-                activeBg: "bg-teal-500/10",
-                text: "text-teal-400",
-                dot: "bg-teal-400",
+                activeBorder: "border-emerald-400/60",
+                activeBg: "bg-emerald-500/10",
+                text: "text-emerald-300",
+                dot: "bg-emerald-400",
               };
 
               return (
@@ -433,23 +479,23 @@ function ProductForm({
                   onClick={() => update({ tone: option.value })}
                   aria-pressed={active}
                   title={option.hint}
-                  className={`btn-tactile flex w-full items-center justify-between gap-2.5 rounded-xl border px-3.5 py-2.5 text-left transition-all duration-150 ${
+                  className={`btn-tactile flex w-full items-center justify-between gap-2.5 rounded-lg border px-3 py-2 text-left transition-colors ${
                     active
-                      ? `${colors.activeBorder} ${colors.activeBg} ring-2 ring-indigo-500/20 shadow-sm`
-                      : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                      ? `${colors.activeBorder} ${colors.activeBg} ring-1 ring-emerald-500/30`
+                      : "border-[#1E2333] bg-[#07090E] text-slate-300 hover:border-[#2D354B] hover:bg-[#121622]"
                   }`}
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <span className={`h-2 w-2 rounded-full shrink-0 ${active ? colors.dot : "bg-zinc-400 dark:bg-zinc-600"}`} />
+                    <span className={`h-2 w-2 rounded-full shrink-0 ${active ? colors.dot : "bg-slate-600"}`} />
                     <span className="min-w-0">
                       <span
                         className={`block text-[13px] font-semibold ${
-                          active ? colors.text : "text-[var(--ink-primary)]"
+                          active ? colors.text : "text-white"
                         }`}
                       >
                         {option.label}
                       </span>
-                      <span className="mt-0.5 block truncate text-[11.5px] text-[var(--ink-tertiary)]">
+                      <span className="mt-0.5 block truncate text-[11.5px] text-slate-400">
                         {option.hint}
                       </span>
                     </span>
@@ -466,7 +512,7 @@ function ProductForm({
             type="button"
             onClick={() => setShowExtendedTones((previous) => !previous)}
             aria-expanded={extendedVisible}
-            className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
+            className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium text-slate-400 transition-colors hover:text-white"
           >
             <ChevronDown
               className={`h-3.5 w-3.5 transition-transform ${extendedVisible ? "rotate-180" : ""}`}
@@ -489,28 +535,26 @@ function ProductForm({
                     onClick={() => update({ tone: option.value })}
                     aria-pressed={active}
                     title={option.hint}
-                    className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-all duration-200 ${
+                    className={`btn-tactile flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
                       active
-                        ? "border-[var(--accent-navy)] bg-[var(--accent-navy)]/[0.06] ring-2 ring-[var(--accent-navy)]/25 shadow-[0_4px_14px_rgba(37,52,199,0.12)]"
-                        : "border-[var(--border-subtle)] bg-[var(--surface)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-raised)]"
+                        ? "border-emerald-400/60 bg-emerald-500/10 ring-1 ring-emerald-500/30 text-emerald-300"
+                        : "border-[#1E2333] bg-[#07090E] text-slate-300 hover:border-[#2D354B] hover:bg-[#121622]"
                     }`}
                   >
                     <span className="min-w-0">
                       <span
                         className={`block text-[13px] font-semibold ${
-                          active
-                            ? "text-[var(--accent-navy)]"
-                            : "text-[var(--ink-primary)]"
+                          active ? "text-emerald-300" : "text-white"
                         }`}
                       >
                         {option.label}
                       </span>
-                      <span className="mt-0.5 block truncate text-[12px] text-[var(--ink-tertiary)]">
+                      <span className="mt-0.5 block truncate text-[11.5px] text-slate-400">
                         {option.hint}
                       </span>
                     </span>
                     {active ? (
-                      <Check className="h-4 w-4 shrink-0 text-[var(--accent-navy)]" />
+                      <Check className="h-4 w-4 shrink-0 text-emerald-400" />
                     ) : null}
                   </button>
                 );
@@ -520,47 +564,55 @@ function ProductForm({
         </div>
       </div>
 
-      <div className="hidden px-5 pb-5 md:block">
-        <button
-          type={cooldownActive ? "button" : "submit"}
-          onClick={cooldownActive ? onOpenUpgrade : undefined}
-          disabled={loading}
-          className={
-            cooldownActive
-              ? "btn-tactile inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-4 py-3.5 text-[14px] font-semibold text-[var(--ink-secondary)] transition-all duration-200 hover:border-[var(--border-strong)]"
-              : "btn-tactile inline-flex w-full items-center justify-center gap-2.5 rounded-xl py-3.5 text-[14px] font-bold bg-[#00D492] hover:bg-teal-400 text-black shadow-[0_0_20px_rgba(0,212,146,0.3)] transition-all disabled:cursor-not-allowed disabled:opacity-60"
-          }
-        >
-          {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Đang biên soạn bài viết...</span>
-            </>
-          ) : cooldownActive ? (
-            <>
-              <Clock className="h-4 w-4 animate-pulse text-[var(--ink-secondary)]" />
-              <span>Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro để tạo ngay)</span>
-            </>
-          ) : (
-            <>
-              <Wand2 className="h-4 w-4" />
-              <span>Tạo 3 góc bài viết</span>
-            </>
-          )}
-        </button>
+      <div className="sticky bottom-0 z-10 hidden border-t border-[#1E2333]/80 bg-[#0A0D15]/95 px-4 py-3 backdrop-blur-xl md:block shadow-[0_-10px_20px_rgba(0,0,0,0.4)]">
+        <MagneticButton as="div" strength={0.12} className="w-full">
+          <button
+            type={cooldownActive ? "button" : "submit"}
+            onClick={cooldownActive ? onOpenUpgrade : undefined}
+            disabled={loading}
+            className={`btn-tactile group relative inline-flex w-full items-center justify-between gap-3 overflow-hidden rounded-lg py-3 pl-4 pr-3 text-sm font-extrabold transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${
+              cooldownActive
+                ? "border border-[#1E2333] bg-[#07090E] text-slate-400 hover:border-white/20"
+                : "bg-emerald-500 text-black shadow-md shadow-emerald-500/25 hover:bg-emerald-400"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin text-black" />
+                  <span>Đang biên soạn 3 góc bài viết...</span>
+                </>
+              ) : cooldownActive ? (
+                <>
+                  <Clock className="h-4 w-4 animate-pulse text-amber-400" />
+                  <span className="text-amber-300">Đang sạc AI: {cooldownSeconds}s (Mở khóa Pro)</span>
+                </>
+              ) : (
+                <>
+                  <Wand2 className="h-4 w-4 text-black" />
+                  <span>Tạo 3 góc bài viết</span>
+                </>
+              )}
+            </span>
 
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[11.5px] leading-relaxed text-[var(--ink-tertiary)]">
-          <span className="text-[var(--accent-emerald)]">✓</span>
-          Gói Miễn Phí: Không giới hạn số bài tạo · Chờ 45s để điều tiết tài nguyên AI
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/15 text-black shadow-inner transition-transform duration-200 group-hover:translate-x-0.5">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </button>
+        </MagneticButton>
+
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[11px] leading-relaxed text-slate-400">
+          <span className="font-bold text-emerald-400">✓</span>
+          Gói Miễn Phí: Không giới hạn bài viết · Cooldown 45s điều tiết AI
         </p>
 
-        <p className="mt-2 text-center text-[12px] text-[var(--ink-tertiary)]">
+        <p className="mt-1 text-center font-mono text-[10.5px] text-slate-400">
           Nhấn{" "}
-          <kbd className="rounded border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-1 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+          <kbd className="rounded border border-[#1E2333] bg-[#07090E] px-1.5 py-0.5 font-medium text-slate-300 font-mono text-[10px]">
             Ctrl
           </kbd>{" "}
           +{" "}
-          <kbd className="rounded border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-1 py-0.5 text-[11px] font-medium text-[var(--ink-secondary)]">
+          <kbd className="rounded border border-[#1E2333] bg-[#07090E] px-1.5 py-0.5 font-medium text-slate-300 font-mono text-[10px]">
             Enter
           </kbd>{" "}
           để tạo nhanh

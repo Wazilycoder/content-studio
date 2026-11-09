@@ -85,7 +85,11 @@ function verifyDevSession(cookieValue: string): DevSession | null {
   return null;
 }
 
-async function setDevSession(email: string, planId: string = "monthly"): Promise<void> {
+async function setDevSession(
+  email: string,
+  planId: string = "monthly",
+  maxAgeSec: number = 60 * 60 * 24 * 7,
+): Promise<void> {
   if (process.env.NODE_ENV === "production") return;
   const cookieStore = await cookies();
   const session: DevSession = {
@@ -99,7 +103,7 @@ async function setDevSession(email: string, planId: string = "monthly"): Promise
     secure: false,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: maxAgeSec,
   });
 }
 
@@ -114,11 +118,13 @@ async function clearDevSession(): Promise<void> {
   });
 }
 
-// Sinh phép tính + token HMAC. Đáp án KHÔNG bao giờ lộ ra client.
+// Sinh phép tính + token HMAC. Đáp án KHÔNG bao giờ âm và KHÔNG bao giờ lộ ra client.
 function generateMathCaptcha(): { question: string; token: string } {
-  const num1 = Math.floor(Math.random() * 20) + 1; // 1..20
-  const num2 = Math.floor(Math.random() * 10) + 1; // 1..10
+  const a = Math.floor(Math.random() * 15) + 5; // 5..19
+  const b = Math.floor(Math.random() * 10) + 1; // 1..10
   const op = Math.random() < 0.5 ? "+" : "-";
+  const num1 = op === "-" ? Math.max(a, b) : a;
+  const num2 = op === "-" ? Math.min(a, b) : b;
   const answer = op === "+" ? num1 + num2 : num1 - num2;
   const timestamp = Date.now();
   const signature = createHmac("sha256", CAPTCHA_SECRET)
@@ -173,6 +179,8 @@ export async function login(formData: FormData): Promise<AuthResult> {
   const password = (formData.get("password") as string) || "";
   const captchaAnswer = (formData.get("captchaAnswer") as string) || "";
   const captchaToken = (formData.get("captchaToken") as string) || "";
+  const remember1h = formData.get("remember1h") === "on";
+  const sessionMaxAge = remember1h ? 60 * 60 : 60 * 60 * 24 * 7;
 
   if (!email || !password) {
     return { error: "Vui lòng nhập đầy đủ email và mật khẩu." };
@@ -198,7 +206,7 @@ export async function login(formData: FormData): Promise<AuthResult> {
   if (authFailed) {
     // Local fallback: cấp session dev để vào Dashboard với 10 lượt tạo
     if (isLocalDev() || isDemoEmail(email)) {
-      await setDevSession(email);
+      await setDevSession(email, "monthly", sessionMaxAge);
       revalidatePath("/", "layout");
       redirect("/workspace");
     }

@@ -16,13 +16,15 @@ import {
   Globe,
   History,
   Loader2,
-    Eye,
-    RefreshCw,
-    RotateCcw,
-    Wand2,
-    X,
-    Zap,
-  } from "lucide-react";
+  Eye,
+  RefreshCw,
+  RotateCcw,
+  Sparkles,
+  Wand2,
+  X,
+  Zap,
+} from "lucide-react";
+import { useToast } from "@/components/ui/SonnerToast";
 import ProductForm from "./ProductForm";
 import FacebookMockup from "./FacebookMockup";
 import AuthModal from "./AuthModal";
@@ -74,10 +76,12 @@ const ANGLE_SECTION_TITLES: string[] = [
 ];
 
 export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceContainerProps) {
+  const sonner = useToast();
   const [formInputs, setFormInputs] = useState<ContentFormInput>(DEFAULT_DEMO_FORM);
   const [result, setResult] = useState<GeneratedContent | null>(DEFAULT_DEMO_RESULT);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
+  const [isMockMode, setIsMockMode] = useState<boolean>(true);
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyItems, setHistoryItems] = useState<GenerationRecord[]>([]);
@@ -170,7 +174,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       setHistoryItems([demoRecord]);
       try {
         localStorage.setItem(historyKey, JSON.stringify([demoRecord]));
-      } catch {}
+      } catch { }
     } catch {
       setHistoryItems([]);
     }
@@ -222,10 +226,10 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
       if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-              if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-              if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
-            };
-          }, []);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      if (cooldownTimerRef.current) clearInterval(cooldownTimerRef.current);
+    };
+  }, []);
 
   // Reset trạng thái biên tập mỗi khi có kết quả AI mới (tạo mới / khôi phục lịch sử / nạp mẫu)
   useEffect(() => {
@@ -256,11 +260,30 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const showToast = useCallback((message: string) => {
-    setToast(message);
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastTimerRef.current = setTimeout(() => setToast(null), 2200);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: "success" | "error" | "info" = "success") => {
+      const lower = message.toLowerCase();
+      if (
+        type === "error" ||
+        lower.includes("không thể") ||
+        lower.includes("thất bại") ||
+        lower.includes("lỗi") ||
+        lower.includes("hết lượt")
+      ) {
+        sonner.error(message);
+      } else if (
+        type === "info" ||
+        lower.includes("vui lòng") ||
+        lower.includes("đang") ||
+        lower.includes("chờ")
+      ) {
+        sonner.info(message);
+      } else {
+        sonner.success(message);
+      }
+    },
+    [sonner]
+  );
 
   const handleCopyText = useCallback(
     async (value: string, key: string, message: string) => {
@@ -272,66 +295,66 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       setCopiedKey(key);
       showToast(message);
       if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-          copyTimerRef.current = setTimeout(() => setCopiedKey(null), 1500);
-        },
-        [showToast],
-      );
+      copyTimerRef.current = setTimeout(() => setCopiedKey(null), 1500);
+    },
+    [showToast],
+  );
 
-      const handleExportFullPackageTxt = useCallback(() => {
-        if (!result) {
-          showToast("Chưa có nội dung để xuất. Hãy tạo 3 góc bài viết trước.");
-          return;
-        }
+  const handleExportFullPackageTxt = useCallback(() => {
+    if (!result) {
+      showToast("Chưa có nội dung để xuất. Hãy tạo 3 góc bài viết trước.");
+      return;
+    }
 
-        const divider = "=".repeat(80);
-        const headlineLines = result.headlines
-          .map((item, index) => `  ${index + 1}. ${item}`)
-          .join("\n");
-        const angleSections = result.captions
-          .map((caption, index) => {
-            const title = ANGLE_SECTION_TITLES[index] ?? caption.angle.toUpperCase();
-            const body = (editedCaptions[index] ?? caption.text).trim();
-            return `--- GÓC ${index + 1}: ${title} ---\n${body}`;
-          })
-          .join("\n\n");
+    const divider = "=".repeat(80);
+    const headlineLines = result.headlines
+      .map((item, index) => `  ${index + 1}. ${item}`)
+      .join("\n");
+    const angleSections = result.captions
+      .map((caption, index) => {
+        const title = ANGLE_SECTION_TITLES[index] ?? caption.angle.toUpperCase();
+        const body = (editedCaptions[index] ?? caption.text).trim();
+        return `--- GÓC ${index + 1}: ${title} ---\n${body}`;
+      })
+      .join("\n\n");
 
-        const content = [
-          divider,
-          "CONTENT STUDIO — BỘ NỘI DUNG QUẢNG CÁO ĐA KÊNH CHUYỂN ĐỔI CAO",
-          `Sản phẩm: ${formInputs.productName.trim() || "(chưa đặt tên)"}`,
-          `Thời gian tạo: ${new Date().toLocaleString("vi-VN")}`,
-          `Tông giọng: ${formInputs.tone}`,
-          divider,
-          "",
-          "[PHẦN 1: 3 TIÊU ĐỀ QUẢNG CÁO HẤP DẪN (HEADLINES)]",
-          headlineLines,
-          "",
-          "[PHẦN 2: 3 GÓC TIẾP CẬN BÀI VIẾT ĐỘC BẢN]",
-          angleSections,
-          "",
-          "[PHẦN 3: 5 HASHTAGS ĐỀ XUẤT]",
-          result.hashtags.join(" "),
-          "",
-          divider,
-          "Tạo bởi Content Studio — Nền tảng kiến tạo nội dung quảng cáo chuẩn AIDA & PAS",
-          divider,
-          "",
-        ].join("\n");
+    const content = [
+      divider,
+      "CONTENT STUDIO — BỘ NỘI DUNG QUẢNG CÁO ĐA KÊNH CHUYỂN ĐỔI CAO",
+      `Sản phẩm: ${formInputs.productName.trim() || "(chưa đặt tên)"}`,
+      `Thời gian tạo: ${new Date().toLocaleString("vi-VN")}`,
+      `Tông giọng: ${formInputs.tone}`,
+      divider,
+      "",
+      "[PHẦN 1: 3 TIÊU ĐỀ QUẢNG CÁO HẤP DẪN (HEADLINES)]",
+      headlineLines,
+      "",
+      "[PHẦN 2: 3 GÓC TIẾP CẬN BÀI VIẾT ĐỘC BẢN]",
+      angleSections,
+      "",
+      "[PHẦN 3: 5 HASHTAGS ĐỀ XUẤT]",
+      result.hashtags.join(" "),
+      "",
+      divider,
+      "Tạo bởi Content Studio — Nền tảng kiến tạo nội dung quảng cáo chuẩn AIDA & PAS",
+      divider,
+      "",
+    ].join("\n");
 
-        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `noi_dung_${toSafeFileName(
-          formInputs.productName,
-          "content_studio",
-        )}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        showToast("Đã xuất toàn bộ gói nội dung (.txt) thành công!");
-      }, [result, editedCaptions, formInputs, showToast]);
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `noi_dung_${toSafeFileName(
+      formInputs.productName,
+      "content_studio",
+    )}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast("Đã xuất toàn bộ gói nội dung (.txt) thành công!");
+  }, [result, editedCaptions, formInputs, showToast]);
 
   const [credits, setCredits] = useState<number | null>(user?.credits ?? null);
   const isPro = typeof credits === "number" && credits > 0;
@@ -346,17 +369,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           for (const item of prev) {
             if (!map.has(item.id)) map.set(item.id, item);
           }
-                  const merged = Array.from(map.values()).slice(0, 50);
-                  try {
-                    localStorage.setItem(historyKey, JSON.stringify(merged));
-                  } catch {}
-                  return merged;
-                });
-              }
-            } catch {
-              // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
-            }
-          }, [historyKey]);
+          const merged = Array.from(map.values()).slice(0, 50);
+          try {
+            localStorage.setItem(historyKey, JSON.stringify(merged));
+          } catch { }
+          return merged;
+        });
+      }
+    } catch {
+      // Làm mới ngầm thất bại không được chặn luồng tạo nội dung.
+    }
+  }, [historyKey]);
 
   useEffect(() => {
     void refreshHistorySilently();
@@ -378,7 +401,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               return;
             }
           }
-        } catch {}
+        } catch { }
         setHistoryError(res.error);
       } else {
         const items = res.data ?? [];
@@ -389,17 +412,17 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             for (const item of prev) {
               if (!map.has(item.id)) map.set(item.id, item);
             }
-                    const merged = Array.from(map.values()).slice(0, 50);
-                    try {
-                      localStorage.setItem(historyKey, JSON.stringify(merged));
-                    } catch {}
-                    return merged;
-                  });
-                }
-              }
-            } catch {
-              try {
-                const cached = localStorage.getItem(historyKey);
+            const merged = Array.from(map.values()).slice(0, 50);
+            try {
+              localStorage.setItem(historyKey, JSON.stringify(merged));
+            } catch { }
+            return merged;
+          });
+        }
+      }
+    } catch {
+      try {
+        const cached = localStorage.getItem(historyKey);
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -407,12 +430,12 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             return;
           }
         }
-      } catch {}
-          setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
-        } finally {
-          setHistoryLoading(false);
-        }
-      }, [historyKey]);
+      } catch { }
+      setHistoryError("Không thể tải lịch sử bài viết. Vui lòng thử lại.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, [historyKey]);
 
   const handleOpenHistory = useCallback(() => {
     setHistoryOpen(true);
@@ -423,8 +446,24 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     setHistoryOpen(false);
   }, []);
 
+  const handleCreateNewTask = useCallback(() => {
+    setFormInputs({
+      productName: "",
+      productDescription: "",
+      targetAudience: "",
+      tone: "hai-huoc",
+    });
+    setResult(null);
+    setEditedCaptions({});
+    setActiveAngleIndex(0);
+    setActiveTaskId(null);
+    setMobileTab("brief");
+    showToast("Đã mở bản thảo mới. Hãy nhập đề bài sản phẩm.");
+  }, [showToast]);
+
   const handleRestore = useCallback(
     (record: GenerationRecord) => {
+      setActiveTaskId(record.id);
       setFormInputs({
         productName: record.productName,
         productDescription: record.productDescription,
@@ -463,7 +502,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           setHistoryItems(snapshot);
           try {
             localStorage.setItem(historyKey, JSON.stringify(snapshot));
-          } catch {}
+          } catch { }
           showToast(res.error ?? "Không thể xóa bài viết. Vui lòng thử lại.");
           return false;
         }
@@ -473,7 +512,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
         setHistoryItems(snapshot);
         try {
           localStorage.setItem(historyKey, JSON.stringify(snapshot));
-        } catch {}
+        } catch { }
         showToast("Mất kết nối khi xóa. Bài viết đã được khôi phục.");
         return false;
       }
@@ -487,22 +526,15 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
       // Nếu chưa đăng nhập:
       if (!user) {
-        const sample = findSampleResult(input);
-        if (sample) {
-          if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
-          generateTimerRef.current = setTimeout(() => {
-            setResult(sample);
-            setLoading(false);
-            setMobileTab("editor");
-            showToast("Đang xem dữ liệu mẫu. Đăng nhập để AI tạo bài viết riêng.");
-          }, 400);
-          return;
-        }
-
-        // Với sản phẩm do người dùng tự gõ -> Yêu cầu đăng nhập
-        setLoading(false);
-        setAuthModalOpen(true);
-        showToast("Vui lòng đăng nhập để AI tạo bài viết cho sản phẩm này.");
+        const sample = findSampleResult(input) ?? SAMPLE_SCENARIOS[0].output;
+        if (generateTimerRef.current) clearTimeout(generateTimerRef.current);
+        generateTimerRef.current = setTimeout(() => {
+          setResult(sample);
+          setIsMockMode(true);
+          setLoading(false);
+          setMobileTab("editor");
+          showToast("Bản demo vòng loại - Dữ liệu mô phỏng AI");
+        }, 400);
         return;
       }
 
@@ -530,6 +562,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
         if (resData.success && resData.data) {
           setResult(resData.data);
+          setIsMockMode(false);
           setLoading(false);
           setMobileTab("editor");
           if (typeof resData.creditsRemaining === "number") {
@@ -553,7 +586,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
             const updated = [newHistoryRec, ...prev.filter((p) => p.id !== newHistoryRec.id)].slice(0, 50);
             try {
               localStorage.setItem(historyKey, JSON.stringify(updated));
-            } catch {}
+            } catch { }
             return updated;
           });
 
@@ -567,14 +600,20 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           throw new Error("Phản hồi từ AI không đúng cấu trúc.");
         }
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Đã xảy ra lỗi khi gọi AI.";
-        showToast(msg);
+        // Fallback tự động sang Mock data khi ngoại tuyến / chưa có API key (bảo vệ ca TC06 Bảng B)
+        const fallbackSample =
+          findSampleResult(input) ??
+          SAMPLE_SCENARIOS[sampleIndexRef.current % SAMPLE_SCENARIOS.length].output;
+        setResult(fallbackSample);
+        setIsMockMode(true);
+        setMobileTab("editor");
+        showToast("Bản demo vòng loại - Dữ liệu mô phỏng AI (Chế độ dự phòng)");
       } finally {
         setLoading(false);
       }
     },
-        [user, showToast, refreshHistorySilently, isPro, historyKey],
-      );
+    [user, showToast, refreshHistorySilently, isPro, historyKey],
+  );
 
   const handleOpenTopUp = useCallback(() => {
     setTopUpModalOpen(true);
@@ -601,92 +640,18 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
     generate(formInputs, "Đã tạo lại nội dung thành công!");
   }, [loading, result, cooldownSeconds, isPro, showToast, generate, formInputs]);
 
-  const handleLoadSample = useCallback(() => {
-    const scenario =
-      SAMPLE_SCENARIOS[sampleIndexRef.current % SAMPLE_SCENARIOS.length];
-    sampleIndexRef.current += 1;
+  const handleLoadSample = useCallback((forcedIndex?: number) => {
+    const idx = typeof forcedIndex === "number" ? forcedIndex : sampleIndexRef.current;
+    const scenario = SAMPLE_SCENARIOS[idx % SAMPLE_SCENARIOS.length];
+    if (typeof forcedIndex !== "number") {
+      sampleIndexRef.current += 1;
+    }
     setFormInputs(scenario.input);
     setResult(scenario.output);
+    setIsMockMode(true);
     setMobileTab("editor");
-    showToast(`Đã nạp dữ liệu mẫu: ${scenario.input.productName}`);
+    showToast(`Bản demo vòng loại - Dữ liệu mô phỏng AI: ${scenario.input.productName}`);
   }, [showToast]);
-
-  // Memo hóa thanh công cụ tĩnh: không bị re-render bởi nhịp cooldown 1s hay các tick nội bộ khác
-  const toolbarRow = useMemo(
-    () => (
-      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h1 className="text-[16px] font-semibold tracking-tight text-[var(--ink-primary)]">
-              Studio biên tập nội dung
-            </h1>
-            {draftSaved && (
-              <span className="animate-fade-in inline-flex items-center gap-1 rounded-full bg-[var(--accent-emerald)]/[0.08] px-2 py-0.5 text-[11px] font-medium text-[var(--accent-emerald)]">
-                <Check className="h-3 w-3" />
-                Đã lưu nháp
-              </span>
-            )}
-          </div>
-          <span className="mt-1 block font-mono text-[11px] text-[var(--ink-tertiary)]">
-            [WORKSPACE · ACTIVE PIPELINE: 3 ANGLES]
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setPreviewOpen(true)}
-            disabled={!result}
-            className="btn-tactile hidden lg:inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-50"
-          >
-            <Eye className="h-3.5 w-3.5" />
-            Xem trước
-          </button>
-          <button
-            type="button"
-            onClick={handleOpenTopUp}
-            className={`btn-tactile inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[12px] font-medium transition-[color,background-color,border-color] duration-150 ${
-              isPro
-                ? activePlan.id === "yearly"
-                  ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15)]"
-                  : activePlan.id === "monthly"
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
-                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-            }`}
-          >
-            {isPro ? (
-              activePlan.id === "yearly" ? (
-                <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
-                ) : activePlan.id === "monthly" ? (
-                  <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
-                ) : (
-                  <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
-                )
-              ) : (
-                <Zap className="h-3.5 w-3.5 text-[var(--accent-navy)]" />
-              )}
-            <span>{isPro ? activePlan.tierBadge : "Nâng cấp Pro 0s"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleOpenHistory}
-            className="btn-tactile inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-          >
-            <History className="h-3.5 w-3.5" />
-            Lịch sử
-          </button>
-        </div>
-      </div>
-    ),
-      [
-        draftSaved,
-        result,
-        isPro,
-        activePlan,
-        handleOpenTopUp,
-        handleOpenHistory,
-      ],
-    );
 
   const activeCaption =
     result?.captions[activeAngleIndex] ?? result?.captions[0] ?? null;
@@ -708,14 +673,12 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
       />
 
       <main className="w-full flex-1 lg:min-h-0 lg:overflow-hidden">
-        <div className="mx-auto flex h-full w-full max-w-[1680px] flex-col px-3 pb-28 pt-3 sm:px-6 sm:py-4 md:pb-6 lg:py-3 lg:pb-3">
-          {toolbarRow}
-
+        <div className="mx-auto flex h-full w-full max-w-[1720px] flex-col px-3 pb-28 pt-2.5 sm:px-5 sm:py-3 md:pb-6 lg:py-2.5 lg:pb-2.5">
           {/* Mobile Segmented Control — Brief / Bản thảo */}
-          <div className="relative mb-3 flex shrink-0 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1 lg:hidden">
+          <div className="relative mb-2.5 flex shrink-0 items-center rounded-xl border border-[#1E2333] bg-[#0E121B] p-1 lg:hidden">
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 transition-transform duration-200"
               style={{
                 width: "calc(50% - 4px)",
                 transform: `translateX(${mobileTab === "brief" ? 0 : 100}%)`,
@@ -725,55 +688,153 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               type="button"
               onClick={() => setMobileTab("brief")}
               aria-pressed={mobileTab === "brief"}
-              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-colors ${
-                mobileTab === "brief"
-                  ? "text-[var(--accent-navy)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
-              }`}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-[13px] font-semibold transition-colors ${mobileTab === "brief"
+                ? "text-emerald-300"
+                : "text-slate-400 hover:text-white"
+                }`}
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Brief</span>
+              <span className="truncate">Brief sản phẩm</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("editor")}
               aria-pressed={mobileTab === "editor"}
-              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-[13px] font-semibold transition-colors ${
-                mobileTab === "editor"
-                  ? "text-[var(--accent-navy)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
-              }`}
+              className={`btn-tactile relative z-10 flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-[13px] font-semibold transition-colors ${mobileTab === "editor"
+                ? "text-emerald-300"
+                : "text-slate-400 hover:text-white"
+                }`}
             >
               <Wand2 className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">Bản thảo</span>
+              <span className="truncate">Bản thảo 3 góc</span>
               {result && (
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-emerald)]" />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
               )}
             </button>
           </div>
 
-          <div className="grid flex-1 grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:grid-cols-[400px_1fr] lg:overflow-hidden xl:grid-cols-[440px_1fr]">
-            {/* ===== CỘT TRÁI — BRIEF INSPECTOR (40%) ===== */}
-            <div className="flex min-w-0 flex-col gap-3 lg:contents">
+          {/* 3-ZONE LINEAR ARCHITECTURE */}
+          <div className="grid flex-1 grid-cols-1 gap-3 lg:h-full lg:min-h-0 lg:grid-cols-[230px_380px_1fr] xl:grid-cols-[250px_420px_1fr] lg:overflow-hidden">
+            {/* ===== ZONE 1: TASK RAIL (Left Sidebar) ===== */}
+            <aside className="hidden lg:flex lg:flex-col lg:h-full lg:min-h-0 w-full rounded-xl border border-[#1E2333] bg-[#0E121B] p-3 shadow-sm">
+              {/* + Bản thảo mới CTA */}
+              <button
+                type="button"
+                onClick={handleCreateNewTask}
+                title="Khởi tạo bản thảo mới (không xóa lịch sử)"
+                className="btn-tactile flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-500 py-2.5 px-3 text-[13px] font-bold text-black shadow-md shadow-emerald-500/20 hover:bg-emerald-400 active:scale-[0.98] transition-all"
+              >
+                <Sparkles className="h-3.5 w-3.5 fill-black text-black" />
+                <span>+ Bản thảo mới</span>
+              </button>
+
+              {/* Active Session Status */}
+              <div className="mt-2.5 flex items-center justify-between rounded-lg border border-[#1E2333] bg-[#07090E] px-2.5 py-1.5 text-[11px] font-mono text-slate-300">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-semibold text-emerald-400">SESSION</span>
+                </div>
+                {draftSaved ? (
+                  <span className="inline-flex items-center gap-1 text-[10.5px] text-emerald-300">
+                    <Check className="h-3 w-3" /> Đã lưu
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-slate-500">Auto-save</span>
+                )}
+              </div>
+
+              {/* Section title */}
+              <div className="mt-3.5 flex items-center justify-between px-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                <span>BẢN THẢO GẦN ĐÂY</span>
+                <span className="text-[10px] text-slate-500 font-normal">({historyItems.length})</span>
+              </div>
+
+              {/* Task Items Scrollable List */}
+              <div className="custom-scrollbar mt-2 flex-1 min-h-0 overflow-y-auto space-y-1 pr-0.5">
+                {historyItems.length > 0 ? (
+                  historyItems.slice(0, 15).map((item) => {
+                    const isActive =
+                      activeTaskId === item.id ||
+                      (formInputs.productName.trim() === item.productName.trim() && Boolean(result));
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => handleRestore(item)}
+                        className={`btn-tactile group relative flex w-full cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${isActive
+                          ? "border border-emerald-500/50 bg-emerald-500/10 text-white font-medium"
+                          : "border border-transparent hover:border-[#1E2333] hover:bg-[#121622] text-slate-300"
+                          }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0 pr-1">
+                          <span
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full ${isActive ? "bg-emerald-400" : "bg-slate-600"
+                              }`}
+                          />
+                          <div className="min-w-0">
+                            <span className="block truncate font-medium text-[12px]">
+                              {item.productName || "Bản thảo chưa đặt tên"}
+                            </span>
+                            <span className="block text-[10px] text-slate-400 font-mono">
+                              3 góc · {item.tone || "Tone"}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleDeleteHistoryItem(item.id);
+                          }}
+                          title="Xóa bản thảo này"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-rose-400 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="space-y-1.5 pt-1">
+                    <p className="text-[11px] text-slate-400 px-1">Chưa có bản thảo lưu. Nạp mẫu nhanh:</p>
+                    {SAMPLE_SCENARIOS.slice(0, 3).map((scenario, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleLoadSample(idx)}
+                        className="btn-tactile flex w-full items-center gap-2 rounded-lg border border-[#1E2333] bg-[#07090E] p-2 text-left text-[11px] text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 transition-colors"
+                      >
+                        <Sparkles className="h-3 w-3 text-emerald-400 shrink-0" />
+                        <span className="truncate">{scenario.input.productName}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom: Archive Drawer Link */}
+              <div className="mt-auto pt-2.5 border-t border-[#1E2333]">
+                <button
+                  type="button"
+                  onClick={handleOpenHistory}
+                  className="btn-tactile flex w-full items-center justify-between rounded-lg border border-[#1E2333] bg-[#07090E] px-2.5 py-2 text-[12px] font-medium text-slate-300 hover:border-white/20 hover:text-white transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <History className="h-3.5 w-3.5 text-purple-400" />
+                    <span>Kho lưu trữ</span>
+                  </span>
+                  <span className="font-mono text-[10.5px] rounded bg-[#121622] px-1.5 py-0.5 text-slate-400">
+                    {historyItems.length}
+                  </span>
+                </button>
+              </div>
+            </aside>
+
+            {/* ===== ZONE 2: BRIEF CANVAS ===== */}
             <div
-              className={`custom-scrollbar relative min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-1.5 ${
-                mobileTab === "brief" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
-              }`}
+              className={`custom-scrollbar relative min-w-0 lg:h-full lg:min-h-0 lg:overflow-y-auto ${mobileTab === "brief" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+                }`}
             >
               <aside className="flex w-full min-w-0 flex-col gap-2.5">
-                <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-2 shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-                      <FileText className="h-3.5 w-3.5" />
-                    </span>
-                    <h2 className="text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                      Brief sản phẩm
-                    </h2>
-                  </div>
-                  <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2 py-0.5 text-[10.5px] font-medium uppercase tracking-wider text-[var(--ink-tertiary)]">
-                    4 trường
-                  </span>
-                </div>
                 <ProductForm
                   value={formInputs}
                   onChange={setFormInputs}
@@ -787,423 +848,405 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
 
                 {isPro ? (
                   <div
-                    className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-[12px] font-medium transition-all ${
-                      activePlan.id === "yearly"
-                        ? "border-purple-500/40 bg-purple-500/10 text-purple-600 dark:text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.12)]"
-                        : activePlan.id === "monthly"
-                        ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.12)]"
-                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                    }`}
+                    className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-[12px] font-medium transition-all ${activePlan.id === "yearly"
+                      ? "border-purple-500/40 bg-purple-500/10 text-purple-300"
+                      : activePlan.id === "monthly"
+                        ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                        : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                      }`}
                   >
                     {activePlan.id === "yearly" ? (
-                      <Crown className="h-3.5 w-3.5 fill-purple-500 text-purple-500" />
+                      <Crown className="h-3.5 w-3.5 fill-purple-400 text-purple-400" />
                     ) : activePlan.id === "monthly" ? (
-                      <Zap className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                      <Zap className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                     ) : (
-                      <Zap className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />
+                      <Zap className="h-3.5 w-3.5 fill-emerald-400 text-emerald-400" />
                     )}
                     <span>{activePlan.statusDescription}</span>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-2 text-[12px] text-[var(--ink-secondary)]">
+                  <div className="flex items-center justify-center gap-2 rounded-xl border border-[#1E2333] bg-[#0E121B] px-3 py-2 text-[12px] text-slate-300">
                     <span>Gói Miễn Phí: Không giới hạn bài viết</span> ·{" "}
                     <button
                       type="button"
                       onClick={handleOpenTopUp}
-                      className="font-semibold text-[var(--accent-navy)] hover:underline"
+                      className="font-bold text-emerald-400 hover:underline"
                     >
                       Nâng cấp Pro 0s
                     </button>
                   </div>
                 )}
               </aside>
+            </div>
 
-              </div>
-
-            {/* ===== CỘT PHẢI — WRITING SUITE (60%) ===== */}
+            {/* ===== ZONE 3: WRITING STAGE ===== */}
             <div
-              className={`relative min-w-0 lg:h-full lg:min-h-0 ${
-                mobileTab === "editor" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
-              }`}
+              className={`relative min-w-0 lg:h-full lg:min-h-0 ${mobileTab === "editor" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+                }`}
             >
-              <section className="custom-scrollbar flex h-full w-full min-w-0 flex-col rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface)] shadow-xs lg:min-h-0 lg:overflow-y-auto">
-              <header className="sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-xs">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-                    <Wand2 className="h-3.5 w-3.5" />
-                  </span>
-                  <h2 className="truncate text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                    Bản thảo biên tập
-                  </h2>
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewOpen(true)}
-                    disabled={!result}
-                    className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-50"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    Xem trước
-                  </button>
-                  {result && (
-                    <button
-                      type="button"
-                      onClick={handleRegenerate}
-                      disabled={loading}
-                      className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] disabled:opacity-60"
-                    >
-                      {loading ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <RefreshCw className="h-3 w-3" />
-                      )}
-                      {loading ? "Đang tạo..." : "Tạo lại"}
-                    </button>
-                  )}
-                </div>
-              </header>
-
-              {result && activeCaption ? (
-                <>
-                  {/* Angle tabs — fluid sliding pill */}
-                  <div className="border-b border-[var(--border-subtle)] px-3 py-2.5">
-                    <div className="relative grid grid-cols-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-1">
-                      <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute inset-y-1 left-1 rounded-lg bg-[var(--surface)] shadow-[0_1px_3px_rgba(0,0,0,0.1)] transition-transform duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-                        style={{
-                          width: "calc(33.3333% - 2.667px)",
-                          transform: `translateX(${activeAngleIndex * 100}%)`,
-                        }}
-                      />
-                      {result.captions.map((cap, index) => {
-                        const meta = ANGLE_META[index];
-                        const active = index === activeAngleIndex;
-                        return (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => setActiveAngleIndex(index)}
-                            aria-pressed={active}
-                            className={`btn-tactile relative z-10 inline-flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1.5 py-1.5 transition-colors ${
-                              active
-                                ? "text-[var(--accent-navy)]"
-                                : "text-[var(--ink-secondary)] hover:text-[var(--ink-primary)]"
-                            }`}
-                          >
-                            <span className="w-full truncate text-center text-[12.5px] font-semibold">
-                              {String(index + 1).padStart(2, "0")}. {meta?.tag ?? `G${index + 1}`}
-                            </span>
-                            <span className="w-full truncate text-center text-[12px] font-normal text-[var(--ink-tertiary)]">
-                              {meta?.label ?? cap.angle}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+              <section className="flex h-full w-full min-w-0 flex-col rounded-xl border border-[#1E2333] bg-[#0E121B] shadow-sm overflow-hidden lg:min-h-0">
+                <header className="flex shrink-0 items-center justify-between gap-2 border-b border-[#1E2333] bg-[#0E121B] px-4 py-2.5">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      <Wand2 className="h-3.5 w-3.5" />
+                    </span>
+                    <h2 className="truncate text-[13.5px] font-semibold text-white">
+                      Bản thảo biên tập
+                    </h2>
+                    {isMockMode ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-mono font-medium text-amber-300">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        Bản demo vòng loại - Dữ liệu mô phỏng AI
+                      </span>
+                    ) : (
+                      <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-300">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        AI Real-time
+                      </span>
+                    )}
                   </div>
-
-                  {/* Quick actions */}
-                  <div className="flex flex-wrap items-center gap-1.5 px-4 py-2.5">
+                  <div className="flex shrink-0 items-center gap-1.5">
                     <button
                       type="button"
-                      onClick={() =>
-                        void handleCopyText(
-                          currentText,
-                          `caption-${activeAngleIndex}`,
-                          "Đã sao chép bài viết vào clipboard.",
-                        )
-                      }
-                      className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11.5px] font-medium transition-colors ${
-                        copiedKey === `caption-${activeAngleIndex}`
-                          ? "border-[var(--accent-emerald)] bg-[var(--accent-emerald)]/[0.08] text-[var(--accent-emerald)]"
-                          : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
-                      }`}
+                      onClick={() => setPreviewOpen(true)}
+                      disabled={!result}
+                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[#1E2333] bg-[#07090E] px-2.5 py-1.5 text-[11.5px] font-medium text-slate-300 transition-colors hover:border-emerald-500/40 hover:text-emerald-300 disabled:opacity-40"
                     >
-                      {copiedKey === `caption-${activeAngleIndex}` ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                      {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
+                      <Eye className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>Xem trước</span>
                     </button>
-
                     <button
                       type="button"
                       onClick={handleExportFullPackageTxt}
-                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-secondary)] transition-colors hover:border-[var(--accent-navy)] hover:text-[var(--accent-navy)]"
+                      disabled={!result}
+                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[#1E2333] bg-[#07090E] px-2.5 py-1.5 text-[11.5px] font-medium text-slate-300 transition-colors hover:border-sky-500/40 hover:text-sky-300 disabled:opacity-40"
                     >
-                      <Download className="h-3.5 w-3.5" />
-                      Xuất gói nội dung (.txt)
+                      <Download className="h-3.5 w-3.5 text-sky-400" />
+                      <span className="hidden sm:inline">Xuất .txt</span>
                     </button>
-
-                    {isModified && (
+                    {result && (
                       <button
                         type="button"
-                        onClick={() => {
-                          setEditedCaptions((prev) => {
-                            const next = { ...prev };
-                            delete next[activeAngleIndex];
-                            return next;
-                          });
-                          showToast("Đã khôi phục nội dung AI gốc.");
-                        }}
-                        className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-2.5 py-1.5 text-[11.5px] font-medium text-[var(--ink-tertiary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)]"
+                        onClick={handleRegenerate}
+                        disabled={loading}
+                        className="btn-tactile inline-flex items-center gap-1 rounded-lg border border-[#1E2333] bg-[#07090E] px-2 py-1.5 text-[11.5px] font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white disabled:opacity-40"
                       >
-                        <RotateCcw className="h-3.5 w-3.5" />
-                        Khôi phục AI gốc
+                        {loading ? (
+                          <Loader2 className="h-3 w-3 animate-spin text-emerald-400" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3 text-emerald-400" />
+                        )}
+                        <span className="hidden sm:inline">{loading ? "Đang tạo..." : "Tạo lại"}</span>
                       </button>
                     )}
                   </div>
+                </header>
 
-                  {/* Inline textarea */}
-                  <div className="flex-1 px-4 pb-3">
-                    <textarea
-                      value={currentText}
-                      onChange={(e) => {
-                        setEditedCaptions((prev) => ({ ...prev, [activeAngleIndex]: e.target.value }));
-                      }}
-                      rows={8}
-                      className="studio-textarea w-full resize-y rounded-xl border border-[var(--border-subtle)] bg-[var(--canvas)] p-4 text-[var(--ink-primary)] outline-hidden transition-colors [field-sizing:content] focus:border-[var(--accent-navy)] focus:ring-2 focus:ring-[var(--accent-navy)]/15"
-                      placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
-                    />
-                      <p className="mt-2 text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
+                {result && activeCaption ? (
+                  <div className="flex flex-1 flex-col min-h-0 overflow-hidden">
+                    {/* Fixed pinned Header: Angle tabs & Quick actions (im 1 chỗ, không bị cà dựt) */}
+                    <div className="shrink-0 border-b border-[#1E2333] bg-[#07090E] z-10">
+                      {/* Angle tabs with Fluid Spring Animation & Glow */}
+                      <div className="px-3 py-2 border-b border-[#1E2333]/70">
+                        <div className="relative grid grid-cols-3 gap-1 rounded-xl bg-[#090D15] p-1 border border-[#1E2333] shadow-inner">
+                          {result.captions.map((cap, index) => {
+                            const meta = ANGLE_META[index];
+                            const active = index === activeAngleIndex;
+                            return (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => setActiveAngleIndex(index)}
+                                aria-pressed={active}
+                                className={`group relative flex flex-col items-center justify-center rounded-lg py-2 px-2 text-center transition-all duration-200 cursor-pointer select-none active:scale-[0.97] ${active
+                                  ? "bg-gradient-to-b from-[#111726] to-[#0B0F1A] text-emerald-300 border border-emerald-500/40 shadow-[0_0_18px_rgba(16,185,129,0.18)]"
+                                  : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border border-transparent"
+                                  }`}
+                              >
+                                {active && (
+                                  <span className="absolute -top-1 h-0.5 w-8 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+                                )}
+                                <span className={`text-[12px] font-bold tracking-tight transition-transform duration-200 group-hover:scale-105 ${active ? "text-emerald-400" : "text-slate-300"}`}>
+                                  {String(index + 1).padStart(2, "0")}. {meta?.tag ?? `G${index + 1}`}
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-normal truncate max-w-full mt-0.5">
+                                  {meta?.label ?? cap.angle}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Quick actions bar - Pinned & Stable */}
+                      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-[#0E121B]">
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              void handleCopyText(
+                                currentText,
+                                `caption-${activeAngleIndex}`,
+                                "Đã sao chép bài viết vào clipboard.",
+                              )
+                            }
+                            className={`btn-tactile inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11.5px] font-semibold transition-all active:scale-95 ${copiedKey === `caption-${activeAngleIndex}`
+                              ? "border-emerald-500/60 bg-emerald-500/20 text-emerald-300 shadow-sm shadow-emerald-500/20"
+                              : "border-[#1E2333] bg-[#07090E] text-slate-300 hover:border-emerald-500/40 hover:text-white"
+                              }`}
+                          >
+                            {copiedKey === `caption-${activeAngleIndex}` ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-400" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                            {copiedKey === `caption-${activeAngleIndex}` ? "Đã chép" : "Sao chép bài viết"}
+                          </button>
+
+                          {isModified && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditedCaptions((prev) => {
+                                  const next = { ...prev };
+                                  delete next[activeAngleIndex];
+                                  return next;
+                                });
+                                showToast("Đã khôi phục nội dung AI gốc.");
+                              }}
+                              className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[#1E2333] bg-[#07090E] px-3 py-1.5 text-[11.5px] font-medium text-slate-400 transition-colors hover:border-white/20 hover:text-white active:scale-95"
+                            >
+                              <RotateCcw className="h-3.5 w-3.5" />
+                              Khôi phục AI gốc
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="hidden sm:flex items-center gap-1 text-[11px] font-mono text-slate-400">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          <span>Góc {activeAngleIndex + 1}/3</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Scrollable Editor Body - Scroll độc lập, không làm cà dựt nút bấm */}
+                    <div className="custom-scrollbar flex-1 min-h-0 overflow-y-auto px-4 py-3">
+                      <textarea
+                        value={currentText}
+                        onChange={(e) => {
+                          setEditedCaptions((prev) => ({ ...prev, [activeAngleIndex]: e.target.value }));
+                        }}
+                        rows={9}
+                        className="w-full min-h-[190px] resize-y rounded-lg border border-[#1E2333] bg-[#07090E] p-4 text-[14px] leading-relaxed text-[#F8FAFC] placeholder:text-slate-500 outline-none transition-colors [field-sizing:content] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30"
+                        placeholder="Nội dung bài viết sẽ xuất hiện ở đây..."
+                      />
+                      <p className="mt-1.5 text-[11.5px] leading-relaxed text-slate-400">
                         125 ký tự đầu tiên là &quot;Hook&quot; — phần hiển thị trước nút &quot;Xem thêm&quot; trên bảng tin Facebook.
                       </p>
 
-                      {/* Linear Precision Telemetry Gauge — FB Hook 125 & IG 2.200 */}
-                      <div className="mt-3.5 space-y-2.5 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 p-3.5">
+                      {/* Telemetry Gauge */}
+                      <div className="mt-3 space-y-2 rounded-lg border border-[#1E2333] bg-[#07090E] p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="font-mono text-[11px] font-medium text-[var(--ink-tertiary)]">
+                          <span className="font-mono text-[11px] font-medium text-slate-400">
                             TELEMETRY · {charCount.toLocaleString("vi-VN")} chars
                           </span>
                           <div className="flex flex-wrap items-center gap-1.5 font-mono">
                             <span
-                              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
-                                overLimit
-                                  ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-300"
-                                  : "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
-                              }`}
+                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums ${overLimit
+                                ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                                : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                                }`}
                             >
                               <span className="h-1.5 w-1.5 rounded-full bg-current" />
                               FB Hook: {charCount}/125
                               {overLimit && <span className="ml-0.5">· Cần xem thêm</span>}
                             </span>
                             <span
-                              className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
-                                isOverInstagram
-                                  ? "border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-300"
-                                  : "border-[var(--border-subtle)] bg-[var(--surface)] text-[var(--ink-secondary)]"
-                              }`}
+                              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold tabular-nums ${isOverInstagram
+                                ? "border-rose-500/40 bg-rose-500/10 text-rose-300"
+                                : "border-[#1E2333] bg-[#0E121B] text-slate-300"
+                                }`}
                             >
                               {isOverInstagram && <AlertTriangle className="h-3 w-3 shrink-0" />}
                               IG: {charCount.toLocaleString("vi-VN")}/2.200
                             </span>
                           </div>
                         </div>
-                        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-raised)]">
+                        <div className="relative h-1 w-full overflow-hidden rounded-full bg-[#1E2333]">
                           <div
-                            className={`h-full rounded-full transition-[width] duration-300 ${
-                              isOverInstagram
-                                ? "bg-rose-500"
-                                : overLimit
-                                ? "bg-amber-500"
-                                : "bg-gradient-to-r from-teal-500 to-emerald-400"
-                            }`}
+                            className={`h-full rounded-full transition-[width] duration-300 ${isOverInstagram
+                              ? "bg-rose-500"
+                              : overLimit
+                                ? "bg-amber-400"
+                                : "bg-emerald-400"
+                              }`}
                             style={{ width: `${Math.min((charCount / 125) * 100, 100)}%` }}
                           />
                         </div>
                       </div>
                     </div>
 
-                  {/* Headlines */}
-                  {result.headlines.length > 0 && (
-                    <div className="border-t border-[var(--border-subtle)]">
-                      <button
-                        type="button"
-                        onClick={() => setHeadlinesOpen((v) => !v)}
-                        className="flex w-full items-center justify-between px-4 py-2.5 text-[12px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
-                      >
-                        <span>Tiêu đề quảng cáo ({result.headlines.length})</span>
-                        {headlinesOpen ? (
-                          <ChevronUp className="h-3.5 w-3.5" />
-                        ) : (
-                          <ChevronDown className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                      {headlinesOpen && (
-                        <ul className="space-y-1.5 px-4 pb-3">
-                          {result.headlines.map((headline, i) => (
-                            <li
-                              key={i}
-                              className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)]/40 px-2.5 py-1.5"
-                            >
-                              <span className="min-w-0 truncate text-[12px] text-[var(--ink-primary)]">
-                                {headline}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  void handleCopyText(headline, `headline-${i}`, "Đã sao chép tiêu đề.")
-                                }
-                                aria-label="Sao chép tiêu đề"
-                                className="shrink-0 text-[var(--ink-tertiary)] transition-colors hover:text-[var(--ink-primary)]"
-                              >
-                                {copiedKey === `headline-${i}` ? (
-                                  <Check className="h-3.5 w-3.5 text-[var(--accent-emerald)]" />
-                                ) : (
-                                  <Copy className="h-3.5 w-3.5" />
-                                )}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Hashtags */}
-                  {result.hashtags.length > 0 && (
-                    <div className="border-t border-[var(--border-subtle)] px-4 py-3">
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-[11.5px] font-medium text-[var(--ink-secondary)]">
-                          Hashtag gợi ý
-                        </span>
+                    {/* Headlines */}
+                    {result.headlines.length > 0 && (
+                      <div className="border-t border-[#1E2333]">
                         <button
                           type="button"
-                          onClick={() =>
-                            void handleCopyText(
-                              result.hashtags.join(" "),
-                              "hashtags",
-                              "Đã sao chép toàn bộ hashtag.",
-                            )
-                          }
-                          className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--accent-navy)] transition-opacity hover:underline"
+                          onClick={() => setHeadlinesOpen((v) => !v)}
+                          className="flex w-full items-center justify-between px-4 py-2.5 text-[12px] font-semibold text-slate-300 transition-colors hover:text-white"
                         >
-                          {copiedKey === "hashtags" ? (
-                            <Check className="h-3 w-3" />
+                          <span>Tiêu đề quảng cáo gợi ý ({result.headlines.length})</span>
+                          {headlinesOpen ? (
+                            <ChevronUp className="h-3.5 w-3.5 text-slate-400" />
                           ) : (
-                            <Copy className="h-3 w-3" />
+                            <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                           )}
-                          Sao chép tất cả
                         </button>
+                        {headlinesOpen && (
+                          <ul className="space-y-1 px-4 pb-3">
+                            {result.headlines.map((headline, i) => (
+                              <li
+                                key={i}
+                                className="flex items-center justify-between gap-2 rounded-lg border border-[#1E2333] bg-[#07090E] px-3 py-2"
+                              >
+                                <span className="min-w-0 truncate text-[12px] text-white">
+                                  {headline}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    void handleCopyText(headline, `headline-${i}`, "Đã sao chép tiêu đề.")
+                                  }
+                                  aria-label="Sao chép tiêu đề"
+                                  className="shrink-0 text-slate-400 transition-colors hover:text-white"
+                                >
+                                  {copiedKey === `headline-${i}` ? (
+                                    <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {result.hashtags.map((tag, i) => (
-                          <span
-                            key={i}
-                            className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] text-[var(--ink-secondary)]"
-                          >
-                            {tag}
+                    )}
+
+                    {/* Hashtags */}
+                    {result.hashtags.length > 0 && (
+                      <div className="border-t border-[#1E2333] px-4 py-3">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-[11.5px] font-semibold text-slate-300">
+                            Hashtag gợi ý
                           </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Mobile navigation CTA to Zone 3 */}
-                  <div className="mt-4 border-t border-[var(--border-subtle)] p-4 lg:hidden">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewOpen(true)}
-                      className="btn-tactile touch-target flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-navy)] py-3 text-[13px] font-semibold text-white shadow-xs"
-                    >
-                      <span>Xem trước bài đăng</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-16 text-center">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
-                    <Wand2 className="h-5 w-5" />
-                  </span>
-                  <p className="text-[13px] font-medium text-[var(--ink-primary)]">Chưa có nội dung</p>
-                  <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
-                    Điền brief ở cột Brief và bấm &quot;Tạo 3 góc bài viết&quot; để AI kiến tạo nội dung.
-                  </p>
-                  <div className="mt-4 lg:hidden">
-                    <button
-                      type="button"
-                      onClick={() => setMobileTab("brief")}
-                      className="btn-tactile inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1.5 text-[12px] font-medium text-[var(--ink-secondary)]"
-                    >
-                      <ArrowLeft className="h-3.5 w-3.5" />
-                      <span>Quay lại Brief</span>
-                    </button>
-                  </div>
-                </div>
-                )}
-              </section>
-
-              </div>
-
-            </div>
-
-            </div>
-
-            {/* ===== PREVIEW DRAWER — Xem trước đa kênh ===== */}
-            {previewOpen && (
-              <div
-                role="presentation"
-                onClick={() => setPreviewOpen(false)}
-                className="animate-fade-in fixed inset-0 z-50 flex justify-end bg-black/45 backdrop-blur-sm"
-              >
-                <div
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Xem trước bài đăng"
-                  onClick={(event) => event.stopPropagation()}
-                  className="animate-drawer-in flex h-full w-full max-w-md flex-col border-l border-[var(--border-subtle)] bg-[var(--surface)] shadow-2xl sm:max-w-lg"
-                >
-                  <header className="flex shrink-0 items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-3">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent-navy)]/[0.1] text-[var(--accent-navy)]">
-                        <Globe className="h-3.5 w-3.5" />
-                      </span>
-                      <h2 className="truncate text-[13.5px] font-semibold text-[var(--ink-primary)]">
-                        Xem trước đa kênh
-                      </h2>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewOpen(false)}
-                      aria-label="Đóng xem trước"
-                      className="btn-tactile inline-flex h-8 w-8 items-center justify-center rounded-lg text-[var(--ink-tertiary)] transition-colors hover:bg-[var(--surface-raised)] hover:text-[var(--ink-primary)]"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </header>
-                  <div className="custom-scrollbar flex-1 overflow-y-auto p-3">
-                    {result && activeCaption ? (
-                      <FacebookMockup
-                        activeText={currentText}
-                        activeAngle={activeCaption.angle}
-                        pageName={formInputs.productName}
-                        headline={result.headlines[0]}
-                        hashtags={result.hashtags}
-                        onNotify={showToast}
-                      />
-                    ) : (
-                      <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--border-subtle)] px-6 text-center">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--surface-raised)] text-[var(--ink-tertiary)]">
-                          <Globe className="h-5 w-5" />
-                        </span>
-                        <p className="text-[13px] font-medium text-[var(--ink-primary)]">
-                          Chưa có bản thảo để xem trước
-                        </p>
-                        <p className="max-w-xs text-[12px] leading-relaxed text-[var(--ink-tertiary)]">
-                          Tạo 3 góc bài viết ở cột Brief, sau đó mở lại Drawer này để xem mockup Facebook và Instagram.
-                        </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              void handleCopyText(
+                                result.hashtags.join(" "),
+                                "hashtags",
+                                "Đã sao chép toàn bộ hashtag.",
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 transition-opacity hover:underline"
+                          >
+                            {copiedKey === "hashtags" ? (
+                              <Check className="h-3 w-3" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                            Sao chép tất cả
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {result.hashtags.map((tag, i) => (
+                            <span
+                              key={i}
+                              className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-mono text-emerald-300"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
+                ) : (
+                  <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 py-16 text-center">
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#1E2333] bg-[#07090E] text-slate-400">
+                      <Wand2 className="h-5 w-5 text-emerald-400" />
+                    </span>
+                    <p className="text-[14px] font-semibold text-white">Chưa có nội dung bản thảo</p>
+                    <p className="max-w-xs text-[12px] leading-relaxed text-slate-400">
+                      Điền brief ở cột bên trái hoặc chọn một bản thảo trong thanh tác vụ để AI kiến tạo nội dung.
+                    </p>
+                  </div>
+                )}
+              </section>
+            </div>
+          </div>
+
+          {/* ===== PREVIEW DRAWER — Xem trước đa kênh ===== */}
+          {previewOpen && (
+            <div
+              role="presentation"
+              onClick={() => setPreviewOpen(false)}
+              className="animate-fade-in fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm"
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="Xem trước bài đăng"
+                onClick={(event) => event.stopPropagation()}
+                className="animate-drawer-in flex h-full w-full max-w-md flex-col border-l border-[#1E2333] bg-[#0E121B] shadow-2xl sm:max-w-lg"
+              >
+                <header className="flex shrink-0 items-center justify-between gap-2 border-b border-[#1E2333] bg-[#0E121B] px-4 py-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      <Globe className="h-3.5 w-3.5" />
+                    </span>
+                    <h2 className="truncate text-[13.5px] font-semibold text-white">
+                      Xem trước đa kênh Facebook &amp; Instagram
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewOpen(false)}
+                    aria-label="Đóng xem trước"
+                    className="btn-tactile inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#1E2333] bg-[#07090E] text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </header>
+                <div className="custom-scrollbar flex-1 overflow-y-auto p-3">
+                  {result && activeCaption ? (
+                    <FacebookMockup
+                      activeText={currentText}
+                      activeAngle={activeCaption.angle}
+                      pageName={formInputs.productName}
+                      headline={result.headlines[0]}
+                      hashtags={result.hashtags}
+                      onNotify={showToast}
+                    />
+                  ) : (
+                    <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#1E2333] bg-[#07090E] px-6 text-center">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#1E2333] bg-[#0E121B] text-slate-400">
+                        <Globe className="h-5 w-5 text-emerald-400" />
+                      </span>
+                      <p className="text-[13px] font-semibold text-white">
+                        Chưa có bản thảo để xem trước
+                      </p>
+                      <p className="max-w-xs text-[12px] leading-relaxed text-slate-400">
+                        Tạo 3 góc bài viết ở cột Brief, sau đó mở lại Drawer này để xem mockup Facebook và Instagram.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-              <HistoryDrawer
+          <HistoryDrawer
             open={historyOpen}
             loading={historyLoading}
             error={historyError}
@@ -1248,21 +1291,20 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
           />
 
           {/* Mobile sticky action bar */}
-          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--surface)]/95 px-4 py-3 backdrop-blur-md lg:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#1E2333] bg-[#0E121B]/95 px-4 py-3 backdrop-blur-md lg:hidden">
             <div className="mx-auto flex max-w-6xl items-center gap-3">
               {mobileTab === "brief" ? (
                 <>
                   <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <p className="truncate text-[12px] text-[var(--ink-tertiary)]">
+                    <p className="truncate text-[12px] text-slate-400">
                       {isPro ? (
                         <span
-                          className={`font-semibold ${
-                            activePlan.id === "yearly"
-                              ? "text-purple-600 dark:text-purple-400"
-                              : activePlan.id === "monthly"
-                              ? "text-amber-600 dark:text-amber-400"
-                              : "text-emerald-600 dark:text-emerald-400"
-                          }`}
+                          className={`font-semibold ${activePlan.id === "yearly"
+                            ? "text-purple-400"
+                            : activePlan.id === "monthly"
+                              ? "text-amber-400"
+                              : "text-emerald-400"
+                            }`}
                         >
                           {activePlan.tierBadge} · 0s chờ
                         </span>
@@ -1275,7 +1317,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     <button
                       type="button"
                       onClick={() => setTopUpModalOpen(true)}
-                      className="shrink-0 text-[11.5px] font-semibold text-[var(--accent-navy)] hover:underline"
+                      className="shrink-0 text-[11.5px] font-semibold text-emerald-400 hover:underline"
                     >
                       {isPro ? "Đổi gói" : "+ Nâng cấp"}
                     </button>
@@ -1284,12 +1326,12 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     type="submit"
                     form="product-form"
                     disabled={loading || (cooldownSeconds > 0 && !isPro)}
-                    className="touch-target inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[var(--accent-navy)] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent-navy-hover)] disabled:cursor-not-allowed disabled:opacity-70"
+                    className="touch-target inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-[13px] font-bold text-black transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {loading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin text-black" />
                     ) : cooldownSeconds > 0 && !isPro ? null : (
-                      <Wand2 className="h-4 w-4" />
+                      <Wand2 className="h-4 w-4 text-black" />
                     )}
                     <span>
                       {loading
@@ -1305,7 +1347,7 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                   <button
                     type="button"
                     onClick={() => setMobileTab("brief")}
-                    className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[12px] font-medium text-[var(--ink-secondary)]"
+                    className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2333] bg-[#07090E] px-3 py-2 text-[12px] font-medium text-slate-300"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
                     <span>Brief</span>
@@ -1315,9 +1357,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                     type="button"
                     onClick={() => setPreviewOpen(true)}
                     aria-label="Xem trước bài đăng"
-                    className="btn-tactile touch-target inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-[var(--ink-secondary)]"
+                    className="btn-tactile touch-target inline-flex shrink-0 items-center justify-center rounded-lg border border-[#1E2333] bg-[#07090E] px-3 py-2 text-slate-300"
                   >
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4 text-emerald-400" />
                   </button>
                   {result && activeCaption && (
                     <button
@@ -1329,9 +1371,9 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
                           "Đã sao chép bài viết.",
                         )
                       }
-                      className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-[var(--accent-navy)] px-4 py-2 text-[12.5px] font-semibold text-white shadow-xs"
+                      className="btn-tactile touch-target inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-[12.5px] font-bold text-black shadow-xs"
                     >
-                      <Copy className="h-3.5 w-3.5" />
+                      <Copy className="h-3.5 w-3.5 text-black" />
                       <span>Sao chép</span>
                     </button>
                   )}
@@ -1339,19 +1381,6 @@ export default function WorkspaceContainer({ user, onSignOutAction }: WorkspaceC
               )}
             </div>
           </div>
-
-          {toast ? (
-            <div className="pointer-events-none fixed inset-x-0 bottom-28 z-50 flex justify-center px-4 md:bottom-6">
-              <div
-                role="status"
-                aria-live="polite"
-                className="animate-fade-in-up flex max-w-full items-center gap-2 rounded-lg bg-[var(--ink-primary)] px-3.5 py-2 text-[12px] font-medium text-[var(--surface)] shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
-              >
-                <Check className="h-3.5 w-3.5 shrink-0 text-[#4ADE80]" />
-                <span className="min-w-0 break-words">{toast}</span>
-              </div>
-            </div>
-          ) : null}
         </div>
       </main>
     </div>

@@ -110,50 +110,60 @@ const ARTICLES: LegalArticle[] = [
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[var(--canvas)]">
-      <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--surface)]/90 backdrop-blur-md">
+    <div className="relative min-h-screen bg-[#06080D] text-[#F3F4F6] selection:bg-emerald-500/20 selection:text-emerald-300">
+      {/* Precision Micro-Grid & Ambient Mesh */}
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
+      <div className="pointer-events-none fixed top-[-10%] left-[-10%] h-[500px] w-[500px] rounded-full bg-emerald-500/[0.08] blur-[140px]" />
+      <div className="pointer-events-none fixed bottom-[-10%] right-[-10%] h-[500px] w-[500px] rounded-full bg-cyan-500/[0.06] blur-[140px]" />
+
+      {/* Obsidian Header */}
+      <header className="sticky top-0 z-40 border-b border-white/[0.08] bg-[#06080D]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-navy)] text-white shadow-xs">
-              <Sparkles className="h-4 w-4" />
+          <Link href="/" className="group flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 via-teal-300 to-sky-400 text-black font-black text-xs shadow-md shadow-emerald-500/25 transition-transform duration-200 group-hover:scale-105">
+              CS
             </span>
-            <span className="text-sm font-semibold tracking-tight text-[var(--ink-primary)]">
-              Content Studio
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm font-extrabold tracking-tight text-white leading-none">
+                Content Studio
+              </span>
+              <span className="font-mono text-[8.5px] uppercase tracking-wider text-slate-400 mt-0.5">
+                Legal &amp; Terms
+              </span>
+            </div>
           </Link>
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[var(--ink-secondary)] transition-colors hover:text-[var(--ink-primary)]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] bg-[#0A0D15]/80 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:border-white/20 hover:text-white active:scale-[0.98] backdrop-blur-md"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Trang chủ
+              <span>Trang chủ</span>
             </Link>
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl space-y-10 px-4 py-12 leading-relaxed text-[var(--ink-secondary)] sm:px-6 sm:py-16">
+      <main className="relative z-10 mx-auto max-w-4xl space-y-10 px-4 py-12 leading-relaxed text-slate-300 sm:px-6 sm:py-16">
         <section className="space-y-4">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ink-secondary)]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 shadow-sm">
             <Scale className="h-3.5 w-3.5" />
-            Pháp lý
+            Văn kiện pháp lý chính thức
           </span>
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[var(--ink-primary)] sm:text-4xl">
+          <h1 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-white">
             Điều khoản sử dụng dịch vụ
           </h1>
-          <p className="max-w-2xl text-[15px] leading-relaxed text-[var(--ink-secondary)]">
-            Quy định rõ ràng về quyền hạn, trách nhiệm và cam kết pháp lý giữa
-            Content Studio và khách hàng.
+          <p className="max-w-2xl text-[15px] leading-relaxed text-slate-400">
+            Quy định minh bạch về quyền hạn, trách nhiệm và cam kết pháp lý giữa Content Studio và khách hàng.
           </p>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-[var(--ink-tertiary)]">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1">
-              <CalendarDays className="h-3.5 w-3.5" />
+          <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-slate-400">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#0A0D15]/80 px-3 py-1 backdrop-blur-md">
+              <CalendarDays className="h-3.5 w-3.5 text-emerald-400" />
               Ngày hiệu lực: 24/10/2026
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--surface)] px-3 py-1">
-              <Sparkles className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.1] bg-[#0A0D15]/80 px-3 py-1 backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
               Áp dụng cho toàn bộ người dùng
             </span>
           </div>
@@ -163,27 +173,27 @@ export default function TermsPage() {
           {ARTICLES.map((article) => (
             <article
               key={article.index}
-              className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface)] p-6 shadow-xs sm:p-7"
+              className="rounded-2xl border border-white/[0.12] bg-[#0A0D15]/85 p-6 sm:p-7 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.14)] backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/30"
             >
               <div className="flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--accent-navy)] text-[11px] font-bold text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 border border-emerald-500/30 font-mono text-[11px] font-bold text-emerald-400">
                   {article.index}
                 </span>
-                <h2 className="text-base font-semibold tracking-tight text-[var(--ink-primary)] sm:text-lg">
+                <h2 className="text-base sm:text-lg font-bold tracking-tight text-white">
                   Điều {Number(article.index)}. {article.title}
                 </h2>
               </div>
 
               {article.highlight ? (
-                <p className="mt-4 rounded-lg border-l-2 border-[var(--accent-emerald)] bg-[var(--surface-raised)] px-4 py-3 text-[13.5px] font-semibold leading-relaxed text-[var(--ink-primary)]">
+                <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/[0.08] p-4 text-[13.5px] font-semibold leading-relaxed text-emerald-300 shadow-sm">
                   {article.highlight}
-                </p>
+                </div>
               ) : null}
 
               {article.paragraphs?.map((paragraph) => (
                 <p
                   key={paragraph}
-                  className="mt-3 text-[14px] leading-relaxed text-[var(--ink-secondary)]"
+                  className="mt-3 text-[14px] leading-relaxed text-slate-300"
                 >
                   {paragraph}
                 </p>
@@ -194,9 +204,9 @@ export default function TermsPage() {
                   {article.bullets.map((bullet) => (
                     <li
                       key={bullet}
-                      className="flex items-start gap-2.5 text-[14px] leading-relaxed text-[var(--ink-secondary)]"
+                      className="flex items-start gap-2.5 text-[14px] leading-relaxed text-slate-300"
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent-emerald)]" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
                       <span>{bullet}</span>
                     </li>
                   ))}
@@ -206,13 +216,11 @@ export default function TermsPage() {
           ))}
         </div>
 
-        <section className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] p-6 text-[13.5px] leading-relaxed text-[var(--ink-secondary)]">
-          Bằng việc tiếp tục sử dụng Content Studio sau ngày hiệu lực, bạn được
-          xem là đã chấp thuận toàn bộ nội dung của Điều khoản sử dụng này. Mọi
-          câu hỏi pháp lý vui lòng gửi về{" "}
+        <section className="rounded-2xl border border-white/[0.12] bg-[#0A0D15]/85 p-6 text-[13.5px] leading-relaxed text-slate-300 shadow-sm backdrop-blur-xl">
+          Bằng việc tiếp tục sử dụng Content Studio sau ngày hiệu lực, bạn được xem là đã chấp thuận toàn bộ nội dung của Điều khoản sử dụng này. Mọi thắc mắc pháp lý vui lòng gửi về{" "}
           <a
             href="mailto:legal@contentstudio.ai"
-            className="font-semibold text-[var(--accent-navy)] underline-offset-4 hover:underline"
+            className="font-semibold text-emerald-400 underline underline-offset-4 hover:text-emerald-300"
           >
             legal@contentstudio.ai
           </a>

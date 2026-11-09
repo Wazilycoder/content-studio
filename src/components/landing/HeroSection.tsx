@@ -7,13 +7,19 @@ import {
   ArrowRight,
   Check,
   Copy,
-  SlidersHorizontal,
+  Layers,
   Sparkles,
+  Zap,
+  SlidersHorizontal,
 } from "lucide-react";
 import { getUserProfile } from "@/app/auth/actions";
-import { SpotlightCard } from "@/components/ui/SpotlightCard";
-import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import { BorderBeam } from "@/components/ui/BorderBeam";
+import { NumberTicker } from "@/components/ui/NumberTicker";
+import { MorphingText } from "@/components/ui/MorphingText";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { Tilt } from "@/components/ui/Tilt";
+import { Particles } from "@/components/ui/Particles";
+import { useToast } from "@/components/ui/SonnerToast";
 
 type LandingUser = Awaited<ReturnType<typeof getUserProfile>>;
 
@@ -51,7 +57,8 @@ const PRESET_SCENARIOS: PresetScenario[] = [
     niche: "THỜI TRANG CÔNG SỞ",
     name: "Áo sơ mi lụa tơ tằm Bảo Lộc",
     tone: "Trang trọng",
-    rawBrief: "Ra mắt bộ sưu tập áo sơ mi lụa tơ tằm dệt tay Bảo Lộc dành cho nữ 25–45 tuổi. Thoáng mát, không nhăn, sang trọng tinh tế.",
+    rawBrief:
+      "Ra mắt bộ sưu tập áo sơ mi lụa tơ tằm dệt tay Bảo Lộc dành cho nữ 25–45 tuổi. Thoáng mát, không nhăn, sang trọng tinh tế.",
     angles: [
       {
         id: "pas",
@@ -102,7 +109,8 @@ const PRESET_SCENARIOS: PresetScenario[] = [
     niche: "ẨM THỰC ĐẶC SẢN",
     name: "Nước mắm cá cơm Phú Quốc 40N",
     tone: "Mộc mạc & Uy tín",
-    rawBrief: "Nước mắm truyền thống Phú Quốc ủ chượp thùng gỗ bời lời 12 tháng. 40 độ đạm tự nhiên, không phẩm màu, không chất bảo quản.",
+    rawBrief:
+      "Nước mắm truyền thống Phú Quốc ủ chượp thùng gỗ bời lời 12 tháng. 40 độ đạm tự nhiên, không phẩm màu, không chất bảo quản.",
     angles: [
       {
         id: "pas",
@@ -153,41 +161,42 @@ const PRESET_SCENARIOS: PresetScenario[] = [
     niche: "DƯỢC MỸ PHẨM THUẦN CHAY",
     name: "Serum B5 Rau Má Phục Hồi Da",
     tone: "Khoa học & Chuyên sâu",
-    rawBrief: "Serum dưỡng ẩm phục hồi hàng rào bảo vệ da, chứa 5% Vitamin B5 tinh khiết và chiết xuất rau má Madagascar. Dành cho da nhạy cảm sau treatment.",
+    rawBrief:
+      "Serum phục hồi làm dịu da nhạy cảm kích ứng sau treatment. Rau má Centella Asiatica 85% kết hợp Vitamin B5 10% và HA phân tử nhỏ.",
     angles: [
       {
         id: "pas",
         num: "01",
         tag: "PAS",
-        name: "Vấn đề & Giải pháp",
+        name: "Vấn đề & Cứu cánh",
         accentColor: "#f43f5e",
         glowColor: "rgba(244, 63, 94, 0.25)",
         activeBg: "bg-rose-500/15",
         activeBorder: "border-rose-500/40",
-        hook: "Da ửng đỏ, rát rát và bong tróc sau khi peel hoặc dùng retinol khiến bạn mất tự tin không dám ra ngoài?",
-        body: "Công thức độc quyền kết hợp 5% D-Panthenol y khoa cùng hoạt chất Asiaticoside từ rau má hữu cơ giúp làm dịu cảm giác châm chích chỉ sau 15 phút. Khóa ẩm sâu 72 giờ, tái thiết lập lớp màng lipid bảo vệ để làn da nhanh chóng căng mọng và khỏe mạnh trở lại.",
+        hook: "Da bỏng rát, ửng đỏ và bong tróc từng mảng sau khi peel da hay dùng retinol? Đừng liều thoa thêm kem đặc gây bít tắc.",
+        body: "Serum B5 thế hệ mới chứa 85% dịch chiết rau má tươi cô đặc giúp làm dịu ngứa rát chỉ sau 15 phút. Công thức cấp nước đa tầng với Hyaluronic Acid phân tử siêu nhỏ len lỏi sâu vào biểu bì, khôi phục lớp màng bảo vệ tự nhiên mà không gây nhờn dính.",
         hashtags: "#PhucHoiDa #SerumB5RauMa #DaNhayCam #TreatmentSkincare",
-        psychology: "Hoảng loạn vì da tổn thương → Làm dịu sau 15 phút → Phục hồi bền vững",
+        psychology: "Hoảng loạn vì da tổn thương → Hạ nhiệt tức thì 15 phút → Khôi phục rào cản ẩm",
       },
       {
         id: "aida",
         num: "02",
         tag: "AIDA",
-        name: "Tự tin & Rạng rỡ",
+        name: "Chữa lành & Tự tin",
         accentColor: "#38bdf8",
         glowColor: "rgba(56, 189, 248, 0.25)",
         activeBg: "bg-sky-500/15",
         activeBorder: "border-sky-500/40",
-        hook: "Tạm biệt lớp nền dày cộm che khuyết điểm, bạn hoàn toàn có thể tự tin sải bước với làn da mộc mọng nước, bóng khỏe tự nhiên.",
-        body: "Cảm giác mát lành tan ngay khi chạm vào bề mặt da, thẩm thấu không tì vết mà không gây bết dính. Một bước dưỡng đơn giản mỗi sáng tối đem lại sự chuyển hóa kỳ diệu, cho làn da thần thái trong veo đầy sức sống.",
-        hashtags: "#DaMocKhoeDep #GlassSkinVietnam #SkincareToiGian #TuTinToaSang",
-        psychology: "Khao khát làn da mộc hoàn hảo → Cảm giác nhẹ tênh thẩm thấu → Tự tin tỏa sáng",
+        hook: "Tạm biệt những ngày phải đeo khẩu trang che đi làn da mẩn đỏ — tìm lại sự trong trẻo, căng mướt mà bạn hằng ao ước.",
+        body: "Được nâng niu làn da mỗi tối bằng kết cấu trong vắt như giọt sương mai. Cảm nhận sự dịu mát lan tỏa qua từng tế bào da, để mỗi sớm mai thức dậy là một ngày bạn mỉm cười trước gương khi thấy làn da căng bóng, khỏe khoắn từ gốc rễ.",
+        hashtags: "#DaKhoeTuNhien #YeuThuongLanDa #SkincareRoutine #TuTinMoiNgay",
+        psychology: "Tự ti vì da khuyết điểm → Trải nghiệm êm dịu → Đón nhận diện mạo rạng rỡ",
       },
       {
         id: "fab",
         num: "03",
         tag: "FAB",
-        name: "Thành phần & Lâm sàng",
+        name: "Thông số lâm sàng",
         accentColor: "#00d492",
         glowColor: "rgba(0, 212, 146, 0.25)",
         activeBg: "bg-teal-500/15",
@@ -203,10 +212,10 @@ const PRESET_SCENARIOS: PresetScenario[] = [
 
 export default function HeroSection({ user }: HeroSectionProps) {
   const router = useRouter();
+  const toast = useToast();
   const [presetIndex, setPresetIndex] = useState(0);
   const [activeAngleIndex, setActiveAngleIndex] = useState(0);
   const [copiedPost, setCopiedPost] = useState(false);
-  const [isSynthesizing, setIsSynthesizing] = useState(false);
 
   const currentScenario = PRESET_SCENARIOS[presetIndex];
   const activeAngle = currentScenario.angles[activeAngleIndex];
@@ -217,331 +226,308 @@ export default function HeroSection({ user }: HeroSectionProps) {
     try {
       await navigator.clipboard.writeText(fullText);
       setCopiedPost(true);
+      toast.success("Đã sao chép kịch bản vào clipboard!", {
+        description: `Góc tiếp cận: ${activeAngle.name} (${activeAngle.tag}) - Sẵn sàng đăng Facebook Ads.`,
+      });
       window.setTimeout(() => setCopiedPost(false), 1600);
     } catch {
       setCopiedPost(false);
+      toast.error("Không thể sao chép kịch bản.");
     }
   };
 
-  const handleTriggerSynthesis = (targetPreset?: number) => {
-    if (typeof targetPreset === "number") setPresetIndex(targetPreset);
-    setIsSynthesizing(true);
-    window.setTimeout(() => setIsSynthesizing(false), 220);
+  const handleSelectPreset = (idx: number) => {
+    setPresetIndex(idx);
+    setActiveAngleIndex(0);
+    toast.info(`Đã nạp đề bài: ${PRESET_SCENARIOS[idx].name}`, {
+      description: `Ngành hàng: ${PRESET_SCENARIOS[idx].niche} · 3 góc tiếp cận đã sẵn sàng.`,
+    });
   };
 
   return (
-    <section className="relative overflow-hidden py-4 sm:py-6 lg:py-8 lg:max-h-[820px]">
-      {/* 1. ReactBits Atmospheric Grid & Radial Lighting */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-20 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
+    <section className="relative overflow-hidden pt-20 pb-24 sm:pt-28 sm:pb-32 lg:pt-36 lg:pb-40">
+      {/* 1. Canvas Particles Background */}
+      <Particles
+        className="pointer-events-none absolute inset-0 -z-10"
+        quantity={45}
+        staticity={60}
+        color="#00D492"
       />
 
-      {/* 2. Layered Ambient Neon Glows */}
+      {/* 2. Deep Atmospheric Mesh & Radial Lighting */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[550px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(0,212,146,0.18),rgba(37,99,235,0.12),transparent_70%)] blur-[50px]"
+        className="pointer-events-none absolute -top-40 left-1/2 -z-20 h-[600px] w-[1000px] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(0,212,146,0.18),rgba(56,189,248,0.12),transparent_70%)] blur-[70px]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/3 -right-40 -z-10 h-[450px] w-[550px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(0,212,146,0.12),transparent_70%)] blur-[45px]"
+        className="pointer-events-none absolute top-1/2 -right-40 -z-20 h-[500px] w-[600px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.12),transparent_70%)] blur-[60px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-30 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,#000_70%,transparent_100%)]"
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* ================= LEFT COLUMN: EDITORIAL INTELLIGENCE ================= */}
-          <div className="flex flex-col items-start text-left lg:col-span-6 xl:col-span-6">
-            {/* ReactBits Glass Pill Eyebrow */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/20 bg-teal-500/10 px-3.5 py-1.5 text-xs font-mono font-medium tracking-wider uppercase text-teal-300 shadow-[0_0_15px_rgba(0,212,146,0.15)] backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-400" />
-              </span>
-              <span>THE LIVE CONTENT SYNTHESIZER // LINEAR TIER</span>
-            </div>
+        {/* ================= HERO EDITORIAL CENTER ================= */}
+        <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+          {/* Eyebrow badge (Pure Frosted Glass Pill) */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-mono font-medium tracking-wider uppercase text-emerald-400 shadow-[0_0_25px_rgba(0,212,146,0.25)] backdrop-blur-xl">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            <span>{"[ AI SYNTHESIS PIPELINE · "}</span>
+            <MorphingText
+              texts={["01. GÓC PAS", "02. GÓC AIDA", "03. GÓC FAB", "0s VĂN MẪU"]}
+              className="text-emerald-300 font-mono inline-block text-[11px]"
+            />
+            <span>{"]"}</span>
+          </div>
 
-            {/* Kinetic High-Contrast Display Headline */}
-            <h1 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-[var(--ink-primary)] sm:text-4xl lg:text-[2.75rem] leading-[1.12]">
-              Tạo Kịch Bản Quảng Cáo <br />
-              <span className="bg-gradient-to-r from-teal-500 via-sky-500 to-indigo-500 bg-clip-text text-transparent dark:from-teal-300 dark:via-sky-300 dark:to-indigo-400 drop-shadow-[0_0_35px_rgba(0,212,146,0.3)]">
-                Chuẩn Xác Như Một Cỗ Máy Kỹ Thuật.
-              </span>
-            </h1>
+          {/* Kinetic Display Headline (2-3 lines max, grand typography) */}
+          <h1 className="mt-6 text-balance text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.12]">
+            Biến Sản Phẩm Thô Thành <br />
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(0,212,146,0.4)]">
+              3 Kịch Bản Quảng Cáo Độc Bản.
+            </span>
+          </h1>
 
-            {/* Subtitle with Clear Multi-Angle Value */}
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-[var(--ink-secondary)] sm:text-[15px]">
-              Trực tiếp chứng kiến một đề bài thô sơ được bóc tách và gia công thành 3 kịch bản chuyển đổi cao ngay trên màn hình:{" "}
-              <strong className="font-semibold text-rose-500 dark:text-rose-400">PAS</strong> đánh trúng nỗi đau,{" "}
-              <strong className="font-semibold text-sky-600 dark:text-sky-400">AIDA</strong> khơi gợi cảm xúc và{" "}
-              <strong className="font-semibold text-teal-600 dark:text-teal-400">FAB</strong> chứng minh độ đạm & chế tác.
-            </p>
+          {/* Wide editorial subtitle */}
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            Không còn văn mẫu AI sáo rỗng. Bóc tách một đề bài duy nhất thành 3 góc nhìn tâm lý:{" "}
+            <strong className="font-semibold text-rose-400">PAS</strong> đánh trúng nỗi đau,{" "}
+            <strong className="font-semibold text-sky-400">AIDA</strong> khơi gợi phong cách sống, và{" "}
+            <strong className="font-semibold text-emerald-400">FAB</strong> minh bạch thông số chế tác — chuẩn 125 ký tự Hook Facebook Ads.
+          </p>
 
-            {/* Call To Action Buttons (ReactBits Island Button Architecture) */}
-            <div className="mt-5 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+          {/* Dual CTAs with Button-in-Button architecture */}
+          <div className="mt-8 flex w-full flex-col items-center justify-center gap-3.5 sm:w-auto sm:flex-row">
+            <MagneticButton as="div" strength={0.12}>
               <button
                 type="button"
                 onClick={() => router.push(primaryHref)}
-                className="btn-tactile group inline-flex items-center justify-center gap-2.5 rounded-lg bg-[var(--brand)] px-6 py-2.5 text-xs font-bold text-white dark:text-black shadow-[0_0_25px_rgba(0,212,146,0.35)] transition hover:opacity-90"
+                className="group relative inline-flex items-center justify-between gap-3 overflow-hidden rounded-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 py-3.5 pl-7 pr-3 text-sm font-extrabold text-black shadow-[inset_0_1px_1px_rgba(255,255,255,0.45),0_15px_35px_-5px_rgba(0,212,146,0.5)] transition-all hover:brightness-110 active:scale-[0.98] cursor-pointer"
               >
-                <span>Khởi Động Studio</span>
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-black/15 transition-transform duration-200 group-hover:translate-x-1">
-                  <ArrowRight className="h-3 w-3" />
+                <span>Khởi Động Studio Miễn Phí</span>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/15 text-black shadow-inner transition-transform duration-200 group-hover:translate-x-0.5">
+                  <ArrowRight className="h-4 w-4" />
                 </span>
               </button>
+            </MagneticButton>
 
-              <a
-                href="#demo"
-                className="btn-tactile inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-5 py-2.5 text-xs font-semibold text-[var(--ink-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] sm:w-auto"
-              >
-                <SlidersHorizontal className="h-3.5 w-3.5 text-[var(--brand)]" />
-                <span>Xem quy trình 3 bước</span>
-              </a>
-            </div>
-
-            {/* Linear Precision Spec Bar */}
-            <div className="mt-5 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)]/60 px-3 py-1.5 text-xs text-[var(--ink-secondary)]">
-              <span className="flex items-center gap-1.5 font-semibold text-[var(--ink-primary)]">
-                <Sparkles className="h-3.5 w-3.5 text-[var(--brand)]" />
-                Quy trình:
-              </span>
-              <span className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface)] px-2 py-0.5 font-mono text-[11px]">
-                Brief thô
-              </span>
-              <span className="text-[var(--ink-tertiary)]">→</span>
-              <span className="rounded-md border border-[var(--brand)]/30 bg-[var(--brand)]/10 px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--brand)]">
-                3 Góc tâm lý
-              </span>
-              <span className="text-[var(--ink-tertiary)]">→</span>
-              <span className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-sky-600 dark:text-sky-300">
-                Canh Newsfeed
-              </span>
-            </div>
+            <a
+              href="#framework"
+              className="inline-flex items-center gap-2 rounded-full border border-white/[0.14] bg-white/[0.04] px-6 py-3.5 text-xs font-semibold text-slate-200 backdrop-blur-xl transition-all hover:bg-white/[0.08] hover:border-white/25 hover:text-white active:scale-[0.98]"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Khám phá 3 góc tiếp cận ↓</span>
+            </a>
           </div>
 
-          {/* ================= RIGHT COLUMN: PRODUCT TRANSFORMATION THEATRE ================= */}
-          <div className="relative flex w-full flex-col items-center justify-center lg:col-span-6 xl:col-span-6">
-            {/* The 3-Layer Z-Axis Stage — Double-Bezel Chassis + BorderBeam */}
-            <div className="double-bezel relative w-full max-w-[540px]">
-              <BorderBeam duration={8} colorFrom="#00D492" colorVia="#38BDF8" colorTo="#00D492" />
-              <div className="double-bezel-inner custom-scrollbar max-h-[470px] overflow-y-auto p-3">
-              {/* TẦNG 0: BƯỚC 1 CHỌN ĐỀ BÀI DOANH NGHIỆP THẬT */}
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/60 p-2.5 text-xs font-mono shadow-md">
-                <span className="text-[11px] text-gray-400 uppercase tracking-wider pl-1 font-semibold">
-                  MẪU NGÀNH HÀNG:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {PRESET_SCENARIOS.map((scenario, idx) => (
-                    <button
-                      key={scenario.id}
-                      type="button"
-                      onClick={() => handleTriggerSynthesis(idx)}
-                      className={`btn-tactile px-2 py-0.5 rounded-md text-[10.5px] font-bold transition ${
-                        presetIndex === idx
-                          ? "bg-teal-500/25 border border-teal-400/60 text-teal-300 shadow-[0_0_12px_rgba(0,212,146,0.2)]"
-                          : "bg-white/5 border border-white/10 text-gray-400 hover:text-white"
-                      }`}
-                    >
-                      [{idx + 1}] {scenario.name.split(" ")[0]} {scenario.name.split(" ")[1]}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {/* Spec Bar (Frosted Glass Telemetry Numbers) */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5 rounded-full border border-white/[0.12] bg-[#0A0D15]/80 px-5 py-2 text-xs text-slate-300 backdrop-blur-xl shadow-inner">
+            <span className="flex items-center gap-1.5 font-semibold text-white">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+              Chỉ số kỹ thuật:
+            </span>
+            <span className="rounded-md border border-white/[0.10] bg-white/[0.05] px-2 py-0.5 font-mono text-[11px] font-medium text-slate-200">
+              <NumberTicker value={125} suffix=" Ký tự vàng" />
+            </span>
+            <span className="text-slate-600">·</span>
+            <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-emerald-400">
+              <NumberTicker value={3} prefix="0" suffix=" Góc tâm lý" />
+            </span>
+            <span className="text-slate-600">·</span>
+            <span className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-sky-400">
+              <NumberTicker value={42} prefix="+" suffix="% CTR Facebook" />
+            </span>
+            <span className="text-slate-600">·</span>
+            <span className="rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-purple-300">
+              0s Độ trễ
+            </span>
+          </div>
+        </div>
 
-              {/* TẦNG 1: RAW BRIEF DISPLAY BAR */}
-              <div className="mb-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-xs backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5),inset_0_1px_0_0_rgba(255,255,255,0.08)]">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="rounded-md bg-teal-500/20 px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-teal-300">
-                      {currentScenario.niche}
+        {/* ================= INTERACTIVE SYNTHESIS THEATRE (DOUBLE-BEZEL LUXURY GLASS) ================= */}
+        <div id="demo" className="mt-14 w-full scroll-mt-24">
+          <Tilt rotationFactor={1.5} perspective={1600} className="w-full">
+            <div className="rounded-[2.25rem] p-2 sm:p-2.5 bg-gradient-to-b from-white/[0.18] via-white/[0.05] to-white/[0.01] border border-white/[0.15] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.8),inset_0_1.5px_1px_rgba(255,255,255,0.25)] backdrop-blur-3xl">
+              <div className="relative overflow-hidden rounded-[calc(2.25rem-0.625rem)] bg-[#0A0D15]/90 p-5 sm:p-7 border border-white/[0.08] backdrop-blur-2xl">
+                <BorderBeam duration={9} colorFrom="#00D492" colorVia="#38BDF8" colorTo="#00D492" borderWidth={1.5} />
+
+                {/* THEATRE TOP BAR: Preset switcher */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-black border border-emerald-500/30">
+                      <Zap className="h-3.5 w-3.5" />
                     </span>
-                    <span className="text-[11px] text-gray-400 font-mono">Tone: {currentScenario.tone}</span>
+                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+                      SÂN KHẤU TỔNG HỢP NỘI DUNG (LIVE STAGE)
+                    </span>
                   </div>
-                  <p className="line-clamp-2 font-medium text-slate-200 text-xs sm:text-[13px] leading-relaxed">
-                    &quot;{currentScenario.rawBrief}&quot;
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleTriggerSynthesis()}
-                  className="btn-tactile shrink-0 self-start sm:self-auto px-3.5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-mono text-[11px] uppercase font-bold transition shadow-md shadow-teal-500/20"
-                >
-                  ⚡ TỔNG HỢP (0.5s)
-                </button>
-              </div>
 
-              {/* TẦNG 2: REACTBITS SEGMENTED ANGLE CONTROLLER */}
-              <div className="mb-3.5 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-slate-950/80 p-1.5 backdrop-blur-2xl shadow-xl">
-                {currentScenario.angles.map((angle, idx) => {
-                  const isActive = activeAngleIndex === idx;
-                  return (
-                    <button
-                      key={angle.id}
-                      type="button"
-                      onClick={() => setActiveAngleIndex(idx)}
-                      aria-pressed={isActive}
-                      className={`group relative flex min-w-0 flex-col items-start gap-0.5 rounded-lg p-2 text-left transition-all duration-300 ${
-                        isActive
-                          ? `${angle.activeBg} border ${angle.activeBorder} shadow-[0_0_20px_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.2)]`
-                          : "border border-transparent hover:bg-white/5 hover:border-white/5"
-                      }`}
-                    >
-                      <div className="flex w-full items-center justify-between">
-                        <span
-                          className="flex items-center gap-1.5 font-mono text-[11px] font-bold tracking-wider"
-                          style={{ color: isActive ? angle.accentColor : "#94a3b8" }}
-                        >
-                          <span
-                            className="h-1.5 w-1.5 rounded-full transition-transform group-hover:scale-125"
-                            style={{
-                              backgroundColor: angle.accentColor,
-                              boxShadow: isActive ? `0 0 10px ${angle.accentColor}` : "none",
-                            }}
-                          />
-                          {angle.num}. {angle.tag}
-                        </span>
-                        {isActive && (
-                          <span
-                            className="h-1 w-1 rounded-full animate-ping"
-                            style={{ backgroundColor: angle.accentColor }}
-                          />
-                        )}
-                      </div>
-                      <span
-                        className={`w-full truncate text-[11px] font-medium transition-colors ${
-                          isActive ? "text-white" : "text-slate-400 group-hover:text-slate-200"
+                  {/* Preset Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
+                    <span className="mr-1 text-[11px] text-slate-400 uppercase tracking-wider">
+                      Đề bài mẫu:
+                    </span>
+                    {PRESET_SCENARIOS.map((scenario, idx) => (
+                      <button
+                        key={scenario.id}
+                        type="button"
+                        onClick={() => handleSelectPreset(idx)}
+                        className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
+                          idx === presetIndex
+                            ? "bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 shadow-[0_0_15px_rgba(0,212,146,0.3)] font-bold"
+                            : "bg-white/[0.04] border border-white/[0.10] text-slate-300 hover:text-white hover:bg-white/[0.08]"
                         }`}
                       >
-                        {angle.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                        {String(idx + 1).padStart(2, "0")}. {scenario.name.split(" ")[0]} {scenario.name.split(" ")[1] ?? ""}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              {/* TẦNG 3: EDITORIAL SHEET (ReactBits Glass Stage Card) */}
-              <div className={`relative transition-all duration-200 ${isSynthesizing ? "opacity-60 blur-xs scale-[0.99]" : "opacity-100 blur-0 scale-100"}`}>
-                <SpotlightCard
-                  spotlightColor={activeAngle.glowColor}
-                  className="rounded-[28px] border border-white/10 bg-[#0E1017]/90 backdrop-blur-2xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.85),inset_0_1px_0_0_rgba(255,255,255,0.08)]"
-                >
-                  <div className="p-5 sm:p-7">
-                    {/* Sheet Header */}
-                    <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <span
-                          className="h-2 w-2 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor: activeAngle.accentColor,
-                            boxShadow: `0 0 12px ${activeAngle.accentColor}`,
-                          }}
-                        />
-                        <span className="font-mono text-xs font-bold uppercase tracking-widest text-slate-200">
-                          Editorial Sheet · {activeAngle.num} {activeAngle.tag}
+                {/* THEATRE MAIN GRID: Brief (Left) -> Synthesis Pipeline (Center) -> Generated Angles (Right) */}
+                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-stretch">
+                  {/* COLUMN 1: CLIENT BRIEF (4 cols - Frosted Glass Container) */}
+                  <div className="flex flex-col justify-between rounded-2xl border border-white/[0.10] bg-white/[0.02] p-5 backdrop-blur-xl lg:col-span-4 shadow-inner">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 font-mono text-[10.5px] font-bold text-emerald-400 uppercase tracking-wider">
+                          {currentScenario.niche}
+                        </span>
+                        <span className="font-mono text-[11px] text-slate-400">
+                          Tông: {currentScenario.tone}
                         </span>
                       </div>
-                      <span
-                        className="shrink-0 rounded-full border px-3 py-0.5 text-xs font-semibold backdrop-blur-md"
-                        style={{
-                          borderColor: `${activeAngle.accentColor}40`,
-                          backgroundColor: `${activeAngle.accentColor}15`,
-                          color: activeAngle.accentColor,
-                        }}
-                      >
-                        {activeAngle.name}
-                      </span>
-                    </div>
 
-                    {/* Hook Mở Đầu Box */}
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]">
-                      <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-                        <span
-                          className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider"
-                          style={{ color: activeAngle.accentColor }}
-                        >
-                          <span
-                            className="h-1.5 w-1.5 rounded-full"
-                            style={{ backgroundColor: activeAngle.accentColor }}
-                          />
-                          Hook đầu trang
-                        </span>
-                        <span className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-slate-400">
-                          {activeAngle.hook.length} ký tự · hiển thị trước &quot;Xem thêm&quot;
-                        </span>
-                      </div>
-                      <p className="text-[14px] font-semibold leading-relaxed text-slate-100 sm:text-[14.5px]">
-                        {activeAngle.hook}
+                      <h3 className="text-base font-bold text-white">
+                        {currentScenario.name}
+                      </h3>
+                      <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                        &quot;{currentScenario.rawBrief}&quot;
                       </p>
                     </div>
 
-                    {/* Thân bài */}
-                    <div className="mt-4">
-                      <p className="text-[13.5px] leading-[1.8] text-slate-300">
-                        {activeAngle.body}
-                      </p>
+                    <div className="mt-5 border-t border-white/[0.08] pt-3 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+                      <span>Pipeline: 3 Angles Active</span>
+                      <span className="text-emerald-400 font-bold">Ready in 0s</span>
+                    </div>
+                  </div>
+
+                  {/* COLUMN 2: 3 LIVE GENERATED ANGLES (8 cols - High-Contrast Frosted Core) */}
+                  <div className="flex flex-col rounded-2xl border border-white/[0.10] bg-[#0E121B]/95 p-5 lg:col-span-8 shadow-sm backdrop-blur-2xl">
+                    {/* Angle Selector Tabs */}
+                    <div className="grid grid-cols-3 gap-2 rounded-xl bg-[#07090E] p-1.5 border border-white/[0.08] relative">
+                      {currentScenario.angles.map((ang, idx) => {
+                        const active = idx === activeAngleIndex;
+                        return (
+                          <button
+                            key={ang.id}
+                            type="button"
+                            onClick={() => setActiveAngleIndex(idx)}
+                            className={`group relative rounded-xl py-2 px-2 text-center transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] cursor-pointer overflow-hidden ${
+                              active
+                                ? "bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 shadow-[0_0_20px_rgba(0,212,146,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)]"
+                                : "text-slate-400 hover:text-white hover:bg-white/[0.05] border border-transparent"
+                            }`}
+                          >
+                            <span className="flex items-center justify-center gap-1 font-mono text-[11px] font-bold">
+                              {active && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+                              <span>{ang.num}. {ang.tag}</span>
+                            </span>
+                            <span className="block text-[11px] truncate opacity-90 mt-0.5 font-medium">
+                              {ang.name.split("—")[1] ?? ang.name}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
 
-                    {/* Hashtag & Chiến lược tâm lý */}
-                    <div className="mt-4 space-y-2.5 border-t border-white/10 pt-4">
-                      <p
-                        className="font-mono text-xs font-semibold tracking-wide"
-                        style={{ color: activeAngle.accentColor }}
-                      >
-                        {activeAngle.hashtags}
-                      </p>
-                      <div className="rounded-xl border border-white/5 bg-white/[0.03] p-3 text-xs text-slate-300">
-                        <p className="flex items-start gap-2 leading-relaxed">
-                          <span
-                            className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: activeAngle.accentColor }}
-                          />
-                          <span>
-                            <strong className="text-white">Chiến lược tâm lý: </strong>
-                            {activeAngle.psychology}
+                    {/* Active Angle Content Display */}
+                    <div className="mt-4 flex-1 rounded-xl border border-white/[0.08] bg-[#07090E] p-4">
+                      {/* Hook callout (125 characters gold hook) */}
+                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3">
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="font-mono text-[10.5px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                            125 Ký tự Hook Facebook (Hiển thị trước &quot;Xem thêm&quot;)
                           </span>
+                          <span className="font-mono text-[10.5px] text-emerald-400 font-semibold">
+                            {activeAngle.hook.length} chars
+                          </span>
+                        </div>
+                        <p className="text-sm font-bold text-white leading-snug">
+                          {activeAngle.hook}
                         </p>
                       </div>
+
+                      {/* Body copy */}
+                      <div className="mt-3">
+                        <p className="text-xs leading-relaxed text-slate-200">
+                          {activeAngle.body}
+                        </p>
+                        <p className="mt-2 font-mono text-[11px] text-emerald-400 font-medium">
+                          {activeAngle.hashtags}
+                        </p>
+                      </div>
+
+                      {/* Psychology insight */}
+                      <div className="mt-3 border-t border-white/[0.08] pt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                        <span className="text-slate-400">
+                          <strong className="text-white">Tâm lý:</strong> {activeAngle.psychology}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={handleCopy}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25 transition-all active:scale-95 cursor-pointer shadow-xs"
+                        >
+                          {copiedPost ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Đã sao chép</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Sao chép kịch bản</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Action Footer */}
-                    <div className="mt-6 flex flex-col gap-2.5 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                      <button
-                        type="button"
-                        onClick={handleCopy}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-200 transition-all hover:border-white/25 hover:bg-white/10 hover:text-white active:scale-95"
-                      >
-                        {copiedPost ? (
-                          <>
-                            <Check className="h-4 w-4 text-emerald-400" />
-                            <span className="text-emerald-400 font-semibold">Đã sao chép bản thảo!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-4 w-4" />
-                            <span>Sao chép bản thảo</span>
-                          </>
-                        )}
-                      </button>
+                {/* THEATRE FOOTER SPECS */}
+                <div className="mt-5 border-t border-white/[0.08] pt-4 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400">
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1.5 text-emerald-400">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      100% Anti-AI-Slop Engine
+                    </span>
+                    <span>·</span>
+                    <span>Facebook Mobile Ready</span>
+                    <span>·</span>
+                    <span>Instagram Feed Ready</span>
+                  </div>
 
-                      <Link
-                        href="/workspace"
-                        className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
-                        style={{
-                          backgroundColor: activeAngle.accentColor === "#818cf8" ? "#4f46e5" : activeAngle.accentColor === "#fb7185" ? "#e11d48" : "#059669",
-                          boxShadow: `0 0 20px ${activeAngle.glowColor}`,
-                        }}
-                      >
-                        <span>Mở Studio biên tập</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
-                                        </div>
-                                      </div>
-                                    </SpotlightCard>
-                                  </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </section>
-                      );
-                    }
+                  <Link
+                    href={primaryHref}
+                    className="inline-flex items-center gap-1 font-bold text-emerald-400 hover:underline"
+                  >
+                    <span>Mở kịch bản trong Studio</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </Tilt>
+        </div>
+      </div>
+    </section>
+  );
+}

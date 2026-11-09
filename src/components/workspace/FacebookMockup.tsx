@@ -173,6 +173,13 @@ function FacebookMockup({
       text: "Đã inbox shop qua fanpage rồi ạ, check tin nhắn giúp mình với.",
       likes: 3,
     },
+    {
+      id: "fb-3",
+      name: "Đỗ Quang Huy",
+      time: "1 giờ trước",
+      text: "Văn phong tự nhiên và cuốn hút thật, không bị cảm giác máy móc AI viết.",
+      likes: 5,
+    },
   ]);
   const [fbNewComment, setFbNewComment] = useState("");
 
@@ -604,7 +611,7 @@ function FacebookMockup({
               }}
               className="hover:underline hover:text-[#050505] dark:hover:text-white"
             >
-              {24 + fbCommentsList.length} bình luận
+              {fbCommentsList.length} bình luận
             </button>
             <button
               type="button"
@@ -690,7 +697,7 @@ function FacebookMockup({
         >
           <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-2.5 dark:border-[#3A3B3C]">
             <span className="text-[13px] font-bold text-[#050505] dark:text-[#E4E6EB]">
-              Bình luận ({24 + fbCommentsList.length})
+              Bình luận ({fbCommentsList.length})
             </span>
             <button
               type="button"
@@ -924,7 +931,7 @@ function FacebookMockup({
                         {/* Comments Preview */}
                         <div className="px-3 pb-3 pt-1.5">
                           <p className="cursor-pointer text-[13px] text-[#8E8E8E]">
-                            Xem tất cả 28 bình luận
+                            Xem tất cả {fbCommentsList.length} bình luận
                           </p>
                           <p className="mt-1 text-[11px] uppercase tracking-wide text-[#8E8E8E]">
                             2 giờ trước
